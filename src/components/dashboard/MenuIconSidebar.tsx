@@ -5,8 +5,31 @@ import graph from "../../assets/graph.svg";
 import Vector from "../../assets/Vector.svg";
 import watch from "../../assets/watch.svg";
 import { Box } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const MenuIconSidebar = () => {
+  const location = useLocation();
+  console.log(location.pathname);
+
+  const sidebarMenuIcon = [
+    { label: "Dashboard", icon: Group, path: "/voicebot" },
+    { label: "AI Agents", icon: Headphoneicon, path: "/voicebot/ai-agents" },
+    {
+      label: "Conversation History",
+      icon: watch,
+      path: "/voicebot/conversation-history",
+    },
+    { label: "Call Data", icon: Vector, path: "/voicebot/call-data" },
+    {
+      label: "Call Monitoring",
+      icon: dextop,
+      path: "/voicebot/call-monitoring",
+    },
+    { label: "Reports", icon: graph, path: "/voicebot/reports" },
+  ];
+
+  const navigate = useNavigate();
+
   return (
     <Box sx={{ width: "72px", height: "966px", background: "#18181B" }}>
       <Box
@@ -18,114 +41,29 @@ const MenuIconSidebar = () => {
           gap: "14px",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "7px",
-            width: "31px",
-            height: "31px",
-            background: "#FF581C",
-          }}
-        >
+        {sidebarMenuIcon.map((menu: any, index: any) => (
           <Box
-            component="img"
-            src={Group}
-            alt="group"
-            sx={{ width: 15.5, height: 15.5 }}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "7px",
-            width: "31px",
-            height: "31px",
-            background: "#2A2A33",
-          }}
-        >
-          <Box
-            component="img"
-            src={Headphoneicon}
-            alt="group"
-            sx={{ width: 17, height: 17 }}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "7px",
-            width: "31px",
-            height: "31px",
-            background: "#2A2A33",
-          }}
-        >
-          <Box
-            component="img"
-            src={watch}
-            alt="group"
-            sx={{ width: 17, height: 17 }}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "7px",
-            width: "31px",
-            height: "31px",
-            background: "#2A2A33",
-          }}
-        >
-          <Box
-            component="img"
-            src={Vector}
-            alt="group"
-            sx={{ width: 18, height: 19 }}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "7px",
-            width: "31px",
-            height: "31px",
-            background: "#2A2A33",
-          }}
-        >
-          <Box
-            component="img"
-            src={dextop}
-            alt="group"
-            sx={{ width: 17, height: 17 }}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "7px",
-            width: "31px",
-            height: "31px",
-            background: "#2A2A33",
-          }}
-        >
-          <Box
-            component="img"
-            src={graph}
-            alt="group"
-            sx={{ width: 15.5, height: 15.5 }}
-          />
-        </Box>
+            key={index}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "7px",
+              width: "31px",
+              height: "31px",
+              background:
+                location.pathname === menu.path ? "#FF581C" : "",
+            }}
+            onClick={() => navigate(menu.path)}
+          >
+            <Box
+              component="img"
+              src={menu.icon}
+              alt="group"
+              sx={{ width: 15.5, height: 15.5 }}
+            />
+          </Box>
+        ))}
       </Box>
     </Box>
   );

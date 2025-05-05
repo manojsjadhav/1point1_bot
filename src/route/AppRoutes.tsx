@@ -3,7 +3,8 @@ import PriveteRoute from "./PrivateRoute";
 import BotPage from "../pages/BotPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
-import VoiceBot from "../pages/voicebot/VoiceBot";
+import VoiceBotDashboard from "../pages/voicebot/dashboard/VoiceBotDashboard";
+import AiAgent from "../pages/voicebot/aiAgent/AiAgent";
 
 const AppRoutes = () => {
   return (
@@ -20,7 +21,47 @@ const AppRoutes = () => {
         path="voicebot"
         element={
           <PriveteRoute>
-            <VoiceBot />
+             <VoiceBotDashboard />
+          </PriveteRoute>
+        }
+      />
+      <Route
+        path="voicebot/ai-agents"
+        element={
+          <PriveteRoute>
+            <AiAgent />
+          </PriveteRoute>
+        }
+      />
+      <Route
+        path="voicebot/conversation-history"
+        element={
+          <PriveteRoute>
+            <AiAgent />
+          </PriveteRoute>
+        }
+      />
+      <Route
+        path="voicebot/call-data"
+        element={
+          <PriveteRoute>
+            <AiAgent />
+          </PriveteRoute>
+        }
+      />
+      <Route
+        path="voicebot/call-monitoring"
+        element={
+          <PriveteRoute>
+            <AiAgent />
+          </PriveteRoute>
+        }
+      />
+      <Route
+        path="voicebot/reports"
+        element={
+          <PriveteRoute>
+            <AiAgent />
           </PriveteRoute>
         }
       />

@@ -1,0 +1,25 @@
+.custom-select {
+  width: 100%;
+  padding: 6px 12px 6px 12px; /* Right padding increased for icon space */
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #41414b;
+  background-color: #2a2a33;
+  color: #b8b9c1;
+  font-family: "GeneralSans-m", sans-serif;
+  font-size: 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("../assets/chevron-down.svg");
+  background-repeat: no-repeat;
+  background-position: right 1px center;
+  background-size: 24px 24px;
+  box-sizing: border-box;
+}
+
+.custom-select:focus {
+  border-color: #ff581c;
+  outline: none;
+}

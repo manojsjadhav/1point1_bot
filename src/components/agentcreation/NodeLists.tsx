@@ -1,23 +1,26 @@
-import { useCallback, useEffect } from "react";
 import {
   addEdge,
   Background,
+  Connection,
   Controls,
+  Edge,
   MiniMap,
+  Panel,
+  ReactFlow,
   useEdgesState,
   useNodesState,
-  Edge,
-  Connection,
-  OnNodesChange,
-  OnEdgesChange,
-  NodeChange, // Correct import: NodeChange
 } from "@xyflow/react";
-import { ReactFlow } from "@xyflow/react";
+import "../../nodes/agentCustomNode.scss";
 import "@xyflow/react/dist/style.css";
+import { useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
 import AgentCustomNode from "../../nodes/AgentCustomNode.tsx";
-import { useSelector, useDispatch } from "react-redux";
+import playIcon from "../../assets/componentmenuicon/play.svg";
+import chevron_down from "../../assets/chevron-down.svg";
 import { RootState } from "../../redux/store.ts";
-import { updateNodeData } from "../../redux/nodeSlice/nodeSlice.ts";
+import { Box, Button } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
+import { postAgentFlow } from "../../services/agentFlowServices.ts";
 
 const nodeTypes = { custom: AgentCustomNode };
 
@@ -25,50 +28,138 @@ export default function NodeLists() {
   const allNode = useSelector((state: RootState) => state.nodes);
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
-  const dispatch = useDispatch();
-console.log({nodes})
-  useEffect(()=>{
-    setNodes(allNode)
-  },[allNode])
+  console.log({ nodes });
+
+  const handleflowsubmit = async () => {
+    const tempId: any = uuidv4();
+    const dammyData: any = {
+      created_date: "2025-04-29T12:00:00",
+      created_by: "rohit",
+      dialer: "Asterisk",
+      flow_type: "STS",
+      agent_name: "Marketing Agent",
+      agent_type: "TTS",
+      sts_model_id: tempId,
+      sts_model_perms: {},
+      llm_model_id: tempId,
+      llm_model_param: {},
+      llm_model_document: "This is a document content",
+      tts_model_id: tempId,
+      tts_model_perm: {},
+    };
+    const requiredNodeTypes = [
+      "speech_to_text",
+      "text_to_speech",
+      "llm_models",
+    ];
+    const foundNodeTypes = new Set(nodes.map((node: any) => node.nodetype));
+
+    const missingTypes = requiredNodeTypes.filter(
+      (type) => !foundNodeTypes.has(type)
+    );
+
+    if (missingTypes.length > 0) {
+      alert(`Missing required node types: ${missingTypes.join(", ")}`);
+      return;
+    }
+    nodes.forEach((node: any) => {
+      if (node.nodetype === "speech_to_text") {
+        node.data.fields.map(
+          (field: any) => (dammyData.sts_model_perms[field.name] = field.value)
+        );
+      } else if (node.nodetype === "text_to_speech") {
+        node.data.fields.map(
+          (field: any) => (dammyData.tts_model_perm[field.name] = field.value)
+        );
+      } else if (node.nodetype === "llm_models") {
+        node.data.fields.map(
+          (field: any) => (dammyData.llm_model_param[field.name] = field.value)
+        );
+      }
+    });
+
+    await postAgentFlow(dammyData)
+    setNodes(allNode);
+  };
+
   const onConnect = useCallback(
     (params: Connection | Edge) =>
       setEdges((eds: any[]) => addEdge(params, eds)),
     [setEdges]
   );
-
-  // const handleNodesChange: OnNodesChange = useCallback(
-  //   (changes) => {
-  //     setNodes((nds: any[]) =>
-  //       nds.map((node: any) => {
-  //         const change = changes.find((ch: any) => ch.id === node.id);
-  //         console.log({change})
-  //         if (change && (change as { type: string }).type === 'data' && change.data) {
-  //           dispatch(updateNodeData({ id: node.id, data: change.data }));
-  //           return { ...node, data: change.data };
-  //         }
-  //         return node;
-  //       })
-  //     );
-  //   },
-  //   [setNodes, dispatch]
-  // );
+  useEffect(() => {
+    setNodes(allNode);
+  }, [allNode]);
 
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        // onNodesChange={handleNodesChange}
+        onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{
-          padding: 0.2,
-          minZoom: 0.75,
-          maxZoom: 1.5,
-        }}
       >
+        <Panel position="top-right">
+          <Box
+            sx={{
+              backgroundColor: "#2A2A33",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              boxShadow: 3,
+              width: "210px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              sx={{
+                textTransform: "none",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                fontFamily: "GeneralSans-m",
+                fontSize: "14px",
+                color: "#fff",
+                px: "25px",
+                height: "36px",
+              }}
+            >
+              <Box
+                component="img"
+                src={playIcon}
+                alt="Apple"
+                sx={{ width: 24, height: 24 }}
+              />
+              test
+            </Button>
+            <Button
+              sx={{
+                background: "#FF581C",
+                textTransform: "none",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                fontFamily: "GeneralSans-m",
+                fontSize: "14px",
+                color: "#fff",
+                px: "25px",
+                height: "36px",
+              }}
+              onClick={() => handleflowsubmit()}
+            >
+              Publish
+              <Box
+                component="img"
+                src={chevron_down}
+                alt="Apple"
+                sx={{ width: 24, height: 24, color: "#FFF" }}
+              />
+            </Button>
+          </Box>
+        </Panel>
+
         <Controls />
         <MiniMap />
         <Background gap={12} size={1} />

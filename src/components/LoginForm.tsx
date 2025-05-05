@@ -42,7 +42,6 @@ const LoginForm = () => {
           ...values,
           id: uuidv4(),
         };
-        console.log({ userData });
         const loginRespons = await axios.post(
           "http://1msg.1point1.in:3001/api/auth/j-v1/signin/",
           userData
@@ -53,7 +52,6 @@ const LoginForm = () => {
         );
         setTokenToggle(!tokenToggle);
         navigate("/")
-        console.log(loginRespons.data);
         formik.resetForm();
       } catch (error: any) {
         console.error("Login Error:", error.message);

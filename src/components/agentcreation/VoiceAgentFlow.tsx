@@ -1,11 +1,10 @@
 import { Box, InputAdornment, TextField, Typography } from "@mui/material";
 import Configuration from "../../assets/Configuration.svg";
 import Search from "../../assets/Search.svg";
-import dotedbg from "../../assets/dotedbg.png";
 import MenuItems from "./MenuItems";
 import NodeLists from "./NodeLists";
 
-const ComponentMenu = () => {
+const VoiceAgentFlow = () => {
   return (
     <Box sx={{ display: "flex", width: "100%" }}>
       <Box
@@ -104,4 +103,4 @@ const ComponentMenu = () => {
   );
 };
 
-export default ComponentMenu;
+export default VoiceAgentFlow;

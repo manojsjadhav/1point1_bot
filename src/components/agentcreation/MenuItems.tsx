@@ -29,6 +29,8 @@ import {
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { addNode } from "../../redux/nodeSlice/nodeSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 // initial static menu items
 const initialMenuItems = [
@@ -126,6 +128,7 @@ const nodeListData = [OpenAINode, DeepgramNode, GoogleTTSNode];
 
 const MenuItems = () => {
   const [menuItems, setMenuItems] = useState(initialMenuItems);
+  const allNodes = useSelector((state: RootState) => state.nodes);
   const dispatch = useDispatch();
 
   const toggleMenu = (id: number) => {
@@ -137,7 +140,14 @@ const MenuItems = () => {
   };
   const handleAddNode = (nodeName: any) => {
     const node = nodeListData.find((node: any) => node.data.title === nodeName);
-    dispatch(addNode({ ...node, id: uuidv4() }));
+    const isCheckNode = allNodes.find(
+      (nodeItem: any) =>  nodeItem.nodetype === node?.nodetype
+    );
+    if (isCheckNode) {
+      alert("This type of node already exist");
+    } else {
+      dispatch(addNode({ ...node, id: uuidv4() }));
+    }
   };
 
   return (
