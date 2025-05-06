@@ -6,10 +6,8 @@ import Info from "../../assets/componentmenuicon/Info.svg";
 import Note_Search from "../../assets/componentmenuicon/Note_Search.svg";
 import Google_TTS from "../../assets/componentmenuicon/Google_TTS.svg";
 import Upload from "../../assets/componentmenuicon/Upload.svg";
-import { v4 as uuidv4 } from "uuid";
 
 export const DeepgramNode = {
-  id: `deepgram-node-${uuidv4()}`,
   nodetype: "speech_to_text",
   type: "custom",
   position: { x: 50, y: 50 },
@@ -78,7 +76,6 @@ export const DeepgramNode = {
   selected: true,
 };
 export const OpenAINode = {
-  id: `openai-node-${uuidv4()}`,
   nodetype: "llm_models",
   type: "custom",
   position: { x: 400, y: 100 },
@@ -111,26 +108,6 @@ export const OpenAINode = {
         infoIcon: Info,
         value: "",
       },
-      // {
-      //   type: "select",
-      //   label: "Sample Rate",
-      //   options: ["8000", "gpt-4", "gemini"],
-      //   value: "8000",
-      // },
-      // {
-      //   type: "select",
-      //   label: "End Pointing",
-      //   options: ["gpt-3", "gpt-4", "gemini"],
-      //   value: "gpt-3",
-      // },
-      // {
-      //   type: "text",
-      //   label: "Train by URL",
-      //   placeholder: "Paste URL",
-      //   infoIcon: Info,
-      //   fieldIcon: Open_view,
-      //   value: "",
-      // },
       {
         type: "file",
         label: "Train by Document",
@@ -147,7 +124,6 @@ export const OpenAINode = {
   },
 };
 export const GoogleTTSNode = {
-  id: `googletts-node-${uuidv4()}`,
   nodetype: "text_to_speech",
   type: "custom",
   position: { x: 750, y: 150 },
@@ -200,4 +176,18 @@ export const GoogleTTSNode = {
       text: "Text to Speech",
     },
   },
+};
+
+export const getCurrentFormattedDate = (): string => {
+  const date = new Date();
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 0-based
+  const day = String(date.getDate()).padStart(2, '0');
+
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 };

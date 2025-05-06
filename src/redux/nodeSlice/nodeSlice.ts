@@ -3,12 +3,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState: any = [];
 interface UpdateNodeDataPayload {
   id: string;
-  data: any; // The new data to merge with the existing node data
+  data: any;
 }
 const nodeSlice = createSlice({
   name: "counter",
   initialState,
   reducers: {
+    setInitialNodes: (state, action: PayloadAction<any[]>) => {
+      state = action.payload;
+    },
     addNode: (state, action: PayloadAction<any>) => {
       state.push(action.payload);
     },
@@ -22,5 +25,5 @@ const nodeSlice = createSlice({
   },
 });
 
-export const { addNode, updateNodeData } = nodeSlice.actions;
+export const { addNode, updateNodeData, setInitialNodes } = nodeSlice.actions;
 export default nodeSlice.reducer;

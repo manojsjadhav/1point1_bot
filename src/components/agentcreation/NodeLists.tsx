@@ -12,7 +12,7 @@ import {
 } from "@xyflow/react";
 import "../../nodes/agentCustomNode.scss";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useSelector } from "react-redux";
 import AgentCustomNode from "../../nodes/AgentCustomNode.tsx";
 import playIcon from "../../assets/componentmenuicon/play.svg";
@@ -21,24 +21,25 @@ import { RootState } from "../../redux/store.ts";
 import { Box, Button } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { postAgentFlow } from "../../services/agentFlowServices.ts";
+import { getCurrentFormattedDate } from "../../nodes/utils/nodedata.ts";
+import { agentStore } from "../../providers/AgentContext.tsx";
+import { setInitialNodes } from "../../redux/nodeSlice/nodeSlice.ts";
+import { useDispatch } from "react-redux";
 
 const nodeTypes = { custom: AgentCustomNode };
 
 export default function NodeLists() {
   const allNode = useSelector((state: RootState) => state.nodes);
+  const { agentDetails, agentFlowtoggle, setAgentFlowtoggle } =
+    useContext(agentStore);
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
-  console.log({ nodes });
-
+  const dispatch = useDispatch();
   const handleflowsubmit = async () => {
     const tempId: any = uuidv4();
     const dammyData: any = {
-      created_date: "2025-04-29T12:00:00",
-      created_by: "rohit",
-      dialer: "Asterisk",
-      flow_type: "STS",
-      agent_name: "Marketing Agent",
-      agent_type: "TTS",
+      created_date: getCurrentFormattedDate(),
+      ...agentDetails,
       sts_model_id: tempId,
       sts_model_perms: {},
       llm_model_id: tempId,
@@ -46,6 +47,8 @@ export default function NodeLists() {
       llm_model_document: "This is a document content",
       tts_model_id: tempId,
       tts_model_perm: {},
+      nodes: nodes,
+      edges: edges,
     };
     const requiredNodeTypes = [
       "speech_to_text",
@@ -53,11 +56,9 @@ export default function NodeLists() {
       "llm_models",
     ];
     const foundNodeTypes = new Set(nodes.map((node: any) => node.nodetype));
-
     const missingTypes = requiredNodeTypes.filter(
       (type) => !foundNodeTypes.has(type)
     );
-
     if (missingTypes.length > 0) {
       alert(`Missing required node types: ${missingTypes.join(", ")}`);
       return;
@@ -77,9 +78,23 @@ export default function NodeLists() {
         );
       }
     });
-
-    await postAgentFlow(dammyData)
-    setNodes(allNode);
+    const hasEmptyFields = [
+      dammyData.sts_model_perms,
+      dammyData.llm_model_param,
+      dammyData.tts_model_perm,
+    ].some((agent) =>
+      Object.values(agent).some(
+        (val) => val === "" || val === null || val === undefined
+      )
+    );
+    if (hasEmptyFields) {
+      alert("please fillup all correct node and make sure any is not empty");
+    } else {
+      await postAgentFlow(dammyData);
+      dispatch(setInitialNodes([]));
+      setNodes(allNode);
+      setAgentFlowtoggle(!agentFlowtoggle);
+    }
   };
 
   const onConnect = useCallback(
@@ -90,7 +105,7 @@ export default function NodeLists() {
   useEffect(() => {
     setNodes(allNode);
   }, [allNode]);
-
+  console.log({ edges });
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow

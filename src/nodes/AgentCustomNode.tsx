@@ -7,15 +7,18 @@ import {
   Typography,
 } from "@mui/material";
 import { Handle, Position, useReactFlow } from "@xyflow/react";
-import { ChangeEvent } from "react";
 import "./agentCustomNode.scss";
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { agentStore } from "../providers/AgentContext";
 
 const AgentCustomNode = (props: any) => {
-  console.log({ props });
-  const { id, data, setData } = props;
+  const { id, data } = props;
+  const [isFocused, setIsFocused] = useState<any>(false);
+  const { agentDetails } = useContext(agentStore);
+  console.log({ data });
   const { setNodes } = useReactFlow();
   if (!data) return <div style={{ color: "white" }}>No data</div>;
-
   const handleInputChange = (event: any) => {
     setNodes((nodes) =>
       nodes.map((node: any) =>
@@ -35,20 +38,56 @@ const AgentCustomNode = (props: any) => {
       )
     );
   };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setData({
-        ...data,
-        fields: data.fields.map((field: any) =>
-          field.label === event.target.name
-            ? { ...field, value: event.target.files![0] }
-            : field
-        ),
-      });
-      console.log("Uploaded file:", event.target.files?.[0]);
+  const handleFileUpload = async (event: any) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await axios.post(
+        "http://1msg.1point1.in:3001/api/auth/j-v1/upload-file/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      const fileUrl = res.data?.file_url;
+      if (fileUrl) {
+        console.log({ fileUrl });
+        setNodes((nodes) =>
+          nodes.map((node: any) =>
+            node.id === id
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    fields: node.data.fields.map((field: any) =>
+                      field.name === event.target.name
+                        ? { ...field, value: fileUrl }
+                        : field
+                    ),
+                  },
+                }
+              : node
+          )
+        );
+      } else {
+        console.error("data.fields is not an array");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
     }
   };
+
+  useEffect(() => {
+    data.fields.map((field: any) => {
+      if (field.name === "system_prompt") {
+        field.value = agentDetails.system_prompt;
+      }
+    });
+  }, []);
 
   const renderField = (field: any, index: number) => {
     const labelWithIcon = (
@@ -154,17 +193,28 @@ const AgentCustomNode = (props: any) => {
           </select>
         )}
         {field.type === "textarea" && (
-          <TextField
-            fullWidth
-            multiline
-            minRows={3}
-            variant="outlined"
-            placeholder={field.placeholder}
+          <textarea
             value={field.value}
-            size="small"
-            sx={{ ...baseTextFieldStyles, mb: "50px" }}
             name={field.name}
             onChange={handleInputChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            placeholder="Type something..."
+            style={{
+              height: "100px",
+              width: "100%",
+              boxSizing: "border-box",
+              paddingBottom: "5px",
+              fontFamily: "GeneralSans-m",
+              fontSize: "10px",
+              border: `1px solid ${isFocused ? "#FF581C" : "#41414B"}`,
+              borderRadius: "8px",
+              background: "#2A2A33",
+              color: "#fff",
+              padding: "8px",
+              resize: "none",
+              overflow:"auto"
+            }}
           />
         )}
         {field.type === "slider" && (
@@ -174,7 +224,7 @@ const AgentCustomNode = (props: any) => {
             onPointerDown={(e) => e.stopPropagation()}
           >
             <Slider
-              name={field.name  }
+              name={field.name}
               value={field.value}
               onChange={handleInputChange}
               aria-labelledby="input-slider"
@@ -189,8 +239,8 @@ const AgentCustomNode = (props: any) => {
               type="file"
               id={`upload-${index}`}
               style={{ display: "none" }}
-              name={field.label}
-              onChange={handleFileChange}
+              name={field.name}
+              onChange={handleFileUpload}
             />
 
             <label htmlFor={`upload-${index}`}>
@@ -316,6 +366,7 @@ const AgentCustomNode = (props: any) => {
             px: "12px",
           }}
         >
+          {console.log({ data })}
           {data.fields?.map(renderField)}
         </Box>
 

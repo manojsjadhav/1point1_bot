@@ -3,8 +3,22 @@ import Configuration from "../../assets/Configuration.svg";
 import Search from "../../assets/Search.svg";
 import MenuItems from "./MenuItems";
 import NodeLists from "./NodeLists";
+import { useContext, useEffect } from "react";
+import { agentStore } from "../../providers/AgentContext";
+import { useDispatch } from "react-redux";
+import { setBreadcrumbs } from "../../redux/nodeSlice/breadcrumbSlice";
 
 const VoiceAgentFlow = () => {
+  const dispatch = useDispatch();
+  const { agentDetails } = useContext(agentStore);
+  useEffect(() => {
+    dispatch(
+      setBreadcrumbs([
+        { label: "My Agent", path: "/voicebot/ai-agents" },
+        { label: agentDetails.agent_type, path: "/voicebot" },
+      ])
+    );
+  }, []);
   return (
     <Box sx={{ display: "flex", width: "100%" }}>
       <Box

@@ -22,10 +22,13 @@ import { loginValidationSchema } from "../utils/validation/authvalidation";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { authStore } from "../providers/AuthContext";
+import { useDispatch } from 'react-redux';
+import { setAuthResponse } from "../redux/nodeSlice/authSlice";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch =useDispatch()
   const { tokenToggle, setTokenToggle } = useContext<any>(authStore);
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev);
@@ -46,10 +49,11 @@ const LoginForm = () => {
           "http://1msg.1point1.in:3001/api/auth/j-v1/signin/",
           userData
         );
-        localStorage.setItem(
-          "logintoken",
-          JSON.stringify(loginRespons.data.message)
-        );
+        dispatch(setAuthResponse(loginRespons.data))
+        // localStorage.setItem(
+        //   "logintoken",
+        //   JSON.stringify(loginRespons.data.message)
+        // );
         setTokenToggle(!tokenToggle);
         navigate("/")
         formik.resetForm();

@@ -1,0 +1,56 @@
+.container {
+  background: #18181b;
+  height: 954px;
+  width: 100%;
+  border-left: 1px solid #41414b;
+  padding: 28px 24px;
+  .heading-content {
+    display: flex;
+    justify-content: space-between;
+    .heading {
+      font-family: GeneralSans-m;
+      font-size: 24px;
+      color: #fff;
+      text-align: center;
+    }
+  }
+}
+.dialog-heading {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: space-around;
+}
+.text {
+  font-family: GeneralSans-m;
+  font-size: 14px;
+  color: #fff;
+}
+.btn {
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  background: #ff581c !important;
+  font-family: "GeneralSans-m", sans-serif !important;
+  font-size: 14px !important;
+  text-transform: none !important;
+  color: #fff !important;
+}
+.agent-type {
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #18181b;
+  cursor: pointer;
+  .agent-title {
+    font-family: GeneralSans-m;
+    font-size: 16px;
+    color: #fff;
+  }
+  .agent-descri {
+    font-family: GeneralSans-r;
+    font-size: 12px;
+    color: #d9d9de;
+  }
+}

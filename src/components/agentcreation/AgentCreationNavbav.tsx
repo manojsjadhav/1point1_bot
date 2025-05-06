@@ -8,9 +8,10 @@ import {
   MenuItem,
   Box,
   Avatar,
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
 import onepointone from "../../assets/onepointone.svg";
-import saveIcon from "../../assets/saveIcon.svg";
 import account from "../../assets/account.svg";
 import Book from "../../assets/Book.svg";
 import LogOut from "../../assets/Log_Out.svg";
@@ -19,25 +20,26 @@ import Headphones from "../../assets/Headphones2.svg";
 import chevrondown from "../../assets/chevron-down.svg";
 import setting from "../../assets/setting.svg";
 import notification from "../../assets/notification.svg";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const AgentCreationNavban = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openMenu, setOpenMenu] = useState(false);
-
+  const navigate = useNavigate();
+  const links = useSelector((state: RootState) => state.breadcrumb.links);
   const handleMenuOpenIcon = () => {
     setOpenMenu((prev) => !prev);
   };
-
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
     handleMenuOpenIcon();
   };
-
   const handleMenuClose = () => {
     setAnchorEl(null);
     handleMenuOpenIcon();
   };
-
   return (
     <AppBar
       position="static"
@@ -61,7 +63,7 @@ const AgentCreationNavban = () => {
             sx={{ width: 71, height: 21 }}
           />
         </Box>
-        <Box
+        {/* <Box
           sx={{
             display: "flex",
             gap: "6px",
@@ -102,7 +104,48 @@ const AgentCreationNavban = () => {
               sx={{ width: 66, height: 24 }}
             />
           </Box>
-        </Box>
+        </Box> */}
+        <Breadcrumbs separator="›" aria-label="breadcrumb">
+          {links.map((item: any, index: any) => {
+            const isLast = index === links.length - 1;
+            return isLast ? (
+              <Typography
+                key={index}
+                color="text.primary"
+                sx={{
+                  color: "#fff",
+                  textTransform: "none",
+                  fontFamily: "GeneralSans-m",
+                  fontSize: "14px",
+                }}
+              >
+                {item.label}
+              </Typography>
+            ) : (
+              <Link
+                key={index}
+                underline="hover"
+                color="inherit"
+                onClick={() => {
+                  if (item.path === location.pathname) {
+                    window.location.reload();
+                  } else {
+                    navigate(item.path);
+                  }
+                }}
+                sx={{
+                  cursor: "pointer",
+                  color: "#B8B9C1",
+                  textTransform: "none",
+                  fontFamily: "GeneralSans-m",
+                  fontSize: "14px",
+                }}
+              >
+                {item.label} /
+              </Link>
+            );
+          })}
+        </Breadcrumbs>
         <Box sx={{ display: "flex", alignItems: "center", gap: "15px" }}>
           <Box>
             <IconButton sx={{ color: "#fff" }}>
@@ -327,7 +370,7 @@ const AgentCreationNavban = () => {
                 </Box>
               </MenuItem>
               <Box sx={{ border: "1px solid #41414B", width: "100%" }} />
-              <MenuItem sx={{ px: "12px", height: "24px",mb:"8px" }}>
+              <MenuItem sx={{ px: "12px", height: "24px", mb: "8px" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
                   <Box
                     component="img"

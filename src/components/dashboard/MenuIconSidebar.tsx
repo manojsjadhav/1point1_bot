@@ -9,8 +9,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const MenuIconSidebar = () => {
   const location = useLocation();
-  console.log(location.pathname);
-
   const sidebarMenuIcon = [
     { label: "Dashboard", icon: Group, path: "/voicebot" },
     { label: "AI Agents", icon: Headphoneicon, path: "/voicebot/ai-agents" },
