@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import VoiceBotDashboard from "../pages/voicebot/dashboard/VoiceBotDashboard";
 import AiAgent from "../pages/voicebot/aiAgent/AiAgent";
+import ConversationHistory from "../pages/voicebot/conversationHistory/ConversationHistory";
 
 const AppRoutes = () => {
   return (
@@ -37,7 +38,7 @@ const AppRoutes = () => {
         path="voicebot/conversation-history"
         element={
           <PriveteRoute>
-            <AiAgent />
+            <ConversationHistory />
           </PriveteRoute>
         }
       />
