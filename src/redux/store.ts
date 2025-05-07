@@ -14,7 +14,10 @@ import {
 import storage from "redux-persist/lib/storage";
 import agentReducer from "./nodeSlice/agentListSlice";
 import breadcrumbReducer from "./nodeSlice/breadcrumbSlice.ts";
-import contactGroupReducer from "./nodeSlice/contactGroupSlice.ts"
+import contactGroupReducer from "./nodeSlice/getContactGroupSlice.ts";
+import createcontactGroupReducer from "./nodeSlice/createcontactGroupSlice.ts";
+import contactDetailReducer from "./nodeSlice/getContactDetailsSlice.ts";
+import callDetailReducer from "./nodeSlice/getCallHistoryByNumberSlice.ts";
 
 const rootReducer = combineReducers({
   nodes: nodeReducer,
@@ -22,6 +25,9 @@ const rootReducer = combineReducers({
   agents: agentReducer,
   breadcrumb: breadcrumbReducer,
   groups: contactGroupReducer,
+  createGroup: createcontactGroupReducer,
+  contactDetails: contactDetailReducer,
+  callDetails: callDetailReducer,
 });
 
 const persistConfig = {

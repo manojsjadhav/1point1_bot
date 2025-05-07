@@ -8,6 +8,7 @@ interface UploadImageModalProps {
     open: boolean;
     onClose: () => void;
     onBack: () => void;
+    setPreviewImage: (img: { previewUrl: string; fileName: string; file: File }) => void;
 }
 
 const style = {
@@ -31,11 +32,23 @@ const dropZoneStyle = {
     mt: 2,
 };
 
-const UploadModal: React.FC<UploadImageModalProps> = ({ open, onClose, onBack }) => {
+const UploadModal: React.FC<UploadImageModalProps> = ({ open, onClose, onBack, setPreviewImage }) => {
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleFileClick = () => {
         fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+            setPreviewImage({
+                previewUrl,
+                fileName: file.name,
+                file,
+            });
+        }
     };
 
     return (
@@ -45,10 +58,11 @@ const UploadModal: React.FC<UploadImageModalProps> = ({ open, onClose, onBack })
                     <IconButton onClick={onBack} sx={{ color: 'white' }}>
                         <ArrowBackIcon />
                     </IconButton>
-                    <Typography variant="h6" marginTop={"6px"} >
+                    <Typography variant="h6" marginTop={"6px"}>
                         Upload an Image
                     </Typography>
                 </Box>
+
                 <Box sx={dropZoneStyle}>
                     <CloudUploadOutlinedIcon sx={{ fontSize: 40, mb: 1 }} />
                     <Typography color='#F7F7F8' fontSize="14px" fontWeight={400}>
@@ -60,12 +74,7 @@ const UploadModal: React.FC<UploadImageModalProps> = ({ open, onClose, onBack })
                         ref={fileInputRef}
                         style={{ display: 'none' }}
                         accept="image/*"
-                        onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                                console.log('Selected file:', file);
-                            }
-                        }}
+                        onChange={handleFileChange}
                     />
 
                     <Button

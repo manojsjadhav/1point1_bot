@@ -33,31 +33,34 @@ import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import { useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../redux/store';
 import { useDispatch } from 'react-redux';
-import { fetchGroups } from '../../../redux/nodeSlice/contactGroupSlice';
+import { fetchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
+import { deleteGroup } from '../../../redux/nodeSlice/deleteContactGroupSlice';
+import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGroupSlice';
+
+import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
 
 const rowsPerPage = 10;
 
 const ContactGroups = () => {
+    const dispatch = useDispatch<AppDispatch>();
     const [search, setSearch] = useState<string>('');
     const [page, setPage] = useState<number>(1);
     const [openAddNew, setOpenAddNew] = useState(false);
     const [openViewContact, setOpeViewContact] = useState(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
+
+    const { success } = useSelector((state: RootState) => state.createGroup);
+
     const groupsState = useSelector((state: RootState) => state && state.groups);
+    const contactState = useSelector((state: RootState) => state && state.contactDetails);
     const { auth } = useSelector((state: RootState) => state);
     const user_id = auth?.response?.user_id;
-    const username = auth?.response?.username;
 
     const groups = groupsState?.groups || [];
+    const contactDetails = contactState?.contactsDeatails || [];
+
     const loading = groupsState?.loading;
-    const error = groupsState?.error;
-
-
-    console.log("user_id", user_id, username, groups, error, auth);
-
-
-    const dispatch = useDispatch<AppDispatch>();
 
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
@@ -67,6 +70,7 @@ const ContactGroups = () => {
             setSelectedRows([]);
         }
     };
+
     const handleSelectRow = (id: string) => {
         setSelectedRows((prevSelected) =>
             prevSelected.includes(id)
@@ -74,15 +78,25 @@ const ContactGroups = () => {
                 : [...prevSelected, id]
         );
     };
+
     const handleOpenAddNew = () => setOpenAddNew(true);
     const handleOpenViewContact = () => setOpeViewContact(true);
+
+    const handleDelete = async (id: string) => {
+        try {
+            await dispatch(deleteGroup(id));
+            dispatch(fetchGroups("1"));
+        } catch (error) {
+            console.error("Delete failed", error);
+        }
+    };
 
     useEffect(() => {
         if (user_id) {
             dispatch(fetchGroups("1"));
+            dispatch(fetchContactDetails("1"));
         }
     }, [dispatch, user_id]);
-
 
     const filteredData = useMemo(() => {
         return groups.filter((item: any) =>
@@ -95,9 +109,6 @@ const ContactGroups = () => {
         return filteredData.slice(start, start + rowsPerPage);
     }, [filteredData, page]);
 
-    console.log("paginatedData", paginatedData);
-
-
     const formatDate = (isoDate: string): string => {
         const date = new Date(isoDate);
         const day = String(date.getDate()).padStart(2, '0');
@@ -107,12 +118,17 @@ const ContactGroups = () => {
     };
 
 
-    const handleCreateGroup = (groupName: string) => {
-        console.log('New Group:', groupName);
-        setOpenAddNew(false);
-    };
+    // const handleCreateGroup = (createPayload: CreateContactGroupPayload) => {
+    //     dispatch(createContactGroup(createPayload));
+    //     setOpenAddNew(false);
+    // };
 
-
+    useEffect(() => {
+        if (success) {
+            console.log('Group created successfully!');
+            dispatch(resetContactGroupState());
+        }
+    }, [success, dispatch]);
 
     if (loading) return <div>Loading...</div>;
 
@@ -142,7 +158,6 @@ const ContactGroups = () => {
             <CreateGroupModal
                 open={openAddNew}
                 onClose={() => setOpenAddNew(false)}
-                onCreate={handleCreateGroup}
                 isCreateModal={true}
             />
         </>
@@ -301,15 +316,14 @@ const ContactGroups = () => {
                                                 </Button>
                                             </Box>
 
-                                            <Box sx={{ display: "flex", gap: 2 }}>
-                                                <IconButton>
+                                            <Box sx={{ display: "flex", gap: 2 }} >
+                                                <IconButton onClick={() => handleDelete(row.id)}>
                                                     <img src={Delete} alt="Delete" style={{ width: 24, height: 24 }} />
                                                 </IconButton>
                                                 <IconButton>
                                                     <img src={Editagent} alt="Edit" style={{ width: 24, height: 24 }} />
                                                 </IconButton>
                                             </Box>
-
                                         </TableCell>
                                     </TableRow>
                                 );
@@ -321,6 +335,7 @@ const ContactGroups = () => {
                 <GroupModal
                     open={openViewContact}
                     onClose={() => setOpeViewContact(false)}
+                    contactDetails={contactDetails}
                 /></>
         );
     };

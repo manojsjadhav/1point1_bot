@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -10,28 +10,69 @@ import {
     Box,
 } from '@mui/material';
 import UploadModal from './UploadModal';
+import { CreateContactGroupPayload } from '../../../types';
+import { useDispatch } from 'react-redux';
+import { createContactGroup, resetContactGroupState } from '../../../redux/nodeSlice/createcontactGroupSlice';
+import { useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../redux/store';
+import { fetchCallDetails } from '../../../redux/nodeSlice/getCallHistoryByNumberSlice';
 
 interface CreateGroupModalProps {
     open: boolean;
     onClose: () => void;
-    onCreate: (groupName: string) => void;
-    isCreateModal: boolean
+    // onCreate: (CreateContactGroupPayload: CreateContactGroupPayload) => void;
+    isCreateModal: boolean;
+    // user_id: string
 }
 
-const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, onCreate, isCreateModal }) => {
+const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCreateModal }) => {
+    const dispatch = useDispatch<AppDispatch>();
+    const { success } = useSelector(
+        (state: RootState) => state.createGroup
+    );
 
-    console.log("isCreateModal",isCreateModal);
-    
+    const callDetailsState = useSelector(
+        (state: RootState) => state.callDetails
+    );
+    console.log("callDetails", callDetailsState.callDeatails);
+
     const [groupName, setGroupName] = React.useState('');
+    const [contactNumber, setContactNumber] = React.useState('');
+    const [previewImage, setPreviewImage] = React.useState<any | null>(null);
     const [openUpload, setOpenUpload] = React.useState(false);
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (isCreateModal) {
+            const payload: CreateContactGroupPayload = {
+                user_id: "1",
+                group_name: groupName,
+                group_avtar: previewImage.fileName
 
-    const handleCreate = () => {
-        if (groupName.trim()) {
-            onCreate(groupName.trim());
-            setGroupName('');
+            };
+            await dispatch(createContactGroup(payload));
+        } else {
+            console.log("Add New Contact");
         }
+        onClose()
     };
+
+    useEffect(() => {
+        if (success) {
+            alert("Group created successfully!");
+            dispatch(resetContactGroupState());
+            setGroupName("");
+        }
+    }, [success, dispatch]);
+
+
+    const handleCallHistory = () => {
+        dispatch(fetchCallDetails({ number: "1234567890", userId: "1" }))
+    }
+
+    useEffect(() => {
+        handleCallHistory()
+    }, [])
 
     return (
         <>
@@ -53,7 +94,11 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, onCr
                     </Typography>
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                        <Avatar sx={{ width: 48, height: 48 }} src="/avatar-placeholder.png" />
+                        {previewImage && (
+                            <Box mt={2}>
+                                <Avatar sx={{ width: 48, height: 48 }} src={previewImage.fileName} />
+                            </Box>
+                        )}
                         <Button
                             variant="outlined"
                             onClick={() => setOpenUpload(true)}
@@ -76,6 +121,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, onCr
                                 console.log('Back button clicked');
                                 setOpenUpload(false);
                             }}
+                            setPreviewImage={setPreviewImage}
                         />
                     </Box>
 
@@ -110,14 +156,29 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, onCr
                         </Typography>
                         <TextField
                             fullWidth
+                            type='number'
                             placeholder={"+91 8888 8888 88"}
                             variant="outlined"
                             size="small"
-                            value={groupName}
-                            onChange={(e) => setGroupName(e.target.value)}
+                            value={contactNumber}
+                            onChange={(e) => setContactNumber(e.target.value)}
                             sx={{
                                 mb: 3,
-                                input: { color: '#fff' },
+                                input: {
+                                    color: '#fff',
+                                    MozAppearance: 'textfield',
+                                },
+                                '& input[type=number]': {
+                                    MozAppearance: 'textfield',
+                                },
+                                '& input[type=number]::-webkit-outer-spin-button': {
+                                    WebkitAppearance: 'none',
+                                    margin: 0,
+                                },
+                                '& input[type=number]::-webkit-inner-spin-button': {
+                                    WebkitAppearance: 'none',
+                                    margin: 0,
+                                },
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': { borderColor: '#555' },
                                     '&:hover fieldset': {
@@ -152,7 +213,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, onCr
                         </Button>
                         <Button
                             variant="contained"
-                            onClick={handleCreate}
+                            onClick={handleSubmit}
                             sx={{
                                 bgcolor: '#ff5a1f',
                                 color: '#fff',

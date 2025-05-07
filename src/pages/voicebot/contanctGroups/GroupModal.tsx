@@ -21,20 +21,7 @@ import { Search } from '@mui/icons-material';
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import { useState } from 'react';
 import CreateGroupModal from './CreateGroupModal';
-
-const StyledInput = styled(InputBase)(({ theme }) => ({
-    background: '#2E2E2E',
-    borderRadius: 8,
-    padding: '6px 12px',
-    color: '#fff',
-    width: '100%',
-}));
-
-const contactList = Array(5).fill({
-    name: 'Chris Doe',
-    number: '+91 86 8768 8765',
-    avatar: '',
-});
+import { Contact, Group } from '../../../types';
 
 const callHistory = [
     { date: 'Today', time: '8:00AM', type: 'Outgoing', duration: '20 mins' },
@@ -43,14 +30,19 @@ const callHistory = [
     { date: '2 May,2024', time: '11:00AM', type: 'Incoming', duration: '15 mins' },
 ];
 
-export default function GroupModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function GroupModal({ open, onClose, contactDetails }: { open: boolean; onClose: () => void, contactDetails: Contact[] }) {
     const [search, setSearch] = useState<string>('');
     const [openAddContactModal, setOpenAddContactModal] = useState(false)
+    const [isClickedRowId, setIsClickedRowId] = useState<any | null>(null)
+    console.log("isClickedRowId", isClickedRowId);
+
 
     const handleCreateGroup = (groupName: string) => {
         console.log('New Group:', groupName);
         setOpenAddContactModal(false);
     };
+
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth PaperProps={{
             sx: {
@@ -66,7 +58,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                     <Box display="flex" flexDirection="column" gap={1}>
                         <Box display="flex" alignContent="center" gap={1}>
                             <Avatar sx={{ width: 26, height: 26 }}>G</Avatar>
-                            <Typography fontWeight={500} fontSize={18}>Group A</Typography>
+                            <Typography fontWeight={500} fontSize={18}> Groups G</Typography>
                         </Box>
                         <Typography fontSize={14} color="gray">Group details and call list.</Typography>
                     </Box>
@@ -87,7 +79,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                 <CreateGroupModal
                     open={openAddContactModal}
                     onClose={() => setOpenAddContactModal(false)}
-                    onCreate={handleCreateGroup}
+                    // onCreate={handleCreateGroup}
                     isCreateModal={false}
                 />
 
@@ -140,13 +132,13 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                             />
                         </Box>
                         <Box display="flex" flexDirection="column" border="1px solid #505060" borderRadius="8px" gap={1}>
-                            {contactList.map((c, i) => (
+                            {contactDetails.map((c, i) => (
                                 <Box key={i} display="flex" alignItems="center" justifyContent="space-between" p={1.5} bgcolor="#2a2a33" borderTop={i === 0 ? "none" : "1px solid #505060"}>
-                                    <Box display="flex" alignItems="center" gap={2} >
+                                    <Box onClick={() => setIsClickedRowId(c.id)} display="flex" alignItems="center" gap={2}  >
                                         <Avatar />
                                         <Box sx={{ display: "flex", gap: 2 }}>
-                                            <Typography fontSize={14}>{c.name}</Typography>
-                                            <Typography fontSize={13} color="gray">{c.number}</Typography>
+                                            <Typography fontSize={14}>{c.person_name}</Typography>
+                                            <Typography fontSize={13} color="gray">{c.phone_number}</Typography>
                                         </Box>
                                     </Box>
                                     <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
@@ -163,25 +155,26 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                     </Box>
 
                     {/* Call History */}
-                    <Box flex={1.2} bgcolor="#2a2a33" p={2} border="1px solid #505060" borderRadius="8px">
-                        <Typography mb={2}>Call History</Typography>
-                        <Box bgcolor="#2a2a33" border="1px solid #505060" borderRadius="8px">
-                            {['Today', '2 May,2024'].map(date => (
-                                <Box key={date}>
-                                    <Typography padding="20px 12px" bgcolor="#41414b" fontSize={13} color="#D9D9DE">{date}</Typography>
-                                    {callHistory.filter(ch => ch.date === date).map((entry, idx) => (
-                                        <Box key={idx} display="flex" justifyContent="space-between" alignItems="center" padding="20px 12px" bgcolor="#2a2a33" borderRadius={1}>
-                                            <Box display="flex" alignItems="center" gap={1}>
-                                                <PhoneInTalkIcon fontSize="small" />
-                                                <Typography fontSize={14} fontWeight={500}>{entry.time}</Typography>
+                    {isClickedRowId &&
+                        <Box flex={1.2} bgcolor="#2a2a33" p={2} border="1px solid #505060" borderRadius="8px">
+                            <Typography mb={2}>Call History</Typography>
+                            <Box bgcolor="#2a2a33" border="1px solid #505060" borderRadius="8px">
+                                {['Today', '2 May,2024'].map(date => (
+                                    <Box key={date}>
+                                        <Typography padding="20px 12px" bgcolor="#41414b" fontSize={13} color="#D9D9DE">{date}</Typography>
+                                        {callHistory.filter(ch => ch.date === date).map((entry, idx) => (
+                                            <Box key={idx} display="flex" justifyContent="space-between" alignItems="center" padding="20px 12px" bgcolor="#2a2a33" borderRadius={1}>
+                                                <Box display="flex" alignItems="center" gap={1}>
+                                                    <PhoneInTalkIcon fontSize="small" />
+                                                    <Typography fontSize={14} fontWeight={500}>{entry.time}</Typography>
+                                                </Box>
+                                                <Typography fontSize={14} color="#D9D9DE">{entry.type}, {entry.duration}</Typography>
                                             </Box>
-                                            <Typography fontSize={14} color="#D9D9DE">{entry.type}, {entry.duration}</Typography>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            ))}
-                        </Box>
-                    </Box>
+                                        ))}
+                                    </Box>
+                                ))}
+                            </Box>
+                        </Box>}
                 </Box>
 
                 {/* Footer Buttons */}
