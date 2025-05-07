@@ -31,8 +31,8 @@ import { v4 as uuidv4 } from "uuid";
 import { addNode } from "../../redux/nodeSlice/nodeSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { useReactFlow } from "@xyflow/react";
 
-// initial static menu items
 const initialMenuItems = [
   {
     id: 1,
@@ -130,6 +130,7 @@ const MenuItems = () => {
   const [menuItems, setMenuItems] = useState(initialMenuItems);
   const allNodes = useSelector((state: RootState) => state.nodes);
   const dispatch = useDispatch();
+  // const { setNodes } = useReactFlow();
 
   const toggleMenu = (id: number) => {
     setMenuItems((prev) =>
@@ -139,13 +140,16 @@ const MenuItems = () => {
     );
   };
   const handleAddNode = (nodeName: any) => {
-    const node = nodeListData.find((node: any) => node.data.title === nodeName);
+    const node: any = nodeListData.find(
+      (node: any) => node.data.title === nodeName
+    );
     const isCheckNode = allNodes.find(
-      (nodeItem: any) =>  nodeItem.nodetype === node?.nodetype
+      (nodeItem: any) => nodeItem.nodetype === node?.nodetype
     );
     if (isCheckNode) {
       alert("This type of node already exist");
     } else {
+      // setNodes(node);
       dispatch(addNode({ ...node, id: uuidv4() }));
     }
   };

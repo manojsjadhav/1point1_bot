@@ -8,7 +8,7 @@ const AgentContext = ({ children }: any) => {
   const { auth } = useSelector((state: RootState) => state);
   const user_id = auth?.response?.user_id;
   const username = auth?.response?.username;
-  console.log({ auth});
+  console.log({ username});
   const [agentDetails, setAgentDetails] = useState<any>({
     user_id,
     created_by: username,

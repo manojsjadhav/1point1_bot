@@ -49,3 +49,17 @@ export const addAgent = createAsyncThunk<any, Partial<any>>(
     }
   }
 );
+
+export const deleteAgent = createAsyncThunk(
+  "agentList/deleteAgent",
+  async (agentId: any, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `http://1msg.1point1.in:3001/api/auth/j-v1/agents/delete/${agentId}`
+      );
+      return agentId;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Delete failed");
+    }
+  }
+);

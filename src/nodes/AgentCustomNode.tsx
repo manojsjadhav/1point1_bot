@@ -88,12 +88,10 @@ const AgentCustomNode = (props: any) => {
               ...node,
               data: {
                 ...node.data,
-                fields: node.data.fields.map((field: any) =>{
-                  console.log({node})
-                  return field.name === "system_prompt"
-                  ? { ...field, value: agentDetails?.system_prompt }
-                  : field
-                }
+                fields: node.data.fields.map((field: any) =>
+                  field.name === "system_prompt"
+                    ? { ...field, value: agentDetails.system_prompt }
+                    : field
                 ),
               },
             }

@@ -15,6 +15,9 @@ const nodeSlice = createSlice({
     addNode: (state, action: PayloadAction<any>) => {
       state.push(action.payload);
     },
+    editNodes: (state, action: PayloadAction<any>) => {
+      state = action.payload;
+    },
     updateNodeData: (state, action: PayloadAction<UpdateNodeDataPayload>) => {
       state.nodes = state.nodes.map((node: any) =>
         node.id === action.payload.id
@@ -25,5 +28,6 @@ const nodeSlice = createSlice({
   },
 });
 
-export const { addNode, updateNodeData, setInitialNodes } = nodeSlice.actions;
+export const { addNode, updateNodeData, setInitialNodes, editNodes } =
+  nodeSlice.actions;
 export default nodeSlice.reducer;

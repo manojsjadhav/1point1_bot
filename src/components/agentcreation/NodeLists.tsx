@@ -35,12 +35,19 @@ export default function NodeLists() {
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const dispatch = useDispatch();
-  console.log({nodes})
+  console.log({ agentDetails });
+  const { user_id, created_by, agent_type, dialer, flow_type, agent_name } =
+    agentDetails;
   const handleflowsubmit = async () => {
     const tempId: any = uuidv4();
     const dammyData: any = {
       created_date: getCurrentFormattedDate(),
-      ...agentDetails,
+      user_id,
+      created_by,
+      agent_type,
+      dialer,
+      flow_type,
+      agent_name,
       sts_model_id: tempId,
       sts_model_perms: {},
       llm_model_id: tempId,

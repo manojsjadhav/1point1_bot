@@ -6,69 +6,73 @@ import RegisterPage from "../pages/RegisterPage";
 import VoiceBotDashboard from "../pages/voicebot/dashboard/VoiceBotDashboard";
 import AiAgent from "../pages/voicebot/aiAgent/AiAgent";
 import ConversationHistory from "../pages/voicebot/conversationHistory/ConversationHistory";
+import { ToastContainer } from "react-toastify";
 
 const AppRoutes = () => {
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <PriveteRoute>
-            <BotPage />
-          </PriveteRoute>
-        }
-      />
-      <Route
-        path="voicebot"
-        element={
-          <PriveteRoute>
-             <VoiceBotDashboard />
-          </PriveteRoute>
-        }
-      />
-      <Route
-        path="voicebot/ai-agents"
-        element={
-          <PriveteRoute>
-            <AiAgent />
-          </PriveteRoute>
-        }
-      />
-      <Route
-        path="voicebot/conversation-history"
-        element={
-          <PriveteRoute>
-            <ConversationHistory />
-          </PriveteRoute>
-        }
-      />
-      <Route
-        path="voicebot/call-data"
-        element={
-          <PriveteRoute>
-            <AiAgent />
-          </PriveteRoute>
-        }
-      />
-      <Route
-        path="voicebot/call-monitoring"
-        element={
-          <PriveteRoute>
-            <AiAgent />
-          </PriveteRoute>
-        }
-      />
-      <Route
-        path="voicebot/reports"
-        element={
-          <PriveteRoute>
-            <AiAgent />
-          </PriveteRoute>
-        }
-      />
-      <Route path="login" element={<LoginPage />} />
-      <Route path="signup" element={<RegisterPage />} />
-    </Routes>
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PriveteRoute>
+              <BotPage />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="voicebot"
+          element={
+            <PriveteRoute>
+              <VoiceBotDashboard />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="voicebot/ai-agents"
+          element={
+            <PriveteRoute>
+              <AiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="voicebot/conversation-history"
+          element={
+            <PriveteRoute>
+              <ConversationHistory />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="voicebot/call-data"
+          element={
+            <PriveteRoute>
+              <AiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="voicebot/call-monitoring"
+          element={
+            <PriveteRoute>
+              <AiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="voicebot/reports"
+          element={
+            <PriveteRoute>
+              <AiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<RegisterPage />} />
+      </Routes>
+    </>
   );
 };
 

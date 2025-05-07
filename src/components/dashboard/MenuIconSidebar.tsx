@@ -29,7 +29,7 @@ const MenuIconSidebar = () => {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ width: "72px", height: "966px", background: "#18181B" }}>
+    <Box sx={{ width: "72px", height: "966px", background: "#18181B",}}>
       <Box
         sx={{
           px: "20px",
