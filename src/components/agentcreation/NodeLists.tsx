@@ -35,6 +35,7 @@ export default function NodeLists() {
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const dispatch = useDispatch();
+  console.log({nodes})
   const handleflowsubmit = async () => {
     const tempId: any = uuidv4();
     const dammyData: any = {

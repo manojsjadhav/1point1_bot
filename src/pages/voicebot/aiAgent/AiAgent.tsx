@@ -9,12 +9,19 @@ import { fetchAgentList } from "../../../services/agentFlowServices";
 import AgentLists from "../../../components/agentcreation/agentlists/AgentLists";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
+import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 
 function AiAgent() {
-  const { agentFlowtoggle } = useContext(agentStore);
+  const { agentDetails, setAgentDetails, agentFlowtoggle } =
+    useContext(agentStore);
   const { auth } = useSelector((state: RootState) => state);
-  const user_id = auth.response.user_id;
+  const user_id = auth?.response?.user_id;
+  const username = auth?.response?.username;
   const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    setAgentDetails({ ...agentDetails, user_id, created_by: username });
+    dispatch(setInitialNodes([]));
+  }, [agentFlowtoggle]);
   useEffect(() => {
     dispatch(fetchAgentList(user_id));
     dispatch(

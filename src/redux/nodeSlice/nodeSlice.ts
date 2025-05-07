@@ -9,8 +9,8 @@ const nodeSlice = createSlice({
   name: "counter",
   initialState,
   reducers: {
-    setInitialNodes: (state, action: PayloadAction<any[]>) => {
-      state = action.payload;
+    setInitialNodes: (_, action: PayloadAction<any[]>) => {
+      return action.payload;
     },
     addNode: (state, action: PayloadAction<any>) => {
       state.push(action.payload);

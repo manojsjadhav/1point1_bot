@@ -80,13 +80,26 @@ const AgentCustomNode = (props: any) => {
       console.error("Upload error:", err);
     }
   };
-
   useEffect(() => {
-    data.fields.map((field: any) => {
-      if (field.name === "system_prompt") {
-        field.value = agentDetails.system_prompt;
-      }
-    });
+    setNodes((nodes) =>
+      nodes.map((node: any) =>
+        node.id === id
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                fields: node.data.fields.map((field: any) =>{
+                  console.log({node})
+                  return field.name === "system_prompt"
+                  ? { ...field, value: agentDetails?.system_prompt }
+                  : field
+                }
+                ),
+              },
+            }
+          : node
+      )
+    );
   }, []);
 
   const renderField = (field: any, index: number) => {
@@ -213,7 +226,7 @@ const AgentCustomNode = (props: any) => {
               color: "#fff",
               padding: "8px",
               resize: "none",
-              overflow:"auto"
+              overflow: "auto",
             }}
           />
         )}

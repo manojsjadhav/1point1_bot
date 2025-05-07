@@ -73,7 +73,7 @@ const TranscriptDialog: React.FC<TranscriptDialogProps> = ({ open, onClose, audi
                 >
                     <Typography variant="body2" sx={{ fontSize: 14, fontWeight: 500, lineHeight: 2 }} >Chat Transcription</Typography>
                     <Divider sx={{ bgcolor: '#B8B9C1', mb: 1 }} />
-                    {messages.map((msg, idx) => (
+                    {messages.map((msg:any, idx:any) => (
                         <Box key={idx} mb={1}>
                             {msg.time && (
                                 <Typography variant="caption" display="block" align='center'>

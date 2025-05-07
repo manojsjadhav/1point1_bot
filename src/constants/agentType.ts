@@ -8,7 +8,7 @@ export const agentTypes = [
     icon: Edit,
     description:
       "Start with blank template and customize your agent to suit your needs. ",
-    system_prompt: "",
+    system_prompt: "prompt",
     value: "blank template",
     title: "Blank Template",
   },
@@ -25,7 +25,7 @@ export const agentTypes = [
     icon: Mindfulness_coach,
     description:
       "Speak with Joe a mindfulness coach who helps you to find calm & clarity.",
-    system_prompt: "",
+    system_prompt: "prompt",
     value: "mindfulness coach",
     title: "Mindfulness Coach",
   },

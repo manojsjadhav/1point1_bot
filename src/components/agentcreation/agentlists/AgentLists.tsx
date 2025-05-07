@@ -13,7 +13,8 @@ import AgentDataTable from "./AgentDataTable";
 import { useDispatch } from "react-redux";
 import { useDebounce } from "../../../utils/useDebounce";
 import { fetchAgentsBySearch } from "../../../services/agentFlowServices";
-import { AppDispatch } from "../../../redux/store";
+import { AppDispatch, RootState } from "../../../redux/store";
+import { useSelector } from "react-redux";
 const textFieldStyle = {
   width: "40%",
   mt: "10px",
@@ -33,6 +34,8 @@ const textFieldStyle = {
 };
 const AgentLists = ({}: any) => {
   const [open, setOpen] = useState<any>(false);
+  const { auth } = useSelector((state: RootState) => state);
+  const user_id = auth?.response?.user_id;
   const dispatch = useDispatch<AppDispatch>();
   const [searchText, setSearchText] = useState<any>("");
   const debouncedSearch = useDebounce(searchText, 500);
@@ -46,7 +49,7 @@ const AgentLists = ({}: any) => {
   };
 
   useEffect(() => {
-      dispatch(fetchAgentsBySearch({ userId: 6, query: debouncedSearch }));
+    dispatch(fetchAgentsBySearch({ userId: user_id, query: debouncedSearch }));
   }, [debouncedSearch, dispatch]);
 
   return (
