@@ -50,3 +50,11 @@ export interface CallRecord {
   contact_id: number;
   person_name: string;
 }
+
+export interface AddNewContactType {
+  user_id: string;
+  group_id: string;
+  person_name: string;
+  phone_number: string;
+  formated_number: string;
+}

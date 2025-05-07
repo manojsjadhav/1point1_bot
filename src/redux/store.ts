@@ -18,6 +18,8 @@ import contactGroupReducer from "./nodeSlice/getContactGroupSlice.ts";
 import createcontactGroupReducer from "./nodeSlice/createcontactGroupSlice.ts";
 import contactDetailReducer from "./nodeSlice/getContactDetailsSlice.ts";
 import callDetailReducer from "./nodeSlice/getCallHistoryByNumberSlice.ts";
+import groupSlice from "./nodeSlice/groupSlice.ts";
+import modalSlice from "./nodeSlice/modolNameSlice.ts";
 
 const rootReducer = combineReducers({
   nodes: nodeReducer,
@@ -28,6 +30,8 @@ const rootReducer = combineReducers({
   createGroup: createcontactGroupReducer,
   contactDetails: contactDetailReducer,
   callDetails: callDetailReducer,
+  groupSlice: groupSlice,
+  modal: modalSlice,
 });
 
 const persistConfig = {

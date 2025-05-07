@@ -1,5 +1,10 @@
 import axios from "axios";
-import { Contact, CreateContactGroupPayload, Group } from "../types";
+import {
+  AddNewContactType,
+  Contact,
+  CreateContactGroupPayload,
+  Group,
+} from "../types";
 
 const BASE_URL = "http://1msg.1point1.in:3001/api/auth/j-v1";
 
@@ -22,9 +27,15 @@ export const deleteContactGroup = async (groupId: string | number) => {
 export const createContactGroupApi = async (
   payload: CreateContactGroupPayload
 ) => {
-  const response = await axios.post(`${BASE_URL}/contact-groups/create/`, {
+  const response = await axios.post(
+    `${BASE_URL}/contact-groups/create/`,
     payload,
-  });
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
   return response.data;
 };
 
@@ -40,6 +51,28 @@ export const getCallHistoryByNumber = async (
 ): Promise<Contact[]> => {
   const response = await axios.get<Contact[]>(
     `${BASE_URL}/call-history/by-number/?number=${payload.number}&user_id=${payload.userId}`
+  );
+  return response.data;
+};
+
+export const addNewContactApi = async (payload: AddNewContactType) => {
+  const response = await axios.post(`${BASE_URL}/contacts/create/`, payload, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const editContactGroups = async (payload: any) => {
+  const response = await axios.put(
+    `${BASE_URL}/contact-groups/edit/${payload.user_id}/`,
+    payload,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
   return response.data;
 };
