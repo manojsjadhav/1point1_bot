@@ -14,12 +14,14 @@ import {
 import storage from "redux-persist/lib/storage";
 import agentReducer from "./nodeSlice/agentListSlice";
 import breadcrumbReducer from "./nodeSlice/breadcrumbSlice.ts";
+import contactGroupReducer from "./nodeSlice/contactGroupSlice.ts"
 
 const rootReducer = combineReducers({
   nodes: nodeReducer,
   auth: authReducer,
   agents: agentReducer,
   breadcrumb: breadcrumbReducer,
+  groups: contactGroupReducer,
 });
 
 const persistConfig = {
