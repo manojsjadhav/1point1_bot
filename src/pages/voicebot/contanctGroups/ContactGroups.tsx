@@ -37,7 +37,7 @@ import { fetchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
 import { deleteGroup } from '../../../redux/nodeSlice/deleteContactGroupSlice';
 import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGroupSlice';
 
-import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
+// import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 
@@ -56,13 +56,16 @@ const ContactGroups = () => {
 
     const groupsState = useSelector((state: RootState) => state && state.groups);
     const contactState = useSelector((state: RootState) => state && state.contactDetails);
-    const { auth } = useSelector((state: RootState) => state);
-    const user_id = auth?.response?.user_id;
+
+    const user_id = "6";
 
     const groups = groupsState?.groups || [];
     const contactDetails = contactState?.contactsDeatails || [];
 
     const loading = groupsState?.loading;
+
+    console.log("groupsgroups", groups);
+
 
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
@@ -91,7 +94,10 @@ const ContactGroups = () => {
         setOpenAddNew(true)
     };
 
-    const handleOpenViewContact = () => setOpeViewContact(true);
+    const handleOpenViewContact = (Row: any) => {
+        dispatch(setSelectedGroup(Row))
+        setOpeViewContact(true);
+    }
 
     const handleDelete = async (id: string) => {
         try {
@@ -105,7 +111,6 @@ const ContactGroups = () => {
     useEffect(() => {
         if (user_id) {
             dispatch(fetchGroups(user_id));
-            dispatch(fetchContactDetails(user_id));
         }
     }, [dispatch, user_id]);
 
@@ -163,7 +168,6 @@ const ContactGroups = () => {
             <CreateGroupModal
                 open={openAddNew}
                 onClose={() => setOpenAddNew(false)}
-                isCreateModal={true}
             />
         </>
     );
@@ -316,7 +320,7 @@ const ContactGroups = () => {
                                                         textTransform: 'none',
                                                     }}
                                                     endIcon={<VisibilityOutlinedIcon />}
-                                                    onClick={handleOpenViewContact}
+                                                    onClick={() => handleOpenViewContact(row)}
                                                 >
                                                     View Contacts
                                                 </Button>

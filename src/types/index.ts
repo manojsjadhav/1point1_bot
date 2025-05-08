@@ -21,6 +21,7 @@ export interface CreateContactGroupPayload {
   group_name: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   group_avtar: any;
+  formated_number: string;
 }
 
 export interface ContactGroupState {

@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   AddNewContactType,
+  CallRecord,
   Contact,
   CreateContactGroupPayload,
   Group,
@@ -48,8 +49,8 @@ export const getContacts = async (userId: string): Promise<Contact[]> => {
 
 export const getCallHistoryByNumber = async (
   payload: any
-): Promise<Contact[]> => {
-  const response = await axios.get<Contact[]>(
+): Promise<CallRecord[]> => {
+  const response = await axios.get<CallRecord[]>(
     `${BASE_URL}/call-history/by-number/?number=${payload.number}&user_id=${payload.userId}`
   );
   return response.data;
@@ -67,6 +68,24 @@ export const addNewContactApi = async (payload: AddNewContactType) => {
 export const editContactGroups = async (payload: any) => {
   const response = await axios.put(
     `${BASE_URL}/contact-groups/edit/${payload.user_id}/`,
+    payload,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
+
+export const deleteContacts = async (groupId: string | number) => {
+  return await axios.delete(`${BASE_URL}/contacts/delete/${groupId}/`);
+};
+
+export const editContactDetails = async (payload: any) => {
+  const response = await axios.put(
+    `${BASE_URL}/contacts/edit/${payload.user_id}/`,
     payload,
     {
       headers: {

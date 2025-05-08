@@ -18,26 +18,32 @@ import {
     createContactGroup,
     resetContactGroupState
 } from '../../../redux/nodeSlice/createcontactGroupSlice';
-import { fetchCallDetails } from '../../../redux/nodeSlice/getCallHistoryByNumberSlice';
 import { addNewContact } from '../../../redux/nodeSlice/addNewContactSlice';
-import { clearSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
-import { editContactGroups } from '../../../services/contactGroupsServices';
+import { editContactDetails, editContactGroups } from '../../../services/contactGroupsServices';
+import { fetchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
+import { fetchCallDetails } from '../../../redux/nodeSlice/getCallHistoryByNumberSlice';
+import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
 
 interface CreateGroupModalProps {
     open: boolean;
     onClose: () => void;
-    isCreateModal: boolean;
 }
 
-const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCreateModal }) => {
+const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { success } = useSelector((state: RootState) => state.createGroup);
     const { auth } = useSelector((state: RootState) => state);
     const user_id = auth?.response?.user_id;
-
     const selectedGroup = useSelector((state: RootState) => state.groupSlice.selectedGroup);
     const selectedmodalName = useSelector((state: RootState) => state.modal.modalName);
-    const isGroupEditModal = selectedmodalName === "Edit_Group_Name";
+
+    const isEditContact = selectedmodalName === "Edit_Contacts_Name";
+    const isAddContact = selectedmodalName === "Add_New_Contact_Name";
+    const isAddGroup = selectedmodalName === "Add_New_Group_Name";
+    const isEditGroup = selectedmodalName === "Edit_Group_Name";
+
+    console.log("selectedGroup", selectedGroup);
+
 
     const [groupName, setGroupName] = React.useState("");
     const [contactNumber, setContactNumber] = React.useState('');
@@ -48,46 +54,55 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCr
         e.preventDefault();
 
         if (!groupName.trim()) {
-            alert("Group/Contact name is required.");
+            alert((isAddGroup || isEditGroup) ? "Group name is required." : "Contact name is required.");
             return;
         }
 
-        if (!isCreateModal && !contactNumber.trim()) {
+        if ((isAddContact || isEditContact) && !contactNumber.trim()) {
             alert("Contact number is required.");
             return;
         }
 
-        if (isCreateModal) {
-            if (isGroupEditModal && selectedGroup?.id) {
-                // await dispatch(updateGroup({
-                //     group_id: selectedGroup.id,
-                //     group_name: groupName,
-                //     group_avtar: previewImage?.fileName || selectedGroup.group_avtar,
-                //     user_id,
-                // }));
-
-                editContactGroups({
-                    group_name: groupName,
-                    group_avtar: previewImage?.fileName || selectedGroup.group_avtar,
-                    user_id,
-                })
-            } else {
-                const payload: CreateContactGroupPayload = {
-                    user_id,
-                    group_name: groupName,
-                    group_avtar: previewImage?.fileName || '',
-                };
-                await dispatch(createContactGroup(payload));
-            }
-        } else {
-            dispatch(addNewContact({
+        if (isAddGroup) {
+            const payload: CreateContactGroupPayload = {
                 user_id,
-                group_id: selectedGroup?.id || "1",
+                group_name: groupName,
+                group_avtar: previewImage?.fileName || '',
+                formated_number: selectedGroup?.formated_number || "+123"
+            };
+            await dispatch(createContactGroup(payload));
+
+            await dispatch(fetchGroups(user_id));
+        } else if (isEditGroup) {
+            await editContactGroups({
+                group_name: groupName,
+                group_avtar: previewImage?.fileName || selectedGroup.group_avtar,
+                user_id: selectedGroup.id,
+                formated_number: selectedGroup?.formated_number || "+123"
+            });
+            await dispatch(fetchGroups(user_id));
+        } else if (isAddContact) {
+            console.log("selectedGroup?.formated_number", selectedGroup?.formated_number);
+
+            await dispatch(addNewContact({
+                user_id,
+                group_id: selectedGroup?.id,
                 person_name: groupName,
                 phone_number: contactNumber,
-                formated_number: "+123"
+                formated_number: contactNumber
             }));
+            await dispatch(fetchContactDetails(selectedGroup?.id));
+
+        } else if (isEditContact) {
+            await editContactDetails({
+                user_id,
+                person_name: groupName,
+                phone_number: contactNumber,
+                formated_number: selectedGroup?.formated_number
+            })
+            await dispatch(fetchContactDetails(selectedGroup?.id));
         }
+
 
         onClose();
     };
@@ -101,11 +116,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCr
     }, [success, dispatch]);
 
     useEffect(() => {
-        if (isGroupEditModal && selectedGroup) {
-            setGroupName(selectedGroup.group_name || '');
+        if ((isEditContact || isEditGroup) && selectedGroup) {
+            setGroupName(selectedGroup.group_name || selectedGroup.person_name || '');
+            setContactNumber(selectedGroup.phone_number || '');
             setPreviewImage({ fileName: selectedGroup.group_avtar });
         }
-    }, [isGroupEditModal, selectedGroup]);
+    }, [isAddContact, isEditContact, isEditGroup, selectedGroup]);
 
     useEffect(() => {
         if (!open) {
@@ -116,11 +132,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCr
     }, [open]);
 
     useEffect(() => {
-        dispatch(fetchCallDetails({ number: "1234567890", userId: "1" }));
-
-        return () => {
-            dispatch(clearSelectedGroup());
-        };
+        dispatch(fetchContactDetails(selectedGroup?.id));
+        dispatch(fetchCallDetails({ number: selectedGroup?.phone_number, userId: selectedGroup?.userId }));
     }, [dispatch]);
 
     return (
@@ -138,26 +151,25 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCr
             }}
         >
             <DialogTitle sx={{ color: '#FFFFFF', fontSize: 18, fontWeight: 500 }}>
-                {isCreateModal
-                    ? selectedmodalName === "Add_New_Group_Name"
-                        ? "Create New Group"
-                        : "Edit Group"
-                    : "Add New Contact"}
+                {isAddGroup && "Create New Group"}
+                {isEditGroup && "Edit Group"}
+                {isAddContact && "Add New Contact"}
+                {isEditContact && "Edit Contact"}
             </DialogTitle>
 
             <DialogContent>
                 <Typography sx={{ color: '#B8B9C1', fontSize: 14, mb: 2, fontWeight: 400 }}>
-                    {isCreateModal
-                        ? "Add group name and an avatar to create a new group."
-                        : "Add a new contact to this group."}
+                    {(isAddGroup || isEditGroup)
+                        ? "Add group name and an avatar to create or update a group."
+                        : "Add contact name and number to create or edit a contact."}
                 </Typography>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                    {previewImage && (
-                        <Box mt={2}>
-                            <Avatar sx={{ width: 48, height: 48 }} src={previewImage.fileName} />
-                        </Box>
-                    )}
+                    {/* {previewImage && ( */}
+                    <Box mt={2}>
+                        <Avatar sx={{ width: 48, height: 48 }} src={"previewImage.png"} />
+                    </Box>
+                    {/* )} */}
                     <Button
                         variant="outlined"
                         onClick={() => setOpenUpload(true)}
@@ -170,7 +182,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCr
                             borderRadius: "8px"
                         }}
                     >
-                        {isCreateModal ? "Change Avatar" : "Add Profile Picture"}
+                        {previewImage ? "Change Avatar" : "Add Profile Picture"}
                     </Button>
 
                     <UploadModal
@@ -182,11 +194,11 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCr
                 </Box>
 
                 <Typography sx={{ color: '#fff', fontSize: 14, mb: 1, fontWeight: 500 }}>
-                    {isCreateModal ? " Add Group Name" : "Add Contact Name"}
+                    {(isAddGroup || isEditGroup) ? "Add Group Name" : "Add Contact Name"}
                 </Typography>
                 <TextField
                     fullWidth
-                    placeholder={isCreateModal ? "Group name" : "Contact Name"}
+                    placeholder={(isAddGroup || isEditGroup) ? "Group Name" : "Contact Name"}
                     variant="outlined"
                     size="small"
                     value={groupName}
@@ -206,7 +218,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCr
                     }}
                 />
 
-                {!isCreateModal && (
+                {(isAddContact || isEditContact) && (
                     <>
                         <Typography sx={{ color: '#fff', fontSize: 14, mb: 1, fontWeight: 500 }}>
                             Add Contact Number
@@ -282,7 +294,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose, isCr
                             },
                         }}
                     >
-                        {isCreateModal ? (isGroupEditModal ? "Update" : "Create") : "Add"}
+                        {(isEditGroup || isEditContact) ? "Update" : "Create"}
                     </Button>
                 </Box>
             </DialogContent>
