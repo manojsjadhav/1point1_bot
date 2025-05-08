@@ -20,11 +20,10 @@ import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import { useRef, useState } from 'react';
 import CreateGroupModal from './CreateGroupModal';
 import { Contact } from '../../../types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteContact } from '../../../redux/nodeSlice/deleteContactSlice';
 import { AppDispatch, RootState } from '../../../redux/store';
 import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
-import { useSelector } from 'react-redux';
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import { uploadFile } from '../../../redux/nodeSlice/uploadFileSlice';
@@ -48,8 +47,6 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
         );
     };
 
-    console.log("contactDetails", contactDetails);
-
     const result = isToday(callDate);
 
     const [search, setSearch] = useState<string>('');
@@ -57,10 +54,15 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
     const [isClickedRowId, setIsClickedRowId] = useState<any | null>(null)
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleContactsDelete = async (data: nay) => {
-        await dispatch(deleteContact(data.id))
-        await dispatch(fetchContactDetails(data.group_id));
-    }
+    const handleContactsDelete = async (data: any) => {
+        try {
+            await dispatch(deleteContact(data.id)).unwrap();
+            await dispatch(fetchContactDetails(data.group_id));
+            alert("Contact deleted successfully.");
+        } catch (error) {
+            alert("Failed to delete contact.");
+        }
+    };
 
     const formatDate = (isoDate: string): string => {
         const date = new Date(isoDate);
@@ -72,27 +74,24 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
 
     const formatTime = (isoDate: string): string => {
         const date = new Date(isoDate);
-
         const hours = date.getHours();
         const minutes = String(date.getMinutes()).padStart(2, '0');
-
         const formattedHour = hours % 12 || 12;
         const amPm = hours >= 12 ? 'PM' : 'AM';
-
         return `${formattedHour}:${minutes}${amPm}`;
     };
 
     const callsHistoryDate = formatDate(callDate);
 
-
     const handleOpenModal = (Row?: any) => {
+
         if (Row) {
-            dispatch(setSelectedGroup(Row))
-            dispatch(setSelectedModalName("Edit_Contacts_Name"))
+            dispatch(setSelectedGroup(Row));
+            dispatch(setSelectedModalName("Edit_Contacts_Name"));
         } else {
-            dispatch(setSelectedModalName("Add_New_Contact_Name"))
+            dispatch(setSelectedModalName("Add_New_Contact_Name"));
         }
-        setOpenAddContactModal(true)
+        setOpenAddContactModal(true);
     };
 
     const handleButtonClick = () => {
@@ -109,14 +108,12 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                     user_id: selectedGroup?.user_id,
                 })).unwrap();
                 alert("Contacts uploaded successfully!");
-                dispatch(fetchContactDetails(selectedGroup?.group_id));
+                dispatch(fetchContactDetails(selectedGroup?.id));
             } catch (err: any) {
-                alert(err || "Failed to upload contacts.");
+                alert(err?.message || "Failed to upload contacts.");
             }
         }
     };
-
-
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth PaperProps={{
@@ -138,7 +135,6 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                     </Box>
 
                     <Box display="flex" gap={1}>
-
                         <input
                             type="file"
                             accept=".csv"
@@ -171,12 +167,10 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                     onClose={() => setOpenAddContactModal(false)}
                 />
 
-
                 <Box display="flex" gap={3}>
                     <Box flex={2} bgcolor="#2a2a33" p={2} border="1px solid #505060" borderRadius="8px">
-                        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", }}>
                             <Typography mb={1}>Contacts</Typography>
-
                             <TextField
                                 fullWidth
                                 placeholder="Search"
@@ -200,7 +194,6 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                                         borderRadius: '8px',
                                         pl: 1,
                                     },
-
                                     '& .MuiOutlinedInput-root': {
                                         '&:hover fieldset': {
                                             borderColor: '#ff5a1f',
@@ -214,14 +207,14 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                                         padding: '10px ',
                                     },
                                     mb: 2,
-
                                 }}
                             />
                         </Box>
+
                         <Box display="flex" flexDirection="column" border="1px solid #505060" borderRadius="8px" gap={1}>
                             {contactDetails.map((c, i) => (
-                                <Box key={i} display="flex" alignItems="center" justifyContent="space-between" p={1.5} bgcolor="#2a2a33" borderTop={i === 0 ? "none" : "1px solid #505060"}>
-                                    <Box onClick={() => setIsClickedRowId(c.id)} display="flex" alignItems="center" gap={2}  >
+                                <Box sx={{ "&:hover": { backgroundColor: "#4c4d58" } }} key={i} display="flex" alignItems="center" justifyContent="space-between" p={1} bgcolor="#2a2a33" borderTop={i === 0 ? "none" : "1px solid #505060"}>
+                                    <Box onClick={() => setIsClickedRowId(c.id)} display="flex" alignItems="center" gap={2}>
                                         <Avatar />
                                         <Box sx={{ display: "flex", gap: 2 }}>
                                             <Typography fontSize={14}>{c.person_name}</Typography>
@@ -241,14 +234,11 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                         </Box>
                     </Box>
 
-                    {/* Call History */}
                     {isClickedRowId &&
                         <Box flex={1.2} bgcolor="#2a2a33" p={2} border="1px solid #505060" borderRadius="8px">
                             <Typography mb={2}>Call History</Typography>
                             <Box bgcolor="#2a2a33" border="1px solid #505060" borderRadius="8px">
                                 {[result ? 'Today' : callsHistoryDate].map(date => (
-
-
                                     <Box key={date}>
                                         <Typography padding="20px 12px" bgcolor="#41414b" fontSize={13} color="#D9D9DE">{date}</Typography>
                                         {callDetail
@@ -274,7 +264,6 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                                                     </Typography>
                                                 </Box>
                                             ))}
-
                                     </Box>
                                 ))}
                             </Box>
@@ -288,7 +277,6 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                     </Button>
                 </Box>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 }
-

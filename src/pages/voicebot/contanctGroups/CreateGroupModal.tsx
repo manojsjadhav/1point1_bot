@@ -42,9 +42,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
     const isAddGroup = selectedmodalName === "Add_New_Group_Name";
     const isEditGroup = selectedmodalName === "Edit_Group_Name";
 
-    console.log("selectedGroup", selectedGroup);
-
-
     const [groupName, setGroupName] = React.useState("");
     const [contactNumber, setContactNumber] = React.useState('');
     const [previewImage, setPreviewImage] = React.useState<any | null>(null);
@@ -82,8 +79,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
             });
             await dispatch(fetchGroups(user_id));
         } else if (isAddContact) {
-            console.log("selectedGroup?.formated_number", selectedGroup?.formated_number);
-
             await dispatch(addNewContact({
                 user_id,
                 group_id: selectedGroup?.id,
@@ -95,12 +90,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
 
         } else if (isEditContact) {
             await editContactDetails({
-                user_id,
+                user_id: selectedGroup.id,
                 person_name: groupName,
                 phone_number: contactNumber,
                 formated_number: selectedGroup?.formated_number
             })
-            await dispatch(fetchContactDetails(selectedGroup?.id));
+            await dispatch(fetchContactDetails(selectedGroup?.group_id));
         }
 
 
