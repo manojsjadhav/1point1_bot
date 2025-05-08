@@ -17,30 +17,45 @@ import { useSelector } from "react-redux";
 import AgentCustomNode from "../../nodes/AgentCustomNode.tsx";
 import playIcon from "../../assets/componentmenuicon/play.svg";
 import chevron_down from "../../assets/chevron-down.svg";
-import { RootState } from "../../redux/store.ts";
+import { AppDispatch, RootState } from "../../redux/store.ts";
 import { Box, Button } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import { postAgentFlow } from "../../services/agentFlowServices.ts";
-import { getCurrentFormattedDate } from "../../nodes/utils/nodedata.ts";
+import { editAgent, postAgentFlow } from "../../services/agentFlowServices.ts";
+// import { getCurrentFormattedDate } from "../../nodes/utils/nodedata.ts";
 import { agentStore } from "../../providers/AgentContext.tsx";
 import { setInitialNodes } from "../../redux/nodeSlice/nodeSlice.ts";
 import { useDispatch } from "react-redux";
+import { cloneDeep } from "lodash";
+import { toast } from "react-toastify";
 
 const nodeTypes = { custom: AgentCustomNode };
 
 export default function NodeLists() {
   const allNode = useSelector((state: RootState) => state.nodes);
-  const { agentDetails, agentFlowtoggle, setAgentFlowtoggle } =
-    useContext(agentStore);
+  const {
+    agentDetails,
+    agentFlowtoggle,
+    setAgentFlowtoggle,
+    editAgentData,
+    setEditAgentData,
+  } = useContext(agentStore);
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
-  const dispatch = useDispatch();
-  console.log({nodes})
+  const dispatch = useDispatch<AppDispatch>();
+  console.log({ allNode });
+  console.log({ nodes });
+  const { user_id, created_by, agent_type, dialer, flow_type, agent_name } =
+    agentDetails;
   const handleflowsubmit = async () => {
     const tempId: any = uuidv4();
     const dammyData: any = {
-      created_date: getCurrentFormattedDate(),
-      ...agentDetails,
+      // created_date: getCurrentFormattedDate(),
+      user_id,
+      created_by,
+      agent_type,
+      dialer,
+      flow_type,
+      agent_name,
       sts_model_id: tempId,
       sts_model_perms: {},
       llm_model_id: tempId,
@@ -48,7 +63,7 @@ export default function NodeLists() {
       llm_model_document: "This is a document content",
       tts_model_id: tempId,
       tts_model_perm: {},
-      nodes: nodes,
+      nodes_list: nodes,
       edges: edges,
     };
     const requiredNodeTypes = [
@@ -91,10 +106,28 @@ export default function NodeLists() {
     if (hasEmptyFields) {
       alert("please fillup all correct node and make sure any is not empty");
     } else {
-      await postAgentFlow(dammyData);
-      dispatch(setInitialNodes([]));
-      setNodes(allNode);
-      setAgentFlowtoggle(!agentFlowtoggle);
+      if (editAgentData && Object.keys(editAgentData).length > 0) {
+        const editedData = {
+          ...editAgentData,
+          sts_model_perms: dammyData.sts_model_perms,
+          llm_model_param: dammyData.llm_model_param,
+          tts_model_perm: dammyData.tts_model_perm,
+          nodes_list: nodes,
+          edges: edges,
+        };
+        dispatch(editAgent({ id: editedData.id, updatedData: editedData }));
+        dispatch(setInitialNodes([]));
+        // setNodes(allNode);
+        setAgentFlowtoggle(!agentFlowtoggle);
+        setEditAgentData({});
+        toast.success("Agent Edited Successfull");
+      } else {
+        await postAgentFlow(dammyData);
+        dispatch(setInitialNodes([]));
+        // setNodes(allNode);
+        setAgentFlowtoggle(!agentFlowtoggle);
+        toast.success("Agent add Successfull");
+      }
     }
   };
 
@@ -104,7 +137,7 @@ export default function NodeLists() {
     [setEdges]
   );
   useEffect(() => {
-    setNodes(allNode);
+    setNodes(cloneDeep(allNode));
   }, [allNode]);
   console.log({ edges });
   return (

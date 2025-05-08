@@ -21,6 +21,7 @@ import { useFormik } from "formik";
 import FormikTextField from "./FormikTextField";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -48,6 +49,7 @@ const RegisterForm = () => {
           "http://1msg.1point1.in:3001/api/auth/j-v1/signup/",
           userData
         );
+        toast.success("User register succssesfully.");
         navigate("/login");
         formik.resetForm();
       } catch (error: any) {

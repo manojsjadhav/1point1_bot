@@ -1,133 +1,15 @@
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
-
-// import your assets
-import Data from "../../assets/Data.svg";
-import Embedding from "../../assets/Embedding.svg";
-import Intelligence from "../../assets/Intelligence.svg";
-import Prompts from "../../assets/Prompts.svg";
-import Speech from "../../assets/Speech.svg";
-import Text from "../../assets/Text.svg";
-import Vector_stores from "../../assets/Vector_stores.svg";
-import Download from "../../assets/Download.svg";
-import Upload from "../../assets/Upload.svg";
-import Right_arrow from "../../assets/Right_arrow.svg";
-import chevrondown from "../../assets/chevron-down.svg";
-import Aws_Polly from "../../assets/componentmenuicon/Aws_Polly.svg";
-import Deepgram from "../../assets/componentmenuicon/Deepgram.svg";
-import Chatgpt from "../../assets/componentmenuicon/Chatgpt.svg";
-import Drag from "../../assets/componentmenuicon/Drag.svg";
-import Gemini from "../../assets/componentmenuicon/Gemini.svg";
-import Google_TTS from "../../assets/componentmenuicon/Google_TTS.svg";
-import Huggingface from "../../assets/componentmenuicon/Huggingface.svg";
-import Local_Model from "../../assets/componentmenuicon/Local_Model.svg";
-import {
-  DeepgramNode,
-  GoogleTTSNode,
-  OpenAINode,
-} from "../../nodes/utils/nodedata";
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { addNode } from "../../redux/nodeSlice/nodeSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-
-// initial static menu items
-const initialMenuItems = [
-  {
-    id: 1,
-    startIcon: Download,
-    label: "Input",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [],
-  },
-  {
-    id: 2,
-    startIcon: Upload,
-    label: "Output",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [],
-  },
-  {
-    id: 3,
-    startIcon: Prompts,
-    label: "Prompts",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [],
-  },
-  {
-    id: 4,
-    startIcon: Data,
-    label: "Data",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [],
-  },
-  {
-    id: 5,
-    startIcon: Speech,
-    label: "Speech to Text",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [{ startIcon: Deepgram, label: "Deepgram", endIcon: Drag }],
-  },
-  {
-    id: 6,
-    startIcon: Text,
-    label: "Text to Speech",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [
-      { startIcon: Google_TTS, label: "Google TTS", endIcon: Drag },
-      { startIcon: Aws_Polly, label: "AWS Polly", endIcon: Drag },
-    ],
-  },
-  {
-    id: 7,
-    startIcon: Intelligence,
-    label: "LLM Models",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [
-      { startIcon: Chatgpt, label: "Open AI", endIcon: Drag },
-      { startIcon: Gemini, label: "Gemini", endIcon: Drag },
-      { startIcon: Huggingface, label: "Huggingface", endIcon: Drag },
-      { startIcon: Local_Model, label: "Language Model", endIcon: Drag },
-    ],
-  },
-  {
-    id: 8,
-    startIcon: Embedding,
-    label: "Embedding Model",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [],
-  },
-  {
-    id: 9,
-    startIcon: Vector_stores,
-    label: "Vector Stores",
-    endCloseIcon: Right_arrow,
-    endOpenIcon: chevrondown,
-    isActive: false,
-    subMenuItems: [],
-  },
-];
-const nodeListData = [OpenAINode, DeepgramNode, GoogleTTSNode];
+import { agentFlowMenuItems } from "../../constants/agentFlowMenuItems";
+import { nodeListData } from "../../nodes/utils/nodedata";
 
 const MenuItems = () => {
-  const [menuItems, setMenuItems] = useState(initialMenuItems);
+  const [menuItems, setMenuItems] = useState(agentFlowMenuItems);
   const allNodes = useSelector((state: RootState) => state.nodes);
   const dispatch = useDispatch();
 
@@ -139,9 +21,11 @@ const MenuItems = () => {
     );
   };
   const handleAddNode = (nodeName: any) => {
-    const node = nodeListData.find((node: any) => node.data.title === nodeName);
+    const node: any = nodeListData.find(
+      (node: any) => node.data.title === nodeName
+    );
     const isCheckNode = allNodes.find(
-      (nodeItem: any) =>  nodeItem.nodetype === node?.nodetype
+      (nodeItem: any) => nodeItem.nodetype === node?.nodetype
     );
     if (isCheckNode) {
       alert("This type of node already exist");
@@ -149,7 +33,6 @@ const MenuItems = () => {
       dispatch(addNode({ ...node, id: uuidv4() }));
     }
   };
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
       {menuItems.map((menu) => (
