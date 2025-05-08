@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -23,11 +23,17 @@ import notification from "../../assets/notification.svg";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/nodeSlice/authSlice";
+import { toast } from "react-toastify";
+import { authStore } from "../../providers/AuthContext";
 
 const AgentCreationNavban = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openMenu, setOpenMenu] = useState(false);
+  const { tokenToggle, setTokenToggle } = useContext(authStore);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const links = useSelector((state: RootState) => state.breadcrumb.links);
   const handleMenuOpenIcon = () => {
     setOpenMenu((prev) => !prev);
@@ -40,9 +46,17 @@ const AgentCreationNavban = () => {
     setAnchorEl(null);
     handleMenuOpenIcon();
   };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    setTokenToggle(!tokenToggle);
+    toast.success("User Logout Successfully.");
+    navigate("/");
+  };
+
   return (
     <AppBar
-      position="static"
+      position="sticky"
       sx={{
         backgroundColor: "#18181B",
         height: "71px",
@@ -384,6 +398,9 @@ const AgentCreationNavban = () => {
                       fontFamily: "GeneralSans-m",
                       fontSize: "12px",
                       color: "#fff",
+                    }}
+                    onClick={() => {
+                      handleLogout();
                     }}
                   >
                     Logout

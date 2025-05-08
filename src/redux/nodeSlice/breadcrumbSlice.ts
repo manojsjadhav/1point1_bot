@@ -19,6 +19,7 @@ const breadcrumbSlice = createSlice({
   initialState,
   reducers: {
     setBreadcrumbs: (state, action: PayloadAction<BreadcrumbItem[]>) => {
+      console.log("action alink: ", action.payload);
       state.links = action.payload;
     },
     clearBreadcrumbs: (state) => {

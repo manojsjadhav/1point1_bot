@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { cloneDeep } from "lodash";
 
 const initialState: any = [];
 interface UpdateNodeDataPayload {
@@ -9,11 +10,16 @@ const nodeSlice = createSlice({
   name: "counter",
   initialState,
   reducers: {
-    setInitialNodes: (_, action: PayloadAction<any[]>) => {
-      return action.payload;
+    setInitialNodes: (state, action: PayloadAction<any[]>) => {
+      state.length = 0;
+      state.push(...cloneDeep(action.payload));
+      console.log("agent edit data:", action.payload);
     },
     addNode: (state, action: PayloadAction<any>) => {
       state.push(action.payload);
+    },
+    editNodes: (state, action: PayloadAction<any>) => {
+      state = action.payload;
     },
     updateNodeData: (state, action: PayloadAction<UpdateNodeDataPayload>) => {
       state.nodes = state.nodes.map((node: any) =>
@@ -25,5 +31,6 @@ const nodeSlice = createSlice({
   },
 });
 
-export const { addNode, updateNodeData, setInitialNodes } = nodeSlice.actions;
+export const { addNode, updateNodeData, setInitialNodes, editNodes } =
+  nodeSlice.actions;
 export default nodeSlice.reducer;

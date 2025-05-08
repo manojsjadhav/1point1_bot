@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import {
   TableContainer,
   Table,
@@ -15,11 +15,16 @@ import {
   styled, // Import the styled utility
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
+import { AppDispatch, RootState } from "../../../redux/store";
 import Delete from "../../../assets/agentdialogicon/Delete.svg";
 import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useDispatch } from "react-redux";
+import { deleteAgent } from "../../../services/agentFlowServices";
+import { editNodes, setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
+import { agentStore } from "../../../providers/AgentContext";
+import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
 
 const NavButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#41414B",
@@ -37,11 +42,16 @@ const NavButton = styled(Button)(({ theme }) => ({
 
 const AgentDataTable = () => {
   const { agents } = useSelector((state: RootState) => state.agents);
-
   const TableHeaders = ["", "Agent Name", "Created On", "Created By", "Action"];
-
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    agentFlowtoggle,
+    setAgentFlowtoggle,
+    editAgentData,
+    setEditAgentData,
+  } = useContext(agentStore);
   const rowsPerPage = 5;
 
   const paginatedAgents = useMemo(() => {
@@ -77,6 +87,27 @@ const AgentDataTable = () => {
     } else {
       setSelectedIds((prev) => [...prev, id]);
     }
+  };
+
+  const handlAgentDelete = (id: any) => {
+    if (window.confirm("Are you sure you want to delete this agent?")) {
+      dispatch(deleteAgent(id));
+    }
+  };
+  const handlAgentEdit = (agent: any) => {
+    console.log({ agent });
+    dispatch(
+      setBreadcrumbs([
+        { label: "My Agent", path: "/voicebot/ai-agents" },
+        { label: agent.agent_type, path: "/voicebot" },
+      ])
+    );
+    const flowNodes = JSON.parse(agent.nodes_list);
+    console.log({ flowNodes });
+    // dispatch(editNodes(flowNodes));
+    dispatch(setInitialNodes(flowNodes));
+    setEditAgentData(agent);
+    setAgentFlowtoggle(!agentFlowtoggle);
   };
 
   return (
@@ -180,6 +211,7 @@ const AgentDataTable = () => {
                     }}
                   >
                     {agent?.created_by}
+                    {/* manoj */}
                   </TableCell>
                   <TableCell
                     sx={{
@@ -200,12 +232,14 @@ const AgentDataTable = () => {
                         src={Delete}
                         alt="Delete"
                         sx={{ width: 22, height: 22, cursor: "pointer" }}
+                        onClick={() => handlAgentDelete(agent?.id)}
                       />
                       <Box
                         component="img"
                         src={Editagent}
                         alt="Edit"
                         sx={{ width: 22, height: 22, cursor: "pointer" }}
+                        onClick={() => handlAgentEdit(agent)}
                       />
                     </Box>
                   </TableCell>

@@ -7,113 +7,118 @@ import { useContext, useEffect } from "react";
 import { agentStore } from "../../providers/AgentContext";
 import { useDispatch } from "react-redux";
 import { setBreadcrumbs } from "../../redux/nodeSlice/breadcrumbSlice";
+import { ReactFlowProvider } from "@xyflow/react";
 
 const VoiceAgentFlow = () => {
   const dispatch = useDispatch();
   const { agentDetails } = useContext(agentStore);
   useEffect(() => {
-    dispatch(
-      setBreadcrumbs([
-        { label: "My Agent", path: "/voicebot/ai-agents" },
-        { label: agentDetails.agent_type, path: "/voicebot" },
-      ])
-    );
+    if (agentDetails.agent_type) {
+      dispatch(
+        setBreadcrumbs([
+          { label: "My Agent", path: "/voicebot/ai-agents" },
+          { label: agentDetails.agent_type, path: "/voicebot" },
+        ])
+      );
+    }
   }, []);
   return (
-    <Box sx={{ display: "flex", width: "100%" }}>
-      <Box
-        sx={{
-          width: "260px",
-          height: "966px",
-          background: "#18181B",
-          borderLeft: "1px solid #41414B",
-          borderRight: "1px solid #41414B",
-        }}
-      >
+    <ReactFlowProvider>
+      <Box sx={{ display: "flex", width: "100%" }}>
         <Box
           sx={{
-            px: "10px",
-            py: "18px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "14px",
+            width: "260px",
+            height: "966px",
+            background: "#18181B",
+            borderLeft: "1px solid #41414B",
+            borderRight: "1px solid #41414B",
           }}
         >
-          <Box>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                pt: "5px",
-              }}
-            >
-              <Typography
+          <Box
+            sx={{
+              px: "10px",
+              py: "18px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "14px",
+            }}
+          >
+            <Box>
+              <Box
                 sx={{
-                  fontFamily: "GeneralSans-m",
-                  fontSize: "16px",
-                  color: "#fff",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  pt: "5px",
                 }}
               >
-                Components
-              </Typography>
-              <Box>
-                <Box
-                  component="img"
-                  src={Configuration}
-                  alt="group"
-                  sx={{ width: 24, height: 24 }}
-                />
+                <Typography
+                  sx={{
+                    fontFamily: "GeneralSans-m",
+                    fontSize: "16px",
+                    color: "#fff",
+                  }}
+                >
+                  Components
+                </Typography>
+                <Box>
+                  <Box
+                    component="img"
+                    src={Configuration}
+                    alt="group"
+                    sx={{ width: 24, height: 24 }}
+                  />
+                </Box>
               </Box>
-            </Box>
-            <TextField
-              variant="outlined"
-              placeholder="Search"
-              fullWidth
-              sx={{
-                "& .MuiInputBase-root": {
-                  border: "1px solid #41414B",
-                  borderRadius: "8px",
-                  height: "36px",
-                  mt: "12px",
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#FF581C",
+              <TextField
+                variant="outlined"
+                placeholder="Search"
+                fullWidth
+                sx={{
+                  "& .MuiInputBase-root": {
+                    border: "1px solid #41414B",
+                    borderRadius: "8px",
+                    height: "36px",
+                    mt: "12px",
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#FF581C",
+                    },
                   },
-                },
-                "& .MuiInputBase-input": {
-                  color: "#B8B9C1",
-                  fontFamily: "GeneralSans-m",
-                  fontSize: "14px",
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Box
-                      component="img"
-                      src={Search}
-                      alt="User Icon"
-                      sx={{ width: 24, height: 24 }}
-                    />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-          <Box>
-            <MenuItems />
+                  "& .MuiInputBase-input": {
+                    color: "#B8B9C1",
+                    fontFamily: "GeneralSans-m",
+                    fontSize: "14px",
+                  },
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Box
+                        component="img"
+                        src={Search}
+                        alt="User Icon"
+                        sx={{ width: 24, height: 24 }}
+                      />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+            <Box>
+              <MenuItems />
+            </Box>
           </Box>
         </Box>
+        <Box
+          sx={{
+            flex: 1,
+            height: "966px",
+            background: "#000",
+          }}
+        >
+          <NodeLists />
+        </Box>
       </Box>
-      <Box
-        sx={{
-          flex: 1,
-          height: "966px",
-          background: "#000",
-        }}
-      >
-        <NodeLists />
-      </Box>
-    </Box>
+    </ReactFlowProvider>
   );
 };
 
