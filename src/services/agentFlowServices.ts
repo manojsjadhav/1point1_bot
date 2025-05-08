@@ -19,7 +19,7 @@ export const fetchAgentList = createAsyncThunk<any>(
   async (user_id, thunkAPI) => {
     try {
       const res = await axios.get(
-        `http://1msg.1point1.in:3001/api/auth/j-v1/agents_by_user?id=${user_id}`
+        `http://1msg.1point1.in:3001/api/auth/j-v1/agents_by_user/?id=${user_id}`
       );
       return res.data;
     } catch (error: any) {
@@ -30,11 +30,18 @@ export const fetchAgentList = createAsyncThunk<any>(
 export const fetchAgentsBySearch = createAsyncThunk(
   "agents/fetchBySearch",
   async ({ userId, query }: { userId: any; query: any }) => {
-    const response = await axios.get(
-      `http://1msg.1point1.in:3001/api/auth/j-v1/agents/search/`,
-      { params: { user_id: userId, q: query } }
-    );
-    return response.data;
+    if (query) {
+      const response = await axios.get(
+        `http://1msg.1point1.in:3001/api/auth/j-v1/agents/search/`,
+        { params: { user_id: userId, q: query } }
+      );
+      return response.data;
+    } else {
+      const res = await axios.get(
+        `http://1msg.1point1.in:3001/api/auth/j-v1/agents_by_user/?id=${userId}`
+      );
+      return res.data;
+    }
   }
 );
 
@@ -49,6 +56,21 @@ export const addAgent = createAsyncThunk<any, Partial<any>>(
     }
   }
 );
+export const editAgent = createAsyncThunk<
+  any,
+  { id: any; updatedData: any },
+  { rejectValue: string }
+>("agentList/editAgent", async ({ id, updatedData }, { rejectWithValue }) => {
+  try {
+    const response = await axios.put(
+      `http://1msg.1point1.in:3001/api/auth/j-v1/agents/edit/${id}/`,
+      updatedData
+    );
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || "Update failed");
+  }
+});
 
 export const deleteAgent = createAsyncThunk(
   "agentList/deleteAgent",

@@ -3,7 +3,8 @@ import {
   addAgent,
   fetchAgentList,
   fetchAgentsBySearch,
-  deleteAgent, // ✅ new import
+  deleteAgent,
+  editAgent, // ✅ new import
 } from "../../services/agentFlowServices";
 
 interface Agent {
@@ -58,15 +59,29 @@ const agentListSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-
       .addCase(
         fetchAgentsBySearch.fulfilled,
         (state, action: PayloadAction<Agent[]>) => {
           state.agents = action.payload;
         }
       )
-
-      // ✅ Handle delete
+      .addCase(editAgent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(editAgent.fulfilled, (state, action: PayloadAction<Agent>) => {
+        const index = state.agents.findIndex(
+          (agent) => agent.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.agents[index] = action.payload;
+        }
+        state.loading = false;
+      })
+      .addCase(editAgent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
       .addCase(deleteAgent.pending, (state) => {
         state.loading = true;
         state.error = null;

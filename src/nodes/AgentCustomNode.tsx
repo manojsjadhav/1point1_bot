@@ -11,13 +11,22 @@ import "./agentCustomNode.scss";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { agentStore } from "../providers/AgentContext";
+import Openview from "../assets/componentmenuicon/Open_view.svg";
+import TextareaPopup from "../components/agentcreation/TextareaPopup";
 
 const AgentCustomNode = (props: any) => {
   const { id, data } = props;
   const [isFocused, setIsFocused] = useState<any>(false);
+  const [openTextarea, setOpenTextarea] = useState<any>(false);
   const { agentDetails } = useContext(agentStore);
   console.log({ data });
   const { setNodes } = useReactFlow();
+  const handleTextareaOpen = () => {
+    setOpenTextarea(true);
+  };
+  const handleTextareaClose = () => {
+    setOpenTextarea(false);
+  };
   if (!data) return <div style={{ color: "white" }}>No data</div>;
   const handleInputChange = (event: any) => {
     setNodes((nodes) =>
@@ -81,23 +90,25 @@ const AgentCustomNode = (props: any) => {
     }
   };
   useEffect(() => {
-    setNodes((nodes) =>
-      nodes.map((node: any) =>
-        node.id === id
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                fields: node.data.fields.map((field: any) =>
-                  field.name === "system_prompt"
-                    ? { ...field, value: agentDetails.system_prompt }
-                    : field
-                ),
-              },
-            }
-          : node
-      )
-    );
+    if (agentDetails.system_prompt) {
+      setNodes((nodes) =>
+        nodes.map((node: any) =>
+          node.id === id
+            ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  fields: node.data.fields.map((field: any) =>
+                    field.name === "system_prompt"
+                      ? { ...field, value: agentDetails.system_prompt }
+                      : field
+                  ),
+                },
+              }
+            : node
+        )
+      );
+    }
   }, []);
 
   const renderField = (field: any, index: number) => {
@@ -203,7 +214,7 @@ const AgentCustomNode = (props: any) => {
             ))}
           </select>
         )}
-        {field.type === "textarea" && (
+        {/* {field.type === "textarea" && (
           <textarea
             value={field.value}
             name={field.name}
@@ -227,6 +238,55 @@ const AgentCustomNode = (props: any) => {
               overflow: "auto",
             }}
           />
+        )} */}
+        {field.type === "textarea" && (
+          <Box sx={{ position: "relative", width: "100%" }}>
+            <textarea
+              value={field.value}
+              name={field.name}
+              onChange={handleInputChange}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              placeholder="Type something..."
+              style={{
+                height: "100px",
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "8px",
+                fontFamily: "GeneralSans-m",
+                fontSize: "10px",
+                border: `1px solid ${isFocused ? "#FF581C" : "#41414B"}`,
+                borderRadius: "8px",
+                background: "#2A2A33",
+                color: "#fff",
+                resize: "none",
+                overflow: "auto",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            />
+            <Box
+              component="img"
+              src={Openview}
+              alt="play"
+              sx={{
+                position: "absolute",
+                top: 5,
+                right: 5,
+                width: 24,
+                height: 24,
+                cursor: "pointer",
+              }}
+              onClick={handleTextareaOpen}
+            />
+            <TextareaPopup
+              openTextarea={openTextarea}
+              handleTextareaClose={handleTextareaClose}
+              value={field.value}
+              name={field.name}
+              handleInputChange={handleInputChange}
+            />
+          </Box>
         )}
         {field.type === "slider" && (
           <Box

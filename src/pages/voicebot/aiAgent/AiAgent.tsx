@@ -20,14 +20,15 @@ function AiAgent() {
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     setAgentDetails({ ...agentDetails, user_id, created_by: username });
-    dispatch(setInitialNodes([]));
   }, [agentFlowtoggle]);
   useEffect(() => {
     dispatch(fetchAgentList(user_id));
     dispatch(
       setBreadcrumbs([{ label: "My Agent", path: "voicebot/ai-agents" }])
     );
+    dispatch(setInitialNodes([]));
   }, []);
+
   return (
     <Layout>{agentFlowtoggle ? <AgentLists /> : <VoiceAgentFlow />}</Layout>
   );

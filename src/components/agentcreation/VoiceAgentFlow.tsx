@@ -13,12 +13,14 @@ const VoiceAgentFlow = () => {
   const dispatch = useDispatch();
   const { agentDetails } = useContext(agentStore);
   useEffect(() => {
-    dispatch(
-      setBreadcrumbs([
-        { label: "My Agent", path: "/voicebot/ai-agents" },
-        { label: agentDetails.agent_type, path: "/voicebot" },
-      ])
-    );
+    if (agentDetails.agent_type) {
+      dispatch(
+        setBreadcrumbs([
+          { label: "My Agent", path: "/voicebot/ai-agents" },
+          { label: agentDetails.agent_type, path: "/voicebot" },
+        ])
+      );
+    }
   }, []);
   return (
     <ReactFlowProvider>

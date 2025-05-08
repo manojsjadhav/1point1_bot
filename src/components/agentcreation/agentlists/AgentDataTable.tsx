@@ -22,9 +22,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useDispatch } from "react-redux";
 import { deleteAgent } from "../../../services/agentFlowServices";
-import { editNodes } from "../../../redux/nodeSlice/nodeSlice";
+import { editNodes, setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
-import { useReactFlow } from "@xyflow/react";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
 
 const NavButton = styled(Button)(({ theme }) => ({
@@ -47,7 +46,12 @@ const AgentDataTable = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const dispatch = useDispatch<AppDispatch>();
-  const { agentFlowtoggle, setAgentFlowtoggle } = useContext(agentStore);
+  const {
+    agentFlowtoggle,
+    setAgentFlowtoggle,
+    editAgentData,
+    setEditAgentData,
+  } = useContext(agentStore);
   const rowsPerPage = 5;
 
   const paginatedAgents = useMemo(() => {
@@ -91,6 +95,7 @@ const AgentDataTable = () => {
     }
   };
   const handlAgentEdit = (agent: any) => {
+    console.log({ agent });
     dispatch(
       setBreadcrumbs([
         { label: "My Agent", path: "/voicebot/ai-agents" },
@@ -98,8 +103,10 @@ const AgentDataTable = () => {
       ])
     );
     const flowNodes = JSON.parse(agent.nodes_list);
-    dispatch(editNodes(flowNodes));
-    console.log("agentEditData", flowNodes);
+    console.log({ flowNodes });
+    // dispatch(editNodes(flowNodes));
+    dispatch(setInitialNodes(flowNodes));
+    setEditAgentData(agent);
     setAgentFlowtoggle(!agentFlowtoggle);
   };
 
@@ -204,6 +211,7 @@ const AgentDataTable = () => {
                     }}
                   >
                     {agent?.created_by}
+                    {/* manoj */}
                   </TableCell>
                   <TableCell
                     sx={{
