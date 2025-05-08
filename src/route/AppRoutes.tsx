@@ -7,6 +7,7 @@ import VoiceBotDashboard from "../pages/voicebot/dashboard/VoiceBotDashboard";
 import AiAgent from "../pages/voicebot/aiAgent/AiAgent";
 import ConversationHistory from "../pages/voicebot/conversationHistory/ConversationHistory";
 import { ToastContainer } from "react-toastify";
+import ContactGroups from "../pages/voicebot/contanctGroups/ContactGroups";
 
 const AppRoutes = () => {
   return (
@@ -49,7 +50,7 @@ const AppRoutes = () => {
           path="voicebot/call-data"
           element={
             <PriveteRoute>
-              <AiAgent />
+              <ContactGroups />
             </PriveteRoute>
           }
         />

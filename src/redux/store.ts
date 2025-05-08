@@ -14,12 +14,30 @@ import {
 import storage from "redux-persist/lib/storage";
 import agentReducer from "./nodeSlice/agentListSlice";
 import breadcrumbReducer from "./nodeSlice/breadcrumbSlice.ts";
+import contactGroupReducer from "./nodeSlice/getContactGroupSlice.ts";
+import createcontactGroupReducer from "./nodeSlice/createcontactGroupSlice.ts";
+import contactDetailReducer from "./nodeSlice/getContactDetailsSlice.ts";
+import callDetailReducer from "./nodeSlice/getCallHistoryByNumberSlice.ts";
+import groupSlice from "./nodeSlice/groupSlice.ts";
+import modalSlice from "./nodeSlice/modolNameSlice.ts";
+import contactGroupSlice from "./nodeSlice/deleteContactSlice.ts";
+import uploadFileReducer from "./nodeSlice/uploadFileSlice.ts";
+import uploadCSVFileSlice from "./nodeSlice/uploadCSVFileSlice.ts";
 
 const rootReducer = combineReducers({
   nodes: nodeReducer,
   auth: authReducer,
   agents: agentReducer,
   breadcrumb: breadcrumbReducer,
+  groups: contactGroupReducer,
+  createGroup: createcontactGroupReducer,
+  contactDetails: contactDetailReducer,
+  callDetails: callDetailReducer,
+  groupSlice: groupSlice,
+  modal: modalSlice,
+  deleteContacts: contactGroupSlice,
+  uploadFile: uploadFileReducer,
+  uploadCSVFile: uploadCSVFileSlice,
 });
 
 const persistConfig = {
