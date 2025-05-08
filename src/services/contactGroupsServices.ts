@@ -13,7 +13,7 @@ export const getGroups = async (userId: string): Promise<Group[]> => {
   const response = await axios.get<Group[]>(
     `${BASE_URL}/groups/?user_id=${userId}`
   );
-  return response.data;
+  return response.data; 
 };
 
 export const getConversationHistory = async (): Promise<Group[]> => {
@@ -77,7 +77,6 @@ export const editContactGroups = async (payload: any) => {
   );
   return response.data;
 };
-
 
 export const deleteContacts = async (groupId: string | number) => {
   return await axios.delete(`${BASE_URL}/contacts/delete/${groupId}/`);
