@@ -448,7 +448,7 @@ const ContactGroups = () => {
 
     return (
         <Layout>
-            {loading ? <CustomLoader /> : <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh', width: '100%' }}>
+            {loading ? <CustomLoader /> : <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh' }}>
                 {chartHistoryHeader()}
                 {groupSearch()}
                 {contactGroupsTable()}
