@@ -25,7 +25,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CreateGroupModal from './CreateGroupModal';
 import GroupModal from './GroupModal';
 import Delete from "../../../assets/agentdialogicon/Delete.svg";
@@ -33,7 +33,7 @@ import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import { useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../redux/store';
 import { useDispatch } from 'react-redux';
-import { fetchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
+import { fetchGroups, searchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
 import { deleteGroup } from '../../../redux/nodeSlice/deleteContactGroupSlice';
 import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGroupSlice';
 
@@ -50,16 +50,14 @@ const ContactGroups = () => {
     const [openAddNew, setOpenAddNew] = useState(false);
     const [openViewContact, setOpeViewContact] = useState(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
-
-
     const { success } = useSelector((state: RootState) => state.createGroup);
-
     const groupsState = useSelector((state: RootState) => state && state.groups);
+    const { auth } = useSelector((state: RootState) => state);
 
-    const user_id = "6";
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
+    const user_id = auth.response.user_id;
     const groups = groupsState?.groups || [];
-
     const loading = groupsState?.loading;
 
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,6 +113,19 @@ const ContactGroups = () => {
         );
     }, [groups, search]);
 
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            if (search.trim()) {
+               dispatch(searchGroups({ user_id, query: search.trim() }));
+               searchInputRef.current?.focus();
+            } else {
+                dispatch(fetchGroups(user_id));
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounce);
+    }, [search, dispatch, user_id]);
+
     const paginatedData = useMemo(() => {
         const start = (page - 1) * rowsPerPage;
         return filteredData.slice(start, start + rowsPerPage);
@@ -134,6 +145,14 @@ const ContactGroups = () => {
             dispatch(resetContactGroupState());
         }
     }, [success, dispatch]);
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+        if (searchInputRef.current) {
+            searchInputRef.current.focus();
+        }
+    };
+
 
     const chartHistoryHeader = () => (
         <>
@@ -171,7 +190,8 @@ const ContactGroups = () => {
             placeholder="Search groups..."
             variant="outlined"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
+            inputRef={searchInputRef}
             InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">
