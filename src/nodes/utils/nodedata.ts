@@ -20,39 +20,39 @@ export const addflowModels = async () => {
   }
 };
 
-const fetchModelParameters = async () => {
-  try {
-    const response = await axios.get(
-      "http://1msg.1point1.in:3001/api/auth/j-v1/model_parameters/",
-      { params: { model_id: 1 } }
-    );
+// const fetchModelParameters = async () => {
+//   try {
+//     const response = await axios.get(
+//       "http://1msg.1point1.in:3001/api/auth/j-v1/model_parameters/",
+//       { params: { model_id: 1 } }
+//     );
 
-    const fieldArr: any[] = [];
+//     const fieldArr: any[] = [];
 
-    (response.data?.model_parameters || []).forEach((item: any) => {
-      const name = item.parameter_name.replace(/\s+/g, "_").toLowerCase();
-      const baseField = {
-        type: item.input_type,
-        label: item.parameter_name,
-        placeholder: "Type something",
-        name,
-        value: "",
-      };
+//     (response.data?.model_parameters || []).forEach((item: any) => {
+//       const name = item.parameter_name.replace(/\s+/g, "_").toLowerCase();
+//       const baseField = {
+//         type: item.input_type,
+//         label: item.parameter_name,
+//         placeholder: "Type something",
+//         name,
+//         value: "",
+//       };
 
-      if (item.input_type === "select") {
-        fieldArr.push({
-          ...baseField,
-          options: item.select_values || ["Linear16", "gpt-4", "gemini"],
-        });
-      } else {
-        fieldArr.push(baseField);
-      }
-    });
-    return fieldArr;
-  } catch (error) {
-    console.error("Error fetching model parameters:", error);
-  }
-};
+//       if (item.input_type === "select") {
+//         fieldArr.push({
+//           ...baseField,
+//           options: item.select_values || ["Linear16", "gpt-4", "gemini"],
+//         });
+//       } else {
+//         fieldArr.push(baseField);
+//       }
+//     });
+//     return fieldArr;
+//   } catch (error) {
+//     console.error("Error fetching model parameters:", error);
+//   }
+// };
 
 export const DeepgramNode = {
   nodetype: "speech_to_text",
