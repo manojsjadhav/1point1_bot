@@ -21,7 +21,6 @@ import {
 import { addNewContact } from '../../../redux/nodeSlice/addNewContactSlice';
 import { editContactDetails, editContactGroups } from '../../../services/contactGroupsServices';
 import { fetchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
-import { fetchCallDetails } from '../../../redux/nodeSlice/getCallHistoryByNumberSlice';
 import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
 
 interface CreateGroupModalProps {
@@ -104,7 +103,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
 
     useEffect(() => {
         if (success) {
-            alert("Group created successfully!");
             dispatch(resetContactGroupState());
             setGroupName("");
         }
@@ -128,7 +126,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
 
     useEffect(() => {
         dispatch(fetchContactDetails(selectedGroup?.id));
-        dispatch(fetchCallDetails({ number: selectedGroup?.phone_number, userId: selectedGroup?.userId }));
     }, [dispatch]);
 
     return (
@@ -160,7 +157,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
                 </Typography>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                    {/* {previewImage && ( */}
                     <Box mt={2}>
                         <Avatar sx={{ width: 48, height: 48 }} src={"previewImage.png"} />
                     </Box>
