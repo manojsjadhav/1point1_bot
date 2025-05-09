@@ -37,9 +37,9 @@ import { fetchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
 import { deleteGroup } from '../../../redux/nodeSlice/deleteContactGroupSlice';
 import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGroupSlice';
 
-// import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
+import CustomLoader from '../../CustomLoader';
 
 const rowsPerPage = 10;
 
@@ -55,17 +55,12 @@ const ContactGroups = () => {
     const { success } = useSelector((state: RootState) => state.createGroup);
 
     const groupsState = useSelector((state: RootState) => state && state.groups);
-    const contactState = useSelector((state: RootState) => state && state.contactDetails);
 
     const user_id = "6";
 
     const groups = groupsState?.groups || [];
-    const contactDetails = contactState?.contactsDeatails || [];
 
     const loading = groupsState?.loading;
-
-    console.log("groupsgroups", groups);
-
 
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
@@ -139,8 +134,6 @@ const ContactGroups = () => {
             dispatch(resetContactGroupState());
         }
     }, [success, dispatch]);
-
-    if (loading) return <div>Loading...</div>;
 
     const chartHistoryHeader = () => (
         <>
@@ -345,7 +338,6 @@ const ContactGroups = () => {
                 <GroupModal
                     open={openViewContact}
                     onClose={() => setOpeViewContact(false)}
-                    contactDetails={contactDetails}
                 /></>
         );
     };
@@ -377,7 +369,6 @@ const ContactGroups = () => {
                     borderTop: 'none'
                 }}
             >
-                {/* Previous Button */}
                 <Button
                     variant="contained"
                     onClick={() => setPage((p) => Math.max(p - 1, 1))}
@@ -388,7 +379,6 @@ const ContactGroups = () => {
                     Previous
                 </Button>
 
-                {/* Pagination */}
                 <Pagination
                     count={totalPages}
                     page={page}
@@ -422,7 +412,6 @@ const ContactGroups = () => {
                     }
                 />
 
-                {/* Next Button */}
                 <Button
                     variant="contained"
                     onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
@@ -439,12 +428,12 @@ const ContactGroups = () => {
 
     return (
         <Layout>
-            <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh', width: '100%' }}>
+            {loading ? <CustomLoader /> : <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh', width: '100%' }}>
                 {chartHistoryHeader()}
                 {groupSearch()}
                 {contactGroupsTable()}
                 {paginationOfTable()}
-            </Box>
+            </Box>}
         </Layout>
     );
 };

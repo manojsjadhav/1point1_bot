@@ -103,7 +103,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
 
     useEffect(() => {
         if (success) {
-            alert("Group created successfully!");
             dispatch(resetContactGroupState());
             setGroupName("");
         }

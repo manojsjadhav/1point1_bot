@@ -6,6 +6,7 @@ import {
   CreateContactGroupPayload,
   Group,
 } from "../types";
+import { toast } from "react-toastify";
 
 const BASE_URL = "http://1msg.1point1.in:3001/api/auth/j-v1";
 
@@ -13,7 +14,8 @@ export const getGroups = async (userId: string): Promise<Group[]> => {
   const response = await axios.get<Group[]>(
     `${BASE_URL}/groups/?user_id=${userId}`
   );
-  return response.data; 
+  // toast.success("Create group succssesfully.");
+  return response.data;
 };
 
 export const getConversationHistory = async (): Promise<Group[]> => {
@@ -22,7 +24,11 @@ export const getConversationHistory = async (): Promise<Group[]> => {
 };
 
 export const deleteContactGroup = async (groupId: string | number) => {
-  return await axios.delete(`${BASE_URL}/contact-groups/delete/${groupId}/`);
+  const res = await axios.delete(
+    `${BASE_URL}/contact-groups/delete/${groupId}/`
+  );
+  toast.success("Delete contact groups succssesfully.");
+  return res;
 };
 
 export const createContactGroupApi = async (
@@ -37,6 +43,7 @@ export const createContactGroupApi = async (
       },
     }
   );
+  toast.success("Create contact groups succssesfully.");
   return response.data;
 };
 
@@ -62,6 +69,7 @@ export const addNewContactApi = async (payload: AddNewContactType) => {
       "Content-Type": "application/json",
     },
   });
+  toast.success("Create contact succssesfully.");
   return response.data;
 };
 
@@ -75,11 +83,14 @@ export const editContactGroups = async (payload: any) => {
       },
     }
   );
+  toast.success("Edit contact group succssesfully.");
   return response.data;
 };
 
 export const deleteContacts = async (groupId: string | number) => {
-  return await axios.delete(`${BASE_URL}/contacts/delete/${groupId}/`);
+  const res = await axios.delete(`${BASE_URL}/contacts/delete/${groupId}/`);
+  toast.success("Delete contact succssesfully.");
+  return res;
 };
 
 export const editContactDetails = async (payload: any) => {
@@ -92,5 +103,6 @@ export const editContactDetails = async (payload: any) => {
       },
     }
   );
+  toast.success("Edit contact succssesfully.");
   return response.data;
 };
