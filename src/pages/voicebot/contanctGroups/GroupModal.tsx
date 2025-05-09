@@ -211,12 +211,39 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                             />
                         </Box>
 
-                        <Box display="flex" flexDirection="column" border="1px solid #505060" borderRadius="8px" gap={1}>
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            border="1px solid #505060"
+                            borderRadius="8px"
+                            sx={{
+                                maxHeight: '400px',
+                                overflowY: 'auto',
+                                pr: 1,
+                                '&::-webkit-scrollbar': {
+                                    width: 0,
+                                    height: 0,
+                                },
+                                scrollbarWidth: 'none',
+                                msOverflowStyle: 'none',
+                            }}
+                        >
                             {contactDetails.map((c, i) => (
-                                <Box sx={{ "&:hover": { backgroundColor: "#4c4d58" } }} key={i} display="flex" alignItems="center" justifyContent="space-between" p={1} bgcolor="#2a2a33" borderTop={i === 0 ? "none" : "1px solid #505060"}>
+                                <Box
+                                    key={i}
+                                    sx={{
+                                        "&:hover": { backgroundColor: "#4c4d58" },
+                                        borderTop: i === 0 ? "none" : "1px solid #505060",
+                                    }}
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="space-between"
+                                    p={2}
+                                    bgcolor="#2a2a33"
+                                >
                                     <Box onClick={() => setIsClickedRowId(c.id)} display="flex" alignItems="center" gap={2}>
                                         <Avatar />
-                                        <Box sx={{ display: "flex", gap: 2 }}>
+                                        <Box display="flex" gap={2}>
                                             <Typography fontSize={14}>{c.person_name}</Typography>
                                             <Typography fontSize={13} color="gray">{c.phone_number}</Typography>
                                         </Box>
@@ -227,7 +254,7 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                                             <Typography fontSize={12} fontWeight={500} color='#FFFFFF'>Call</Typography>
                                         </Button>
                                         <IconButton onClick={() => handleContactsDelete(c)}><DeleteIcon sx={{ color: '#fff' }} /></IconButton>
-                                        <IconButton onClick={() => handleOpenModal(c)} ><EditIcon sx={{ color: '#fff' }} /></IconButton>
+                                        <IconButton onClick={() => handleOpenModal(c)}><EditIcon sx={{ color: '#fff' }} /></IconButton>
                                     </Box>
                                 </Box>
                             ))}
