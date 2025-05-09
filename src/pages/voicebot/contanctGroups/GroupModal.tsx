@@ -27,6 +27,7 @@ import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsS
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import { uploadFile } from '../../../redux/nodeSlice/uploadFileSlice';
+import { fetchCallDetails } from '../../../redux/nodeSlice/getCallHistoryByNumberSlice';
 
 export default function GroupModal({ open, onClose, contactDetails }: { open: boolean; onClose: () => void, contactDetails: Contact[] }) {
     const dispatch = useDispatch<AppDispatch>();
@@ -114,6 +115,11 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
             }
         }
     };
+
+    const handleCallHistory = async (rowData: any) => {
+        setIsClickedRowId(rowData.id)
+        await dispatch(fetchCallDetails({ number: rowData?.phone_number, userId: rowData?.user_id }));
+    }
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth PaperProps={{
@@ -240,8 +246,9 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                                     justifyContent="space-between"
                                     p={2}
                                     bgcolor="#2a2a33"
+                                    onClick={() => handleCallHistory(c)}
                                 >
-                                    <Box onClick={() => setIsClickedRowId(c.id)} display="flex" alignItems="center" gap={2}>
+                                    <Box display="flex" alignItems="center" gap={2}>
                                         <Avatar />
                                         <Box display="flex" gap={2}>
                                             <Typography fontSize={14}>{c.person_name}</Typography>
@@ -265,7 +272,7 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                         <Box flex={1.2} bgcolor="#2a2a33" p={2} border="1px solid #505060" borderRadius="8px">
                             <Typography mb={2}>Call History</Typography>
                             <Box bgcolor="#2a2a33" border="1px solid #505060" borderRadius="8px">
-                                {[result ? 'Today' : callsHistoryDate].map(date => (
+                                {callDetail.length ? [result ? 'Today' : callsHistoryDate].map(date => (
                                     <Box key={date}>
                                         <Typography padding="20px 12px" bgcolor="#41414b" fontSize={13} color="#D9D9DE">{date}</Typography>
                                         {callDetail
@@ -292,7 +299,7 @@ export default function GroupModal({ open, onClose, contactDetails }: { open: bo
                                                 </Box>
                                             ))}
                                     </Box>
-                                ))}
+                                )) : null}
                             </Box>
                         </Box>}
                 </Box>
