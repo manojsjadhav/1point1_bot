@@ -158,7 +158,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                     <Box display="flex" flexDirection="column" gap={1}>
                         <Box display="flex" alignContent="center" gap={1}>
                             {selectedGroup?.group_avtar ? <Avatar sx={{ width: 26, height: 26 }} src={selectedGroup?.group_avtar} /> :
-                                <Avatar sx={{ width: 26, height: 26 }}>{selectedGroup?.group_name.str.charAt(0).toUpperCase()}</Avatar>}
+                                <Avatar sx={{ width: 26, height: 26 }}>{selectedGroup?.group_name.charAt(0).toUpperCase()}</Avatar>}
                             <Typography fontWeight={500} fontSize={18}> {selectedGroup?.group_name}</Typography>
                         </Box>
                         <Typography fontSize={14} color="gray">Group details and call list.</Typography>

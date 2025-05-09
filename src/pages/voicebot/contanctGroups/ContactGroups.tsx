@@ -289,10 +289,17 @@ const ContactGroups = () => {
                                                 />
                                             </IconButton>
                                             <IconButton>
-                                                <Avatar
-                                                    src={row.group_avtar}
-                                                    sx={{ width: 26, height: 26 }}
-                                                />
+                                                {row.group_avtar ?
+
+                                                    <Avatar
+                                                        src={row.group_avtar}
+                                                        sx={{ width: 26, height: 26 }}
+                                                    />
+                                                    :
+                                                    <Avatar
+                                                        src={"sample.png"}
+                                                        sx={{ width: 26, height: 26 }}
+                                                    > {row.group_name.charAt(0).toUpperCase()}</Avatar>}
 
                                             </IconButton>
                                             {row.group_name}
