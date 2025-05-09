@@ -22,7 +22,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useDispatch } from "react-redux";
 import { deleteAgent } from "../../../services/agentFlowServices";
-import { editNodes, setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
+import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
 
@@ -46,12 +46,8 @@ const AgentDataTable = () => {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    agentFlowtoggle,
-    setAgentFlowtoggle,
-    editAgentData,
-    setEditAgentData,
-  } = useContext(agentStore);
+  const { agentFlowtoggle, setAgentFlowtoggle, setEditAgentData } =
+    useContext(agentStore);
   const rowsPerPage = 5;
 
   const paginatedAgents = useMemo(() => {

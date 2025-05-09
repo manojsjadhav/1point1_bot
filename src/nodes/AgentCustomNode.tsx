@@ -207,8 +207,8 @@ const AgentCustomNode = (props: any) => {
             <option value="" disabled>
               {field.placeholder || "Select an option"}
             </option>
-            {field.options?.map((option: any) => (
-              <option key={option} value={option}>
+            {field.options?.map((option: any, index: number) => (
+              <option key={index} value={option}>
                 {String(option)}
               </option>
             ))}
@@ -378,32 +378,32 @@ const AgentCustomNode = (props: any) => {
             px: "12px",
           }}
         >
-          {data.nodeIcon && (
+          {/* {data.nodeIcon && ( */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              mb: "8px",
+            }}
+          >
             <Box
+              component="img"
+              src={data.nodeIcon}
+              alt={data.label}
+              sx={{ width: 24, height: 24 }}
+            />
+            <Typography
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                mb: "8px",
+                fontFamily: "GeneralSans-m",
+                fontSize: "14px",
+                color: "#fff",
               }}
             >
-              <Box
-                component="img"
-                src={data.nodeIcon}
-                alt={data.label}
-                sx={{ width: 24, height: 24 }}
-              />
-              <Typography
-                sx={{
-                  fontFamily: "GeneralSans-m",
-                  fontSize: "14px",
-                  color: "#fff",
-                }}
-              >
-                {data.title}
-              </Typography>
-            </Box>
-          )}
+              {data.title}
+            </Typography>
+          </Box>
+          {/* )} */}
           <Box>
             <Box
               component="img"
