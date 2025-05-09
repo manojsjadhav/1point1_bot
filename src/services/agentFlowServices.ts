@@ -85,3 +85,14 @@ export const deleteAgent = createAsyncThunk(
     }
   }
 );
+
+export const getSubmenuList = async () => {
+  try {
+    const result = await axios.get(
+      "http://1msg.1point1.in:3001/api/auth/j-v1/all_models/"
+    );
+    return result.data.models;
+  } catch (error: any) {
+    console.log("getSubmenuList", error.message);
+  }
+};
