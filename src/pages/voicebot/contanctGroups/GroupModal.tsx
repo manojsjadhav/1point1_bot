@@ -28,7 +28,7 @@ import { uploadFile } from '../../../redux/nodeSlice/uploadFileSlice';
 import { fetchCallDetails } from '../../../redux/nodeSlice/getCallHistoryByNumberSlice';
 import CustomLoader from '../../CustomLoader';
 import NoData from '../../../components/NoData';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 export default function GroupModal({ open, onClose }: { open: boolean; onClose: () => void, }) {
     const dispatch = useDispatch<AppDispatch>();
@@ -125,6 +125,12 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
         await dispatch(fetchCallDetails({ number: rowData?.phone_number, userId: rowData?.user_id }));
     }
 
+    const filteredData = useMemo(() => {
+        return contactDetails.filter((item: any) =>
+            item.person_name?.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [contactDetails, search]);
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth PaperProps={{
             sx: {
@@ -177,7 +183,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                     onClose={() => setOpenAddContactModal(false)}
                 />
 
-                {!loading ? contactDetails.length ? <>
+                {!loading ? <>
                     <Box display="flex" gap={3}>
                         <Box flex={2} bgcolor="#2a2a33" p={2} border="1px solid #505060" borderRadius="8px">
                             <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", }}>
@@ -222,7 +228,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                                 />
                             </Box>
 
-                            <Box
+                            {filteredData.length ? <Box
                                 display="flex"
                                 flexDirection="column"
                                 border="1px solid #505060"
@@ -239,7 +245,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                                     msOverflowStyle: 'none',
                                 }}
                             >
-                                {contactDetails.map((c, i) => (
+                                {filteredData.map((c, i) => (
                                     <Box
                                         key={i}
                                         sx={{
@@ -270,7 +276,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                                         </Box>
                                     </Box>
                                 ))}
-                            </Box>
+                            </Box> : <NoData />}
                         </Box>
 
                         {isClickedRowId &&
@@ -315,7 +321,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                             Save
                         </Button>
                     </Box>
-                </> : <NoData /> : <CustomLoader />}
+                </> : <CustomLoader />}
             </DialogContent>
         </Dialog >
     );
