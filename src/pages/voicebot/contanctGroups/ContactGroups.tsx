@@ -116,8 +116,8 @@ const ContactGroups = () => {
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             if (search.trim()) {
-               dispatch(searchGroups({ user_id, query: search.trim() }));
-               searchInputRef.current?.focus();
+                dispatch(searchGroups({ user_id, query: search.trim() }));
+                searchInputRef.current?.focus();
             } else {
                 dispatch(fetchGroups(user_id));
             }
@@ -141,7 +141,6 @@ const ContactGroups = () => {
 
     useEffect(() => {
         if (success) {
-            console.log('Group created successfully!');
             dispatch(resetContactGroupState());
         }
     }, [success, dispatch]);
@@ -263,14 +262,12 @@ const ContactGroups = () => {
                                                 }}
                                             />
                                         )}
-
                                         {header}
                                         {header === 'Action' && <IconButton><ErrorOutlineOutlinedIcon sx={{ fontSize: 16, color: '#a1a1aa' }} /></IconButton>}
                                     </TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
-
                         <TableBody sx={{ border: '1px solid #505060', borderTop: "none", borderBottom: "none" }}>
                             {paginatedData.map((row: any, index: any) => {
                                 const isEvenRow = index % 2 === 0;
