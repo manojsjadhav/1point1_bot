@@ -1,7 +1,7 @@
 .container {
   background: #18181b;
-  height: 954px;
-  width: 100%;
+  height:calc(100% - 56px);
+  // width: 100%;
   border-left: 1px solid #41414b;
   padding: 28px 24px;
   .heading-content {
