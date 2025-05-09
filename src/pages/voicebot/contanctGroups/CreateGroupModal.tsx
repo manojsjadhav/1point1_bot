@@ -125,7 +125,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
     }, [open]);
 
     useEffect(() => {
-        dispatch(fetchContactDetails(selectedGroup?.id));
+        // dispatch(fetchContactDetails(selectedGroup?.id));
     }, [dispatch]);
 
     return (

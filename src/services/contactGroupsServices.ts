@@ -112,17 +112,12 @@ export const searchContactGroups = async (
   query: string = ""
 ) => {
   const response = await axios.get(
-    `${BASE_URL}/search/groups/?user_id=${user_id}&q=${query}`,
-    {
-      params: { user_id: user_id, search: query },
-    }
+    `${BASE_URL}/search/groups/?user_id=${user_id}&q=${query}`
   );
   return response.data;
 };
 
 export const searchContactDetail = async (query: string = "") => {
-  const response = await axios.get(`${BASE_URL}/search/contacts/?q=${query}`, {
-    params: { search: query },
-  });
+  const response = await axios.get(`${BASE_URL}/search/contacts/?q=${query}`);
   return response.data;
 };

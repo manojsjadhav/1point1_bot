@@ -59,7 +59,6 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
     const [openAddContactModal, setOpenAddContactModal] = useState(false)
     const [isClickedRowId, setIsClickedRowId] = useState<any | null>(null)
     const inputRef = useRef<HTMLInputElement>(null);
-    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const handleContactsDelete = async (data: any) => {
         try {
@@ -136,7 +135,6 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             dispatch(searchContact({ query: search.trim() }));
-            searchInputRef.current?.focus();
         }, 300);
 
         return () => clearTimeout(delayDebounce);
