@@ -10,9 +10,9 @@ import { toast } from "react-toastify";
 
 const BASE_URL = "http://1msg.1point1.in:3001/api/auth/j-v1";
 
-export const getGroups = async (userId: string): Promise<Group[]> => {
+export const getGroups = async (user_id: string): Promise<Group[]> => {
   const response = await axios.get<Group[]>(
-    `${BASE_URL}/groups/?user_id=${userId}`
+    `${BASE_URL}/groups/?user_id=${user_id}`
   );
   // toast.success("Create group succssesfully.");
   return response.data;
@@ -104,5 +104,25 @@ export const editContactDetails = async (payload: any) => {
     }
   );
   toast.success("Edit contact succssesfully.");
+  return response.data;
+};
+
+export const searchContactGroups = async (
+  user_id: string,
+  query: string = ""
+) => {
+  const response = await axios.get(
+    `${BASE_URL}/search/groups/?user_id=${user_id}&q=${query}`,
+    {
+      params: { user_id: user_id, search: query },
+    }
+  );
+  return response.data;
+};
+
+export const searchContactDetail = async (query: string = "") => {
+  const response = await axios.get(`${BASE_URL}/search/contacts/?q=${query}`, {
+    params: { search: query },
+  });
   return response.data;
 };

@@ -21,14 +21,14 @@ import CreateGroupModal from './CreateGroupModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteContact } from '../../../redux/nodeSlice/deleteContactSlice';
 import { AppDispatch, RootState } from '../../../redux/store';
-import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
+import { fetchContactDetails, searchContact } from '../../../redux/nodeSlice/getContactDetailsSlice';
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import { uploadFile } from '../../../redux/nodeSlice/uploadFileSlice';
 import { fetchCallDetails } from '../../../redux/nodeSlice/getCallHistoryByNumberSlice';
 import CustomLoader from '../../CustomLoader';
 import NoData from '../../../components/NoData';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function GroupModal({ open, onClose }: { open: boolean; onClose: () => void, }) {
     const dispatch = useDispatch<AppDispatch>();
@@ -40,6 +40,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
     const callDetails = useSelector((state: RootState) => state.callDetails);
     const callDetail = callDetails.callDeatails;
     const callDate = callDetail[0]?.created_date;
+
 
     const isToday = (inputDateString: string): boolean => {
         const inputDate = new Date(inputDateString);
@@ -58,6 +59,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
     const [openAddContactModal, setOpenAddContactModal] = useState(false)
     const [isClickedRowId, setIsClickedRowId] = useState<any | null>(null)
     const inputRef = useRef<HTMLInputElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const handleContactsDelete = async (data: any) => {
         try {
@@ -130,6 +132,18 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
             item.person_name?.toLowerCase().includes(search.toLowerCase())
         );
     }, [contactDetails, search]);
+
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            dispatch(searchContact({ query: search.trim() }));
+            searchInputRef.current?.focus();
+        }, 300);
+
+        return () => clearTimeout(delayDebounce);
+    }, [search, dispatch]);
+
+
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth PaperProps={{
