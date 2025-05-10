@@ -5,7 +5,6 @@ import {
   Controls,
   Edge,
   MiniMap,
-  Panel,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -21,7 +20,6 @@ import { AppDispatch, RootState } from "../../redux/store.ts";
 import { Box, Button } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { editAgent, postAgentFlow } from "../../services/agentFlowServices.ts";
-// import { getCurrentFormattedDate } from "../../nodes/utils/nodedata.ts";
 import { agentStore } from "../../providers/AgentContext.tsx";
 import { setInitialNodes } from "../../redux/nodeSlice/nodeSlice.ts";
 import { useDispatch } from "react-redux";
@@ -49,7 +47,6 @@ export default function NodeLists() {
   const handleflowsubmit = async () => {
     const tempId: any = uuidv4();
     const dammyData: any = {
-      // created_date: getCurrentFormattedDate(),
       user_id,
       created_by,
       agent_type,
@@ -66,11 +63,7 @@ export default function NodeLists() {
       nodes_list: nodes,
       edges: edges,
     };
-    const requiredNodeTypes = [
-      "speech_to_text",
-      "text_to_speech",
-      "llm_models",
-    ];
+    const requiredNodeTypes = ["STT", "TTS", "LLM"];
     const foundNodeTypes = new Set(nodes.map((node: any) => node.nodetype));
     const missingTypes = requiredNodeTypes.filter(
       (type) => !foundNodeTypes.has(type)
@@ -117,14 +110,12 @@ export default function NodeLists() {
         };
         dispatch(editAgent({ id: editedData.id, updatedData: editedData }));
         dispatch(setInitialNodes([]));
-        // setNodes(allNode);
         setAgentFlowtoggle(!agentFlowtoggle);
         setEditAgentData({});
         toast.success("Agent Edited Successfull");
       } else {
         await postAgentFlow(dammyData);
         dispatch(setInitialNodes([]));
-        // setNodes(allNode);
         setAgentFlowtoggle(!agentFlowtoggle);
         toast.success("Agent add Successfull");
       }
@@ -137,11 +128,72 @@ export default function NodeLists() {
     [setEdges]
   );
   useEffect(() => {
-    setNodes(cloneDeep(allNode));
+    if (allNode.length > 0) {
+      setNodes(cloneDeep(allNode));
+    }
   }, [allNode]);
   console.log({ edges });
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <div
+        style={{
+          position: "fixed",
+          top: "80px",
+          right: "25px",
+          zIndex: 9999,
+          backgroundColor: "#2A2A33",
+          padding: "8px 12px",
+          borderRadius: "8px",
+          display: "flex",
+          alignItems: "center",
+          boxShadow: "0 0 10px rgba(0,0,0,0.4)",
+        }}
+      >
+        <Button
+          sx={{
+            textTransform: "none",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            fontFamily: "GeneralSans-m",
+            fontSize: "14px",
+            color: "#fff",
+            px: "25px",
+            height: "36px",
+          }}
+        >
+          <Box
+            component="img"
+            src={playIcon}
+            alt="Test"
+            sx={{ width: 24, height: 24, mr: 1 }}
+          />
+          Test
+        </Button>
+        <Button
+          sx={{
+            background: "#FF581C",
+            textTransform: "none",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            fontFamily: "GeneralSans-m",
+            fontSize: "14px",
+            color: "#fff",
+            px: "25px",
+            height: "36px",
+          }}
+          onClick={handleflowsubmit}
+        >
+          Publish
+          <Box
+            component="img"
+            src={chevron_down}
+            alt="Publish"
+            sx={{ width: 24, height: 24, ml: 1 }}
+          />
+        </Button>
+      </div>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -149,66 +201,8 @@ export default function NodeLists() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        fitView
       >
-        <Panel position="top-right">
-          <Box
-            sx={{
-              backgroundColor: "#2A2A33",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              boxShadow: 3,
-              width: "210px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Button
-              sx={{
-                textTransform: "none",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                fontFamily: "GeneralSans-m",
-                fontSize: "14px",
-                color: "#fff",
-                px: "25px",
-                height: "36px",
-              }}
-            >
-              <Box
-                component="img"
-                src={playIcon}
-                alt="Apple"
-                sx={{ width: 24, height: 24 }}
-              />
-              test
-            </Button>
-            <Button
-              sx={{
-                background: "#FF581C",
-                textTransform: "none",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                fontFamily: "GeneralSans-m",
-                fontSize: "14px",
-                color: "#fff",
-                px: "25px",
-                height: "36px",
-              }}
-              onClick={() => handleflowsubmit()}
-            >
-              Publish
-              <Box
-                component="img"
-                src={chevron_down}
-                alt="Apple"
-                sx={{ width: 24, height: 24, color: "#FFF" }}
-              />
-            </Button>
-          </Box>
-        </Panel>
-
         <Controls />
         <MiniMap />
         <Background gap={12} size={1} />

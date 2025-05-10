@@ -13,6 +13,7 @@ import { useContext, useEffect, useState } from "react";
 import { agentStore } from "../providers/AgentContext";
 import Openview from "../assets/componentmenuicon/Open_view.svg";
 import TextareaPopup from "../components/agentcreation/TextareaPopup";
+import Upload from "../assets/componentmenuicon/Upload.svg";
 
 const AgentCustomNode = (props: any) => {
   const { id, data } = props;
@@ -27,6 +28,10 @@ const AgentCustomNode = (props: any) => {
   const handleTextareaClose = () => {
     setOpenTextarea(false);
   };
+  const handleDeleteNode = () => {
+    setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
+  };
+
   if (!data) return <div style={{ color: "white" }}>No data</div>;
   const handleInputChange = (event: any) => {
     setNodes((nodes) =>
@@ -214,31 +219,6 @@ const AgentCustomNode = (props: any) => {
             ))}
           </select>
         )}
-        {/* {field.type === "textarea" && (
-          <textarea
-            value={field.value}
-            name={field.name}
-            onChange={handleInputChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            placeholder="Type something..."
-            style={{
-              height: "100px",
-              width: "100%",
-              boxSizing: "border-box",
-              paddingBottom: "5px",
-              fontFamily: "GeneralSans-m",
-              fontSize: "10px",
-              border: `1px solid ${isFocused ? "#FF581C" : "#41414B"}`,
-              borderRadius: "8px",
-              background: "#2A2A33",
-              color: "#fff",
-              padding: "8px",
-              resize: "none",
-              overflow: "auto",
-            }}
-          />
-        )} */}
         {field.type === "textarea" && (
           <Box sx={{ position: "relative", width: "100%" }}>
             <textarea
@@ -333,7 +313,7 @@ const AgentCustomNode = (props: any) => {
               >
                 <Box
                   component="img"
-                  src={field.fileIcon}
+                  src={Upload}
                   alt="upload"
                   sx={{ width: 20, height: 20 }}
                 />
@@ -412,8 +392,10 @@ const AgentCustomNode = (props: any) => {
               sx={{
                 width: 24,
                 height: 24,
+                cursor: "pointer",
                 color: data.isActive ? "#F7F7F8" : "",
               }}
+              onClick={handleDeleteNode}
             />
           </Box>
         </Box>

@@ -7,12 +7,16 @@ import {
   Drawer,
 } from "@mui/material";
 import Arrow_Left_SM from "../../assets/agentdialogicon/Arrow_Left_SM.svg";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { agentStore } from "../../providers/AgentContext";
-import { agentTypes } from "../../constants/agentType";
+import { voiceAgentType, chatAgentTypes } from "../../constants/agentType";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
   const [typeValue, setTypeValue] = useState<any>("");
+  const [agentType, setAgentType] = useState<any>([]);
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const { agentFlowtoggle, setAgentFlowtoggle, setAgentDetails, agentDetails } =
     useContext(agentStore);
 
@@ -39,6 +43,13 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
       setAgentFlowtoggle(!agentFlowtoggle);
     }
   };
+  useEffect(() => {
+    if (selectedBotName?.selectedBot === "Voice_Bot") {
+      setAgentType(voiceAgentType);
+    } else if (selectedBotName?.selectedBot === "Chat_Bot") {
+      setAgentType(chatAgentTypes);
+    }
+  }, []);
   return (
     <Drawer
       anchor="right"
@@ -120,7 +131,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
         </Typography>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {agentTypes.map((agent: any, index: any) => (
+        {agentType.map((agent: any, index: any) => (
           <Box
             key={index}
             className="agent-type"

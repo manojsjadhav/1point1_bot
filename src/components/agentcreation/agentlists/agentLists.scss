@@ -1,6 +1,6 @@
 .container {
   background: #18181b;
-  height:calc(100% - 56px);
+  height: calc(100% - 56px);
   // width: 100%;
   border-left: 1px solid #41414b;
   padding: 28px 24px;
@@ -19,7 +19,6 @@
   display: flex;
   gap: 5px;
   align-items: center;
-  justify-content: space-around;
 }
 .text {
   font-family: GeneralSans-m;
