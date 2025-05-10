@@ -27,6 +27,21 @@ export const fetchAgentList = createAsyncThunk<any>(
     }
   }
 );
+
+export const fetchEmailBotAgentList = createAsyncThunk(
+  "agents/fetchEmailBotAgentList",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get(
+        `http://1msg.1point1.in:3001/api/email/bot/get-all/email-user/bot/j-v1/`
+      );
+      return res.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message || "Something went wrong");
+    }
+  }
+);
+
 export const fetchAgentsBySearch = createAsyncThunk(
   "agents/fetchBySearch",
   async ({ userId, query }: { userId: any; query: any }) => {

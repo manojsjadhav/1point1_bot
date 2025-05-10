@@ -77,22 +77,27 @@ const BotPage = () => {
                 route="/voicebot"
                 icon={voicebot}
                 botName="Voice Bot"
+                label="Voice_Bot"
                 description="Build conversational voice agents with intuitive drag-and-drop tools. Deploy on calls, IVR systems, or virtual assistants. "
               />
               <BotType
                 icon={chatbot}
                 botName="Chat Bot"
+                label="Chat_Bot"
                 description="Create dynamic, context-aware chatbots for web, mobile, or messaging platforms. Deploy privately with ease."
               />
             </Box>
             <Box sx={{ display: "flex", mb: "34px", gap: "18px" }}>
               <BotType
+                route="/emailBot"
                 icon={emailbot}
+                label="Email_Bot"
                 botName="Email Bot"
                 description="Automate smart email workflows with powerful language models. Send, respond, and analyse emails-Quick setup, instant testing."
               />
               <BotType
                 icon={voiceanalysistool}
+                label="Voice_Analysis_Tool"
                 botName="Voice Analysis Tool"
                 description="Analyse voice data with AI-driven insights. Detect intent, sentiment, and key moments from calls using our no-code flow builder. "
               />
