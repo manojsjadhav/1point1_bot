@@ -33,16 +33,16 @@ const AgentCustomNode = (props: any) => {
       nodes.map((node: any) =>
         node.id === id
           ? {
-              ...node,
-              data: {
-                ...node.data,
-                fields: node.data.fields.map((field: any) =>
-                  field.name === event.target.name
-                    ? { ...field, value: event.target.value }
-                    : field
-                ),
-              },
-            }
+            ...node,
+            data: {
+              ...node.data,
+              fields: node.data.fields.map((field: any) =>
+                field.name === event.target.name
+                  ? { ...field, value: event.target.value }
+                  : field
+              ),
+            },
+          }
           : node
       )
     );
@@ -69,16 +69,16 @@ const AgentCustomNode = (props: any) => {
           nodes.map((node: any) =>
             node.id === id
               ? {
-                  ...node,
-                  data: {
-                    ...node.data,
-                    fields: node.data.fields.map((field: any) =>
-                      field.name === event.target.name
-                        ? { ...field, value: fileUrl }
-                        : field
-                    ),
-                  },
-                }
+                ...node,
+                data: {
+                  ...node.data,
+                  fields: node.data.fields.map((field: any) =>
+                    field.name === event.target.name
+                      ? { ...field, value: fileUrl }
+                      : field
+                  ),
+                },
+              }
               : node
           )
         );
@@ -89,22 +89,23 @@ const AgentCustomNode = (props: any) => {
       console.error("Upload error:", err);
     }
   };
+  
   useEffect(() => {
     if (agentDetails.system_prompt) {
       setNodes((nodes) =>
         nodes.map((node: any) =>
           node.id === id
             ? {
-                ...node,
-                data: {
-                  ...node.data,
-                  fields: node.data.fields.map((field: any) =>
-                    field.name === "system_prompt"
-                      ? { ...field, value: agentDetails.system_prompt }
-                      : field
-                  ),
-                },
-              }
+              ...node,
+              data: {
+                ...node.data,
+                fields: node.data.fields.map((field: any) =>
+                  field.name === "system_prompt"
+                    ? { ...field, value: agentDetails.system_prompt }
+                    : field
+                ),
+              },
+            }
             : node
         )
       );

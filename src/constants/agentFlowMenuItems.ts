@@ -9,14 +9,14 @@ import Download from "../assets/Download.svg";
 import Upload from "../assets/Upload.svg";
 import Right_arrow from "../assets/Right_arrow.svg";
 import chevrondown from "../assets/chevron-down.svg";
-import Aws_Polly from "../assets/componentmenuicon/Aws_Polly.svg";
-import Deepgram from "../assets/componentmenuicon/Deepgram.svg";
-import Chatgpt from "../assets/componentmenuicon/Chatgpt.svg";
-import Drag from "../assets/componentmenuicon/Drag.svg";
-import Gemini from "../assets/componentmenuicon/Gemini.svg";
-import Google_TTS from "../assets/componentmenuicon/Google_TTS.svg";
-import Huggingface from "../assets/componentmenuicon/Huggingface.svg";
-import Local_Model from "../assets/componentmenuicon/Local_Model.svg";
+// import Aws_Polly from "../assets/componentmenuicon/Aws_Polly.svg";
+// import Deepgram from "../assets/componentmenuicon/Deepgram.svg";
+// import Chatgpt from "../assets/componentmenuicon/Chatgpt.svg";
+// import Drag from "../assets/componentmenuicon/Drag.svg";
+// import Gemini from "../assets/componentmenuicon/Gemini.svg";
+// import Google_TTS from "../assets/componentmenuicon/Google_TTS.svg";
+// import Huggingface from "../assets/componentmenuicon/Huggingface.svg";
+// import Local_Model from "../assets/componentmenuicon/Local_Model.svg";
 
 export const agentFlowMenuItems = (subNemus: any) => {
   const menuItems: any = [
