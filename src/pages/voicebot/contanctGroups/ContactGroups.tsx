@@ -50,7 +50,6 @@ const ContactGroups = () => {
     const [openAddNew, setOpenAddNew] = useState(false);
     const [openViewContact, setOpeViewContact] = useState(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
-    // const { success } = useSelector((state: RootState) => state.createGroup);
     const groupsState = useSelector((state: RootState) => state && state.groups);
     const { auth } = useSelector((state: RootState) => state);
 
@@ -136,12 +135,6 @@ const ContactGroups = () => {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     };
-
-    // useEffect(() => {
-    //     if (success) {
-    //         dispatch(resetContactGroupState());
-    //     }
-    // }, [success, dispatch]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
