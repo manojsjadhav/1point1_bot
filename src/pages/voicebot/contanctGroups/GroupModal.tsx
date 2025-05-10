@@ -21,14 +21,14 @@ import CreateGroupModal from './CreateGroupModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteContact } from '../../../redux/nodeSlice/deleteContactSlice';
 import { AppDispatch, RootState } from '../../../redux/store';
-import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
+import { fetchContactDetails, searchContact } from '../../../redux/nodeSlice/getContactDetailsSlice';
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import { uploadFile } from '../../../redux/nodeSlice/uploadFileSlice';
 import { fetchCallDetails } from '../../../redux/nodeSlice/getCallHistoryByNumberSlice';
 import CustomLoader from '../../CustomLoader';
 import NoData from '../../../components/NoData';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function GroupModal({ open, onClose }: { open: boolean; onClose: () => void, }) {
     const dispatch = useDispatch<AppDispatch>();
@@ -40,6 +40,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
     const callDetails = useSelector((state: RootState) => state.callDetails);
     const callDetail = callDetails.callDeatails;
     const callDate = callDetail[0]?.created_date;
+
 
     const isToday = (inputDateString: string): boolean => {
         const inputDate = new Date(inputDateString);
@@ -112,7 +113,6 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                     group_id: selectedGroup.id,
                     user_id: selectedGroup?.user_id,
                 })).unwrap();
-                // alert("Contacts uploaded successfully!");
                 dispatch(fetchContactDetails(selectedGroup?.id));
             } catch (err: any) {
                 alert(err?.message || "Failed to upload contacts.");
@@ -131,6 +131,17 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
         );
     }, [contactDetails, search]);
 
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            dispatch(searchContact({ query: search.trim() }));
+        }, 300);
+
+        return () => clearTimeout(delayDebounce);
+    }, [search, dispatch]);
+
+
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth PaperProps={{
             sx: {
@@ -144,7 +155,8 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                     <Box display="flex" flexDirection="column" gap={1}>
                         <Box display="flex" alignContent="center" gap={1}>
-                            <Avatar sx={{ width: 26, height: 26 }}>G</Avatar>
+                            {selectedGroup?.group_avtar ? <Avatar sx={{ width: 26, height: 26 }} src={selectedGroup?.group_avtar} /> :
+                                <Avatar sx={{ width: 26, height: 26 }}>{selectedGroup?.group_name.charAt(0).toUpperCase()}</Avatar>}
                             <Typography fontWeight={500} fontSize={18}> {selectedGroup?.group_name}</Typography>
                         </Box>
                         <Typography fontSize={14} color="gray">Group details and call list.</Typography>

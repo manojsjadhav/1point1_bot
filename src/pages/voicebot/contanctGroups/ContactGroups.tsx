@@ -25,7 +25,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CreateGroupModal from './CreateGroupModal';
 import GroupModal from './GroupModal';
 import Delete from "../../../assets/agentdialogicon/Delete.svg";
@@ -33,7 +33,7 @@ import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import { useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../redux/store';
 import { useDispatch } from 'react-redux';
-import { fetchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
+import { fetchGroups, searchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
 import { deleteGroup } from '../../../redux/nodeSlice/deleteContactGroupSlice';
 import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGroupSlice';
 
@@ -51,16 +51,13 @@ const ContactGroups = () => {
     const [openAddNew, setOpenAddNew] = useState(false);
     const [openViewContact, setOpeViewContact] = useState(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
-
-
-    const { success } = useSelector((state: RootState) => state.createGroup);
-
     const groupsState = useSelector((state: RootState) => state && state.groups);
+    const { auth } = useSelector((state: RootState) => state);
 
-    const user_id = "6";
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
+    const user_id = auth.response.user_id;
     const groups = groupsState?.groups || [];
-
     const loading = groupsState?.loading;
 
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,17 +113,29 @@ const ContactGroups = () => {
         );
     }, [groups, search]);
 
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            if (search.trim()) {
+                dispatch(searchGroups({ user_id, query: search.trim() }));
+                searchInputRef.current?.focus();
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounce);
+    }, [search, dispatch, user_id]);
+
     const paginatedData = useMemo(() => {
         const start = (page - 1) * rowsPerPage;
         return filteredData.slice(start, start + rowsPerPage);
     }, [filteredData, page]);
 
-    useEffect(() => {
-        if (success) {
-            console.log('Group created successfully!');
-            dispatch(resetContactGroupState());
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+        if (searchInputRef.current) {
+            searchInputRef.current.focus();
         }
-    }, [success, dispatch]);
+    };
+
 
     const chartHistoryHeader = () => (
         <>
@@ -164,7 +173,8 @@ const ContactGroups = () => {
             placeholder="Search groups..."
             variant="outlined"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
+            inputRef={searchInputRef}
             InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">
@@ -236,14 +246,12 @@ const ContactGroups = () => {
                                                 }}
                                             />
                                         )}
-
                                         {header}
                                         {header === 'Action' && <IconButton><ErrorOutlineOutlinedIcon sx={{ fontSize: 16, color: '#a1a1aa' }} /></IconButton>}
                                     </TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
-
                         <TableBody sx={{ border: '1px solid #505060', borderTop: "none", borderBottom: "none" }}>
                             {paginatedData.map((row: any, index: any) => {
                                 const isEvenRow = index % 2 === 0;
@@ -265,10 +273,17 @@ const ContactGroups = () => {
                                                 />
                                             </IconButton>
                                             <IconButton>
-                                                <Avatar
-                                                    src={row.group_avtar}
-                                                    sx={{ width: 26, height: 26 }}
-                                                />
+                                                {row.group_avtar ?
+
+                                                    <Avatar
+                                                        src={row.group_avtar}
+                                                        sx={{ width: 26, height: 26 }}
+                                                    />
+                                                    :
+                                                    <Avatar
+                                                        src={"sample.png"}
+                                                        sx={{ width: 26, height: 26 }}
+                                                    > {row.group_name.charAt(0).toUpperCase()}</Avatar>}
 
                                             </IconButton>
                                             {row.group_name}
@@ -421,7 +436,7 @@ const ContactGroups = () => {
 
     return (
         <Layout>
-            {loading ? <CustomLoader /> : <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh', width: '100%' }}>
+            {loading ? <CustomLoader /> : <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh' }}>
                 {chartHistoryHeader()}
                 {groupSearch()}
                 {contactGroupsTable()}
