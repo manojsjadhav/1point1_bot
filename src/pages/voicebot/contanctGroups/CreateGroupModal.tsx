@@ -63,7 +63,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
             const payload: CreateContactGroupPayload = {
                 user_id,
                 group_name: groupName,
-                group_avtar: previewImage?.fileName || '',
+                group_avtar: previewImage?.previewUrl || '',
                 formated_number: selectedGroup?.formated_number || "+123"
             };
             await dispatch(createContactGroup(payload));
@@ -72,7 +72,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
         } else if (isEditGroup) {
             await editContactGroups({
                 group_name: groupName,
-                group_avtar: previewImage?.fileName || selectedGroup.group_avtar,
+                group_avtar: previewImage?.previewUrl || selectedGroup.group_avtar,
                 user_id: selectedGroup.id,
                 formated_number: selectedGroup?.formated_number || "+123"
             });
@@ -125,7 +125,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
     }, [open]);
 
     useEffect(() => {
-        dispatch(fetchContactDetails(selectedGroup?.id));
+        // dispatch(fetchContactDetails(selectedGroup?.id));
     }, [dispatch]);
 
     return (
@@ -136,13 +136,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
                 sx: {
                     backgroundColor: '#41414B',
                     borderRadius: '12px',
-                    padding: 2,
                     minWidth: 360,
                     boxShadow: "rgba(16, 24, 40, 0.03)"
                 }
             }}
         >
-            <DialogTitle sx={{ color: '#FFFFFF', fontSize: 18, fontWeight: 500 }}>
+            <DialogTitle sx={{ padding:"24px 24px 8px", color: '#FFFFFF', fontSize: 18, fontWeight: 500 }}>
                 {isAddGroup && "Create New Group"}
                 {isEditGroup && "Edit Group"}
                 {isAddContact && "Add New Contact"}
@@ -157,10 +156,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ open, onClose }) =>
                 </Typography>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                    <Box mt={2}>
-                        <Avatar sx={{ width: 48, height: 48 }} src={"previewImage.png"} />
+                    <Box>
+                        {previewImage?.previewUrl ?
+                            <Avatar sx={{ width: 48, height: 48 }} src={previewImage.previewUrl} /> :
+                            <Avatar sx={{ width: 48, height: 48 }} src={"previewImage.png"} />
+                        }
                     </Box>
-                    {/* )} */}
                     <Button
                         variant="outlined"
                         onClick={() => setOpenUpload(true)}

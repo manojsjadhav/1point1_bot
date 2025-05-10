@@ -7,18 +7,20 @@ import {
 
 interface ContactState {
   contactsDeatails: Contact[];
+  searchResults: Contact[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: ContactState = {
   contactsDeatails: [],
+  searchResults: [],
   loading: false,
   error: null,
 };
 
 export const fetchContactDetails = createAsyncThunk(
-  "groups/fetchContacts",
+  "contacts/fetchContacts",
   async (userId: string, { rejectWithValue }) => {
     try {
       const data = await getContacts(userId);
@@ -30,7 +32,7 @@ export const fetchContactDetails = createAsyncThunk(
 );
 
 export const searchContact = createAsyncThunk(
-  "groups/searchContact",
+  "contacts/searchContact",
   async ({ query }: { query: string }, { rejectWithValue }) => {
     try {
       const data = await searchContactDetail(query);
@@ -44,11 +46,12 @@ export const searchContact = createAsyncThunk(
 const contactDetailReducer = createSlice({
   name: "contacts",
   initialState,
-  reducers: {},
+  reducers: { resetGroupsState: () => initialState },
   extraReducers: (builder) => {
     builder
       .addCase(fetchContactDetails.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchContactDetails.fulfilled, (state, action) => {
         state.loading = false;

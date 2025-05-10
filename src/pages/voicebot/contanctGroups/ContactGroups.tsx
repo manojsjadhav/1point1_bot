@@ -50,7 +50,6 @@ const ContactGroups = () => {
     const [openAddNew, setOpenAddNew] = useState(false);
     const [openViewContact, setOpeViewContact] = useState(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
-    const { success } = useSelector((state: RootState) => state.createGroup);
     const groupsState = useSelector((state: RootState) => state && state.groups);
     const { auth } = useSelector((state: RootState) => state);
 
@@ -116,10 +115,8 @@ const ContactGroups = () => {
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             if (search.trim()) {
-               dispatch(searchGroups({ user_id, query: search.trim() }));
-               searchInputRef.current?.focus();
-            } else {
-                dispatch(fetchGroups(user_id));
+                dispatch(searchGroups({ user_id, query: search.trim() }));
+                searchInputRef.current?.focus();
             }
         }, 300);
 
@@ -138,13 +135,6 @@ const ContactGroups = () => {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     };
-
-    useEffect(() => {
-        if (success) {
-            console.log('Group created successfully!');
-            dispatch(resetContactGroupState());
-        }
-    }, [success, dispatch]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
@@ -263,14 +253,12 @@ const ContactGroups = () => {
                                                 }}
                                             />
                                         )}
-
                                         {header}
                                         {header === 'Action' && <IconButton><ErrorOutlineOutlinedIcon sx={{ fontSize: 16, color: '#a1a1aa' }} /></IconButton>}
                                     </TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
-
                         <TableBody sx={{ border: '1px solid #505060', borderTop: "none", borderBottom: "none" }}>
                             {paginatedData.map((row: any, index: any) => {
                                 const isEvenRow = index % 2 === 0;
@@ -292,10 +280,17 @@ const ContactGroups = () => {
                                                 />
                                             </IconButton>
                                             <IconButton>
-                                                <Avatar
-                                                    src={row.group_avtar}
-                                                    sx={{ width: 26, height: 26 }}
-                                                />
+                                                {row.group_avtar ?
+
+                                                    <Avatar
+                                                        src={row.group_avtar}
+                                                        sx={{ width: 26, height: 26 }}
+                                                    />
+                                                    :
+                                                    <Avatar
+                                                        src={"sample.png"}
+                                                        sx={{ width: 26, height: 26 }}
+                                                    > {row.group_name.charAt(0).toUpperCase()}</Avatar>}
 
                                             </IconButton>
                                             {row.group_name}

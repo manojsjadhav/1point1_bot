@@ -59,7 +59,6 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
     const [openAddContactModal, setOpenAddContactModal] = useState(false)
     const [isClickedRowId, setIsClickedRowId] = useState<any | null>(null)
     const inputRef = useRef<HTMLInputElement>(null);
-    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const handleContactsDelete = async (data: any) => {
         try {
@@ -114,7 +113,6 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                     group_id: selectedGroup.id,
                     user_id: selectedGroup?.user_id,
                 })).unwrap();
-                // alert("Contacts uploaded successfully!");
                 dispatch(fetchContactDetails(selectedGroup?.id));
             } catch (err: any) {
                 alert(err?.message || "Failed to upload contacts.");
@@ -137,7 +135,6 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             dispatch(searchContact({ query: search.trim() }));
-            searchInputRef.current?.focus();
         }, 300);
 
         return () => clearTimeout(delayDebounce);
@@ -158,7 +155,8 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                     <Box display="flex" flexDirection="column" gap={1}>
                         <Box display="flex" alignContent="center" gap={1}>
-                            <Avatar sx={{ width: 26, height: 26 }}>G</Avatar>
+                            {selectedGroup?.group_avtar ? <Avatar sx={{ width: 26, height: 26 }} src={selectedGroup?.group_avtar} /> :
+                                <Avatar sx={{ width: 26, height: 26 }}>{selectedGroup?.group_name.charAt(0).toUpperCase()}</Avatar>}
                             <Typography fontWeight={500} fontSize={18}> {selectedGroup?.group_name}</Typography>
                         </Box>
                         <Typography fontSize={14} color="gray">Group details and call list.</Typography>
