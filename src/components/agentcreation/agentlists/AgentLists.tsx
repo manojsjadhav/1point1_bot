@@ -12,7 +12,7 @@ import AgentInfoDialogBox from "../AgentInfoDialogBox";
 import AgentDataTable from "./AgentDataTable";
 import { useDispatch } from "react-redux";
 import { useDebounce } from "../../../utils/useDebounce";
-import { fetchAgentsBySearch } from "../../../services/agentFlowServices";
+import { fetchAgentsBySearch, fetchEmailBotAgentList } from "../../../services/agentFlowServices";
 import { AppDispatch, RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 const textFieldStyle = {
@@ -32,13 +32,16 @@ const textFieldStyle = {
     fontSize: "14px",
   },
 };
-const AgentLists = ({}: any) => {
+const AgentLists = ({ }: any) => {
   const [open, setOpen] = useState<any>(false);
   const { auth } = useSelector((state: RootState) => state);
   const user_id = auth?.response?.user_id;
   const dispatch = useDispatch<AppDispatch>();
   const [searchText, setSearchText] = useState<any>("");
   const debouncedSearch = useDebounce(searchText, 500);
+
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
+  const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -49,13 +52,17 @@ const AgentLists = ({}: any) => {
   };
 
   useEffect(() => {
-    dispatch(fetchAgentsBySearch({ userId: user_id, query: debouncedSearch }));
+    if (mailBotSelected) {
+      dispatch(fetchEmailBotAgentList())
+    } else {
+      dispatch(fetchAgentsBySearch({ userId: user_id, query: debouncedSearch }));
+    }
   }, [debouncedSearch, dispatch]);
 
   return (
     <Box className="container">
       <Box className="heading-content">
-        <Typography className="heading">Manage Agents</Typography>
+        <Typography className="heading">{mailBotSelected ? "Manage Email Agents" : "Manage Voice Agents"}</Typography>
         <TextField
           variant="outlined"
           placeholder="Search an Agent"
@@ -84,7 +91,6 @@ const AgentLists = ({}: any) => {
         handleClose={handleClose}
         textFieldStyle={textFieldStyle}
       />
-
       <AgentDataTable />
     </Box>
   );

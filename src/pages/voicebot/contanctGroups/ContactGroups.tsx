@@ -40,6 +40,7 @@ import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGr
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import CustomLoader from '../../CustomLoader';
+import { formatDate } from '../../../utils';
 
 const rowsPerPage = 10;
 
@@ -127,14 +128,6 @@ const ContactGroups = () => {
         const start = (page - 1) * rowsPerPage;
         return filteredData.slice(start, start + rowsPerPage);
     }, [filteredData, page]);
-
-    const formatDate = (isoDate: string): string => {
-        const date = new Date(isoDate);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);

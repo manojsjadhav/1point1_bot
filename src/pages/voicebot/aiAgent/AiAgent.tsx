@@ -5,7 +5,7 @@ import VoiceAgentFlow from "../../../components/agentcreation/VoiceAgentFlow";
 import { AppDispatch, RootState } from "../../../redux/store";
 import { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { fetchAgentList } from "../../../services/agentFlowServices";
+import { fetchAgentList, fetchEmailBotAgentList } from "../../../services/agentFlowServices";
 import AgentLists from "../../../components/agentcreation/agentlists/AgentLists";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
@@ -18,14 +18,29 @@ function AiAgent() {
   const user_id = auth?.response?.user_id;
   const username = auth?.response?.username;
   const dispatch = useDispatch<AppDispatch>();
+
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
+  const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
+
   useEffect(() => {
     setAgentDetails({ ...agentDetails, user_id, created_by: username });
   }, [agentFlowtoggle]);
+
+
   useEffect(() => {
-    dispatch(fetchAgentList(user_id));
-    dispatch(
-      setBreadcrumbs([{ label: "My Agent", path: "voicebot/ai-agents" }])
-    );
+    if (mailBotSelected) {
+      dispatch(fetchEmailBotAgentList())
+
+      dispatch(
+        setBreadcrumbs([{ label: "My Agent", path: "emailBot/emailBotAIAgents" }])
+      );
+    }
+    else {
+      dispatch(fetchAgentList(user_id));
+      dispatch(
+        setBreadcrumbs([{ label: "My Agent", path: "voicebot/ai-agents" }])
+      );
+    }
     dispatch(setInitialNodes([]));
   }, []);
 

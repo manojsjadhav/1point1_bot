@@ -25,6 +25,7 @@ import { deleteAgent } from "../../../services/agentFlowServices";
 import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
+import { formatDate } from "../../../utils";
 
 const NavButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#41414B",
@@ -48,7 +49,12 @@ const AgentDataTable = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { agentFlowtoggle, setAgentFlowtoggle, setEditAgentData } =
     useContext(agentStore);
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
+
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
+  const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
+  console.log("mailBotSelected", mailBotSelected);
+
 
   const paginatedAgents = useMemo(() => {
     const startIndex = (page - 1) * rowsPerPage;
@@ -197,7 +203,7 @@ const AgentDataTable = () => {
                       backgroundColor: bgColor,
                     }}
                   >
-                    {agent?.created_date}
+                    {formatDate(agent?.created_date)}
                   </TableCell>
                   <TableCell
                     sx={{

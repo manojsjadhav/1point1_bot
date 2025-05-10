@@ -4,13 +4,13 @@ import {
   fetchAgentList,
   fetchAgentsBySearch,
   deleteAgent,
-  editAgent, // ✅ new import
+  editAgent,
+  fetchEmailBotAgentList,
 } from "../../services/agentFlowServices";
 
 interface Agent {
   id: string;
   name: string;
-  // Add other fields if needed
 }
 
 interface AgentListState {
@@ -96,6 +96,23 @@ const agentListSlice = createSlice({
         }
       )
       .addCase(deleteAgent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // Fetch Email Bot Agents
+      .addCase(fetchEmailBotAgentList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchEmailBotAgentList.fulfilled,
+        (state, action: PayloadAction<Agent[]>) => {
+          state.agents = action.payload;
+          state.loading = false;
+        }
+      )
+      .addCase(fetchEmailBotAgentList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

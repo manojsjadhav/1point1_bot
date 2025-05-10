@@ -8,6 +8,8 @@ import AiAgent from "../pages/voicebot/aiAgent/AiAgent";
 import ConversationHistory from "../pages/voicebot/conversationHistory/ConversationHistory";
 import { ToastContainer } from "react-toastify";
 import ContactGroups from "../pages/voicebot/contanctGroups/ContactGroups";
+import EmailBotDashboard from "../pages/voicebot/dashboard/EmailBotDashboard";
+import EmailBotAIAgent from "../pages/emailBot/emailBotAiAgent/EmailBotAIAgent";
 
 const AppRoutes = () => {
   return (
@@ -67,6 +69,22 @@ const AppRoutes = () => {
           element={
             <PriveteRoute>
               <AiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="emailBot"
+          element={
+            <PriveteRoute>
+              <EmailBotDashboard />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="emailBot/emailBotAIAgents"
+          element={
+            <PriveteRoute>
+              <EmailBotAIAgent />
             </PriveteRoute>
           }
         />
