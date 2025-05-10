@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Box, Typography } from '@mui/material';
 import NoDataImage from '../assets/NoData.svg';
 const NoData = () => {

@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { addNode } from "../../redux/nodeSlice/nodeSlice";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { agentFlowMenuItems } from "../../constants/agentFlowMenuItems";
+import Drag from "../../assets/componentmenuicon/Drag.svg";
+import {
+  agentFlowMenuItems,
+  chatAgentFlowMenuItems,
+  groupedByTypes,
+} from "../../constants/agentFlowMenuItems";
 import { fetchModelParameters, nodeListData } from "../../nodes/utils/nodedata";
 import { getSubmenuList } from "../../services/agentFlowServices";
-// import NodeLists from './NodeLists';
+import { useReactFlow } from "@xyflow/react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const MenuItems = () => {
   const [menuItems, setMenuItems] = useState([]);
-  const allNodes = useSelector((state: RootState) => state.nodes);
-  const dispatch = useDispatch();
-
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
+  const { addNodes, getNodes } = useReactFlow();
   const toggleMenu = (id: number) => {
     setMenuItems((prev: any) =>
       prev.map((item: any) =>
@@ -23,37 +25,40 @@ const MenuItems = () => {
     );
   };
   const handleAddNode = async (subMenu: any) => {
+    const getAllNodes: any = getNodes();
+    console.log({ getAllNodes });
     let node: any = nodeListData.find(
       (node: any) => node.nodetype === subMenu.model_type
     );
     const fields = await fetchModelParameters(subMenu.id);
     console.log({ fields });
     node.data.title = subMenu.model_name;
-    node.data.nodeIcon = "";
+    node.data.nodeIcon = subMenu.thumbnail;
     node.data.fields = fields;
     console.log({ node });
-    const isCheckNode = allNodes.find(
-      (nodeItem: any) => nodeItem.nodetype === node?.nodetype
+    const isCheckNode = getAllNodes.some(
+      (nodeItem: any) => nodeItem?.nodetype === node?.nodetype
     );
     if (isCheckNode) {
       alert("This type of node already exist");
     } else {
-      dispatch(addNode({ ...node, id: uuidv4() }));
+      addNodes({ ...node, id: uuidv4() });
     }
   };
+
   useEffect(() => {
     (async () => {
-      const menuData = await getSubmenuList();
-      const groupedByType = (menuData || []).reduce((acc: any, model: any) => {
-        const type = model.model_type;
-        if (!acc[type]) {
-          acc[type] = [];
-        }
-        acc[type].push(model);
-        return acc;
-      }, {});
-      const menuitem = agentFlowMenuItems(groupedByType);
-      setMenuItems(menuitem);
+      if (selectedBotName?.selectedBot === "Voice_Bot") {
+        const menuData = await getSubmenuList();
+        const groupedByType = groupedByTypes(menuData);
+        const menuitem = agentFlowMenuItems(groupedByType);
+        setMenuItems(menuitem);
+      } else if (selectedBotName?.selectedBot === "Chat_Bot") {
+        const menuData = await getSubmenuList(); // call chat menuitem api
+        const groupedByType = groupedByTypes(menuData);
+        const menuitem = chatAgentFlowMenuItems(groupedByType);
+        setMenuItems(menuitem);
+      }
     })();
   }, []);
   return (
@@ -109,8 +114,6 @@ const MenuItems = () => {
               }}
             />
           </Box>
-
-          {/* Submenu */}
           {menu.isActive && menu.subMenuItems.length > 0 && (
             <Box
               sx={{
@@ -137,7 +140,7 @@ const MenuItems = () => {
                   <Box
                     sx={{ display: "flex", alignItems: "center", gap: "8px" }}
                   >
-                    {/* <Box
+                    <Box
                       component="img"
                       src={sub.thumbnail}
                       alt={sub.model_name}
@@ -146,7 +149,7 @@ const MenuItems = () => {
                         height: 24,
                         color: menu.isActive ? "#F7F7F8" : "",
                       }}
-                    /> */}
+                    />
                     <Typography
                       sx={{
                         fontFamily: "GeneralSans-m",
@@ -157,16 +160,16 @@ const MenuItems = () => {
                       {sub.model_name}
                     </Typography>
                   </Box>
-                  {/* <Box
+                  <Box
                     component="img"
-                    src={sub.endIcon}
+                    src={Drag}
                     alt="drag"
                     sx={{
                       width: 24,
                       height: 24,
                       color: menu.isActive ? "#F7F7F8" : "",
                     }}
-                  /> */}
+                  />
                 </Box>
               ))}
             </Box>

@@ -50,7 +50,7 @@ const BotPage = () => {
                 fontSize: "24px",
               }}
             >
-              Chatbot
+              1point1 bot
             </Typography>
           </Box>
           <Box sx={{ color: "#fff" }}>
@@ -81,6 +81,7 @@ const BotPage = () => {
                 description="Build conversational voice agents with intuitive drag-and-drop tools. Deploy on calls, IVR systems, or virtual assistants. "
               />
               <BotType
+                route="/chatbot"
                 icon={chatbot}
                 botName="Chat Bot"
                 label="Chat_Bot"

@@ -12,7 +12,7 @@ import {
   Button,
   Pagination,
   PaginationItem,
-  styled, // Import the styled utility
+  styled,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../redux/store";
@@ -52,9 +52,6 @@ const AgentDataTable = () => {
   const rowsPerPage = 10;
 
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
-  const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
-  console.log("mailBotSelected", mailBotSelected);
-
 
   const paginatedAgents = useMemo(() => {
     const startIndex = (page - 1) * rowsPerPage;
@@ -98,15 +95,23 @@ const AgentDataTable = () => {
   };
   const handlAgentEdit = (agent: any) => {
     console.log({ agent });
-    dispatch(
-      setBreadcrumbs([
-        { label: "My Agent", path: "/voicebot/ai-agents" },
-        { label: agent.agent_type, path: "/voicebot" },
-      ])
-    );
+    if (selectedBotName?.selectedBot === "Voice_Bot") {
+      dispatch(
+        setBreadcrumbs([
+          { label: "Voice Agent", path: "/voicebot/ai-agents" },
+          { label: agent.agent_type, path: "/voicebot" },
+        ])
+      );
+    } else if (selectedBotName?.selectedBot === "Chat_Bot") {
+      dispatch(
+        setBreadcrumbs([
+          { label: "Chat Agent", path: "/chatbot/ai-agents" },
+          { label: agent.agent_type, path: "/chatbot" },
+        ])
+      );
+    }
     const flowNodes = JSON.parse(agent.nodes_list);
     console.log({ flowNodes });
-    // dispatch(editNodes(flowNodes));
     dispatch(setInitialNodes(flowNodes));
     setEditAgentData(agent);
     setAgentFlowtoggle(!agentFlowtoggle);
@@ -212,8 +217,8 @@ const AgentDataTable = () => {
                       backgroundColor: bgColor,
                     }}
                   >
-                    {agent?.created_by}
-                    {/* manoj */}
+                    {/* {agent?.created_by} */}
+                    Admin
                   </TableCell>
                   <TableCell
                     sx={{

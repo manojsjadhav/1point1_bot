@@ -74,51 +74,10 @@ const AgentCreationNavban = () => {
             component="img"
             src={onepointone}
             alt="Onepointone logo"
-            sx={{ width: 71, height: 21 }}
+            sx={{ width: 71, height: 21, cursor: "pointer" }}
+            onClick={() => navigate("/")}
           />
         </Box>
-        {/* <Box
-          sx={{
-            display: "flex",
-            gap: "6px",
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
-          }}
-        >
-          <Typography
-            variant="button"
-            sx={{
-              cursor: "pointer",
-              color: "#B8B9C1",
-              textTransform: "none",
-              fontFamily: "GeneralSans-m",
-              fontSize: "14px",
-            }}
-          >
-            My Agents/
-          </Typography>
-          <Typography
-            variant="button"
-            sx={{
-              cursor: "pointer",
-              color: "#fff",
-              textTransform: "none",
-              fontFamily: "GeneralSans-m",
-              fontSize: "14px",
-            }}
-          >
-            SBI Voice Assistant
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Box
-              component="img"
-              src={saveIcon}
-              alt="Onepointone logo"
-              sx={{ width: 66, height: 24 }}
-            />
-          </Box>
-        </Box> */}
         <Breadcrumbs separator="›" aria-label="breadcrumb">
           {links.map((item: any, index: any) => {
             const isLast = index === links.length - 1;
@@ -138,7 +97,7 @@ const AgentCreationNavban = () => {
             ) : (
               <Link
                 key={index}
-                underline="hover"
+                underline="none"
                 color="inherit"
                 onClick={() => {
                   if (item.path === location.pathname) {

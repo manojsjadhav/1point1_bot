@@ -1,6 +1,6 @@
 import Chatgpt from "../../assets/componentmenuicon/Chatgpt.svg";
 import Deepgram from "../../assets/componentmenuicon/Deepgram.svg";
-import play from "../../assets/componentmenuicon/play.svg";
+import Delete from "../../assets/agentdialogicon/Delete.svg";
 import Show from "../../assets/componentmenuicon/Show.svg";
 // import Info from "../../assets/componentmenuicon/Info.svg";
 import Note_Search from "../../assets/componentmenuicon/Note_Search.svg";
@@ -92,7 +92,7 @@ const DeepgramNode = {
     nodeIcon: Deepgram,
     title: "Deepgram",
     description: "Generates text using Deepgram LLMs.",
-    playIcon: play,
+    playIcon: Delete,
     fields: [],
     // fields: [
     //   {
@@ -160,7 +160,7 @@ export const OpenAINode = {
     nodeIcon: Chatgpt,
     title: "Open AI",
     description: "Generates text using OpenAI LLMs.",
-    playIcon: play,
+    playIcon: Delete,
     fields: [],
     // fields: [
     //   {
@@ -209,7 +209,7 @@ export const GoogleTTSNode = {
     nodeIcon: Google_TTS,
     title: "Google TTS",
     description: "Generates speech using Google TTS.",
-    playIcon: play,
+    playIcon: Delete,
     fields: [],
     // fields: [
     //   {

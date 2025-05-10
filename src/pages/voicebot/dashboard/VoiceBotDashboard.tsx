@@ -4,13 +4,9 @@ import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
 import { useDispatch } from "react-redux";
 
 const VoiceBotDashboard = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(
-      setBreadcrumbs([
-        { label: "Dashboard", path: "/voicebot" },
-      ])
-    );
+    dispatch(setBreadcrumbs([{ label: "Voice Dashboard", path: "/voicebot" }]));
   }, [dispatch]);
   return (
     <Layout>
