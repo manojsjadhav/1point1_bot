@@ -9,7 +9,7 @@ import {
 import Arrow_Left_SM from "../../assets/agentdialogicon/Arrow_Left_SM.svg";
 import { useContext, useState } from "react";
 import { agentStore } from "../../providers/AgentContext";
-import { agentTypes } from "../../constants/agentType";
+import { agentTypes, marketingAgentType } from "../../constants/agentType";
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
 
@@ -47,7 +47,8 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
       setAgentFlowtoggle(!agentFlowtoggle);
     }
   };
-  
+
+  const agentTypesData = mailBotSelected ? [...agentTypes, ...marketingAgentType] : agentTypes
   return (
     <Drawer
       anchor="right"
@@ -131,7 +132,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
         </Typography>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {agentTypes.map((agent: any, index: any) => (
+        {agentTypesData.map((agent: any, index: any) => (
           <Box
             key={index}
             className="agent-type"

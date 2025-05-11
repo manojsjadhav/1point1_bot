@@ -21,7 +21,7 @@ import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useDispatch } from "react-redux";
-import { deleteAgent } from "../../../services/agentFlowServices";
+import { deleteAgent, deleteEmailAgent } from "../../../services/agentFlowServices";
 import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
@@ -93,12 +93,19 @@ const AgentDataTable = () => {
 
   const handlAgentDelete = (id: any) => {
     if (window.confirm("Are you sure you want to delete this agent?")) {
-      dispatch(deleteAgent(id));
+      if (mailBotSelected) {
+        dispatch(deleteEmailAgent(id));
+      } else {
+        dispatch(deleteAgent(id));
+      }
     }
   };
+  
   const handlAgentEdit = (agent: any) => {
-    console.log({ agent });
-    dispatch(
+    dispatch(mailBotSelected ? setBreadcrumbs([
+      { label: "My Email Agent", path: "/emailBot/emailBotAIAgents" },
+      { label: agent.agent_type, path: "/emailBot" },
+    ]) :
       setBreadcrumbs([
         { label: "My Agent", path: "/voicebot/ai-agents" },
         { label: agent.agent_type, path: "/voicebot" },

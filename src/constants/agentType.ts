@@ -40,6 +40,9 @@ export const agentTypes = [
     value: "Sales Agent",
     title: "Sales Agent",
   },
+];
+
+export const marketingAgentType = [
   {
     icon: Marketing_agent,
     description:
