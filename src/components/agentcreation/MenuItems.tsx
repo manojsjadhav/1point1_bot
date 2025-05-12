@@ -1,45 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import { addNode } from "../../redux/nodeSlice/nodeSlice";
 import { RootState } from "../../redux/store";
-import { agentFlowMenuItems } from "../../constants/agentFlowMenuItems";
-import { EmailConfigurationLLM, fetchModelParameters, nodeListData } from "../../nodes/utils/nodedata";
+import { fetchModelParameters, nodeListData } from "../../nodes/utils/nodedata";
 import { getSubmenuList } from "../../services/agentFlowServices";
 import {
   agentFlowMenuItems,
   chatAgentFlowMenuItems,
   groupedByTypes,
 } from "../../constants/agentFlowMenuItems";
-
-interface Model {
-  id: number;
-  model_name: string;
-  url: string;
-  library_details: string;
-  thumbnail: string;
-  model_type: string;
-}
-
-const groupModelsByType = (menuData: Model[]) => {
-  return menuData.reduce((acc: Record<string, Model[]>, model) => {
-    const type = model.model_type;
-    if (!acc[type]) {
-      acc[type] = [];
-    }
-    acc[type].push(model);
-    return acc;
-  }, {});
-};
+import { useReactFlow } from "@xyflow/react";
+import Drag from "../../assets/componentmenuicon/Drag.svg";
 
 const MenuItems = () => {
   const [menuItems, setMenuItems] = useState([]);
-  const allNodes = useSelector((state: RootState) => state.nodes);
-  const dispatch = useDispatch();
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
-   const { addNodes, getNodes } = useReactFlow();
+  const { addNodes, getNodes } = useReactFlow();
 
   const toggleMenu = (id: number) => {
     setMenuItems((prev: any) =>
@@ -50,7 +28,7 @@ const MenuItems = () => {
   };
 
   const handleAddNode = async (subMenu: any) => {
-    const getNodes = getNodes();
+    const getnodes: any = getNodes();
     const nodeTemplate: any = nodeListData.find(
       (node: any) => node.nodetype === subMenu.model_type
     );
@@ -71,14 +49,14 @@ const MenuItems = () => {
         fields,
       },
     };
-    
-    const isDuplicate = getNodes.find(
+
+    const isDuplicate = getnodes.find(
       (nodeItem: any) => nodeItem.nodetype === nodeTemplate?.nodetype
     );
 
     if (isDuplicate) {
       alert("This type of node already exists");
-      return;   
+      return;
     }
 
     addNodes(newNode);
@@ -91,7 +69,10 @@ const MenuItems = () => {
         const groupedByType = groupedByTypes(menuData);
         const menuitem = agentFlowMenuItems(groupedByType);
         setMenuItems(menuitem);
-      } else if (selectedBotName?.selectedBot === "Chat_Bot" || selectedBotName?.selectedBot === "Email_Bot") {
+      } else if (
+        selectedBotName?.selectedBot === "Chat_Bot" ||
+        selectedBotName?.selectedBot === "Email_Bot"
+      ) {
         const menuData = await getSubmenuList(); // call chat menuitem api
         const groupedByType = groupedByTypes(menuData);
         const menuitem = chatAgentFlowMenuItems(groupedByType);
@@ -100,7 +81,9 @@ const MenuItems = () => {
     })();
   }, [selectedBotName.selectedBot]);
 
-  const filterData = mailBotSelected ? menuItems.filter((elem: any) => elem.label === "LLM Models") : menuItems
+  const filterData = mailBotSelected
+    ? menuItems.filter((elem: any) => elem.label === "LLM Models")
+    : menuItems;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>

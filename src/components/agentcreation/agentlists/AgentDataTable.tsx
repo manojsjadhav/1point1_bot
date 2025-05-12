@@ -23,7 +23,11 @@ import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useDispatch } from "react-redux";
-import { deleteAgent, deleteEmailAgent } from "../../../services/agentFlowServices";
+import {
+  deleteAgent,
+  deleteEmailAgent,
+  fetchAgentList,
+} from "../../../services/agentFlowServices";
 import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
@@ -54,8 +58,12 @@ const AgentDataTable = () => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { agentFlowtoggle, setAgentFlowtoggle, setEditAgentData } =
-    useContext(agentStore);
+  const {
+    agentFlowtoggle,
+    setAgentFlowtoggle,
+    setEditAgentData,
+    editAgentData,
+  } = useContext(agentStore);
   const rowsPerPage = 10;
 
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
@@ -103,18 +111,31 @@ const AgentDataTable = () => {
     }
   };
 
-  const handlAgentDelete = (id: any) => {
+  const handlAgentDelete = (id: any, user_id: any) => {
     if (window.confirm("Are you sure you want to delete this agent?")) {
-      if (mailBotSelected) {
+      if (selectedBotName?.selectedBot === "Voice_Bot") {
         dispatch(deleteEmailAgent(id));
+        dispatch(fetchAgentList(user_id));
       } else {
         dispatch(deleteAgent(id));
       }
     }
   };
-  
+
   const handlAgentEdit = (agent: any) => {
-    console.log({ agent });
+    console.log("chech agent data:", agent);
+    const prompt = JSON.parse(agent.llm_model_param);
+    console.log({ prompt });
+    const editagent = {
+      user_id: agent.user_id,
+      created_by: agent.created_by,
+      dialer: agent.dialer,
+      flow_type: agent.flow_type,
+      agent_name: agent.agent_name,
+      agent_type: agent.agent_type,
+      system_prompt: prompt.system_prompt,
+      id: agent.id,
+    };
     if (selectedBotName?.selectedBot === "Voice_Bot") {
       dispatch(
         setBreadcrumbs([
@@ -129,18 +150,18 @@ const AgentDataTable = () => {
           { label: agent.agent_type, path: "/chatbot" },
         ])
       );
-    } else if(selectedBotName?.selectedBot === "Email_Bot"){
-         dispatch(
+    } else if (selectedBotName?.selectedBot === "Email_Bot") {
+      dispatch(
         setBreadcrumbs([
           { label: "My Email Agent", path: "/emailBot/emailBotAIAgents" },
-           { label: agent.agent_type, path: "/emailBot" },
+          { label: agent.agent_type, path: "/emailBot" },
         ])
       );
-     }
+    }
     const flowNodes = JSON.parse(agent.nodes_list);
-    console.log({ flowNodes });
     dispatch(setInitialNodes(flowNodes));
-    setEditAgentData(agent);
+    setEditAgentData(editagent);
+    console.log("check editagent set data", editAgentData);
     setAgentFlowtoggle(!agentFlowtoggle);
   };
 
@@ -314,7 +335,9 @@ const AgentDataTable = () => {
                         src={Delete}
                         alt="Delete"
                         sx={{ width: 22, height: 22, cursor: "pointer" }}
-                        onClick={() => handlAgentDelete(agent?.id)}
+                        onClick={() =>
+                          handlAgentDelete(agent?.id, agent?.user_id)
+                        }
                       />
                       <Box
                         component="img"

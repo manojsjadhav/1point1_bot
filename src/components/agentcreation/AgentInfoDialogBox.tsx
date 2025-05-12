@@ -9,10 +9,13 @@ import {
 import Arrow_Left_SM from "../../assets/agentdialogicon/Arrow_Left_SM.svg";
 import { useContext, useEffect, useState } from "react";
 import { agentStore } from "../../providers/AgentContext";
-import { agentTypes, marketingAgentType , voiceAgentType, chatAgentTypes } from "../../constants/agentType";
+import {
+  marketingAgentType,
+  voiceAgentType,
+  chatAgentTypes,
+} from "../../constants/agentType";
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
-
 
 const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
   const [typeValue, setTypeValue] = useState<any>("");
@@ -20,7 +23,6 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const { agentFlowtoggle, setAgentFlowtoggle, setAgentDetails, agentDetails } =
     useContext(agentStore);
-  const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -50,7 +52,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
       setAgentFlowtoggle(!agentFlowtoggle);
     }
   };
-  
+
   useEffect(() => {
     if (selectedBotName?.selectedBot === "Voice_Bot") {
       setAgentType(voiceAgentType);
@@ -60,7 +62,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
       setAgentType(marketingAgentType);
     }
   }, []);
-  
+
   return (
     <Drawer
       anchor="right"
@@ -106,10 +108,12 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
           onChange={handleChange}
         />
 
-        {selectedBotName?.selectedBot === "Voice_Bot" &&
-          <> <Typography className="text" sx={{ mt: "20px" }}>
-            2. Flow Type
-          </Typography>
+        {selectedBotName?.selectedBot === "Voice_Bot" && (
+          <>
+            {" "}
+            <Typography className="text" sx={{ mt: "20px" }}>
+              2. Flow Type
+            </Typography>
             <select
               name="flow_type"
               value={agentDetails.flow_type}
@@ -122,7 +126,6 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
               <option value="speech to speech">Speech to Speech</option>
               <option value="flow">Flow</option>
             </select>
-
             <Typography className="text" sx={{ mt: "20px" }}>
               3. Dialer
             </Typography>
@@ -138,7 +141,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
               <option value="free switch">Free Switch</option>
             </select>
           </>
-        }
+        )}
         <Typography className="text" sx={{ my: "20px" }}>
           4. Choose the right Agent template to build your AI Agent.
         </Typography>

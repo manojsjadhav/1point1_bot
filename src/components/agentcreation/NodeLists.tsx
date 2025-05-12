@@ -20,7 +20,12 @@ import chevron_down from "../../assets/chevron-down.svg";
 import { AppDispatch, RootState } from "../../redux/store.ts";
 import { Box, Button } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import { editAgent, editEmailAgent, postAgentFlow, postEmailAgentFlow } from "../../services/agentFlowServices.ts";
+import {
+  editAgent,
+  editEmailAgent,
+  postAgentFlow,
+  postEmailAgentFlow,
+} from "../../services/agentFlowServices.ts";
 // import { getCurrentFormattedDate } from "../../nodes/utils/nodedata.ts";
 
 import { agentStore } from "../../providers/AgentContext.tsx";
@@ -35,14 +40,15 @@ export default function NodeLists() {
   const allNode = useSelector((state: RootState) => state.nodes);
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
-  const { addNodes } = useReactFlow()
+  const { addNodes } = useReactFlow();
   const {
     agentDetails,
-    // agentFlowtoggle,
+    agentFlowtoggle,
     setAgentFlowtoggle,
     editAgentData,
     setEditAgentData,
   } = useContext(agentStore);
+  console.log(editAgentData);
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const dispatch = useDispatch<AppDispatch>();
@@ -50,21 +56,20 @@ export default function NodeLists() {
   const { user_id, created_by, agent_type, dialer, flow_type, agent_name } =
     agentDetails;
   const handleFlowSubmit = async () => {
+    console.log("agentEditData", agentDetails);
     const tempId = uuidv4();
     const isEditing = editAgentData && Object.keys(editAgentData).length > 0;
-
     const requiredNodes = mailBotSelected
       ? ["LLM", "Email"]
-      : ["speech_to_text", "text_to_speech", "llm_models"];
-
+      : ["STT", "TTS", "LLM"];
     const currentNodeTypes = new Set(nodes.map((node: any) => node.nodetype));
-    const missingNodes = requiredNodes.filter(type => !currentNodeTypes.has(type));
-
+    const missingNodes = requiredNodes.filter(
+      (type) => !currentNodeTypes.has(type)
+    );
     if (missingNodes.length > 0) {
       alert(`Missing required nodes: ${missingNodes.join(", ")}`);
       return;
     }
-
     const baseData = {
       user_id,
       dialer,
@@ -75,7 +80,6 @@ export default function NodeLists() {
       nodes_list: nodes,
       edges,
     };
-
     const emailAgentData = {
       ...baseData,
       sts_model_id: tempId,
@@ -86,7 +90,6 @@ export default function NodeLists() {
       tts_model_perm: {},
       sts_model_perms: { read: true, write: false, execute: false },
     };
-
     const fallbackAgentData = {
       ...baseData,
       sts_model_id: tempId,
@@ -99,56 +102,58 @@ export default function NodeLists() {
     };
     // Utility to populate values from fields
     const populateFields = (target: any, fields: any[]) => {
-      fields.forEach(field => {
+      fields.forEach((field) => {
         target[field.name] = field.value;
       });
     };
-
     // Populate data from nodes
     nodes.forEach((node: any) => {
-      const { fields, nodetype } = node.data;
-
+      const { nodetype } = node;
+      const { fields } = node.data;
       if (mailBotSelected) {
         if (nodetype === "LLM") {
           populateFields(emailAgentData.llm_model_param, fields);
-
-          const modelField = fields.find(f => f.name === "model");
+          const modelField = fields.find((f: any) => f.name === "model");
           if (modelField) emailAgentData.llm_model_id = modelField.value;
-
-          const docField = fields.find(f => f.name === "document");
+          const docField = fields.find((f: any) => f.name === "document");
           if (docField) emailAgentData.llm_model_document = docField.value;
         }
-
         if (nodetype === "Email") {
           populateFields(emailAgentData.tts_model_perm, fields);
         }
       } else {
-        if (nodetype === "speech_to_text") {
+        if (nodetype === "STT") {
           populateFields(fallbackAgentData.sts_model_perms, fields);
         }
-
-        if (nodetype === "text_to_speech") {
+        if (nodetype === "TTS") {
           populateFields(fallbackAgentData.tts_model_perm, fields);
         }
-
-        if (nodetype === "llm_models") {
+        if (nodetype === "LLM") {
           populateFields(fallbackAgentData.llm_model_param, fields);
         }
       }
     });
     // Utility to check if any field is empty
     const hasEmptyFields = (obj: Record<string, any>) =>
-      Object.values(obj).some(value => value === "" || value === null || value === undefined);
-
+      Object.values(obj).some(
+        (value) => value === "" || value === null || value === undefined
+      );
     const dataToValidate = mailBotSelected
-      ? [emailAgentData.llm_model_param, emailAgentData.tts_model_perm, emailAgentData.sts_model_perms]
-      : [fallbackAgentData.llm_model_param, fallbackAgentData.tts_model_perm, fallbackAgentData.sts_model_perms];
+      ? [
+          emailAgentData.llm_model_param,
+          emailAgentData.tts_model_perm,
+          emailAgentData.sts_model_perms,
+        ]
+      : [
+          fallbackAgentData.llm_model_param,
+          fallbackAgentData.tts_model_perm,
+          fallbackAgentData.sts_model_perms,
+        ];
 
     if (dataToValidate.some(hasEmptyFields)) {
       alert("Please fill out all required node fields correctly.");
       return;
     }
-
     try {
       if (mailBotSelected) {
         if (isEditing) {
@@ -175,36 +180,34 @@ export default function NodeLists() {
           toast.success("Agent Added Successfully");
         }
       }
-
       dispatch(setInitialNodes([]));
-      setAgentFlowtoggle((prev: any) => !prev);
+      setAgentFlowtoggle(!agentFlowtoggle);
       setEditAgentData({});
     } catch (error) {
       console.error("Flow submission error:", error);
       alert("An error occurred while submitting the agent flow.");
     }
   };
-
   const onConnect = useCallback(
     (params: Connection | Edge) =>
       setEdges((eds: any[]) => addEdge(params, eds)),
     [setEdges]
   );
-
   useEffect(() => {
-   if(allNode.length > 0){ 
-     setNodes((prevNodes) => {
-      const newNodes = cloneDeep(allNode);
-      const existingIds = new Set(prevNodes.map((node) => node.id));
-      const filteredNewNodes = newNodes.filter((node: any) => !existingIds.has(node.id));
-      return [...prevNodes, ...filteredNewNodes];
-    });
+    if (allNode.length > 0) {
+      setNodes((prevNodes) => {
+        const newNodes = cloneDeep(allNode);
+        const existingIds = new Set(prevNodes.map((node) => node.id));
+        const filteredNewNodes = newNodes.filter(
+          (node: any) => !existingIds.has(node.id)
+        );
+        return [...prevNodes, ...filteredNewNodes];
+      });
     }
   }, [allNode]);
-
   useEffect(() => {
-    if (mailBotSelected && lengthNodes === 0) addNodes(EmailConfigurationLLM)
-  }, [])
+    if (mailBotSelected && lengthNodes === 0) addNodes(EmailConfigurationLLM);
+  }, []);
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
@@ -256,7 +259,7 @@ export default function NodeLists() {
             px: "25px",
             height: "36px",
           }}
-          onClick={handleflowsubmit}
+          onClick={handleFlowSubmit}
         >
           Publish
           <Box
@@ -276,64 +279,6 @@ export default function NodeLists() {
         nodeTypes={nodeTypes}
         fitView
       >
-        <Panel position="top-right">
-          <Box
-            sx={{
-              backgroundColor: "#2A2A33",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              boxShadow: 3,
-              width: "210px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Button
-              sx={{
-                textTransform: "none",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                fontFamily: "GeneralSans-m",
-                fontSize: "14px",
-                color: "#fff",
-                px: "25px",
-                height: "36px",
-              }}
-            >
-              <Box
-                component="img"
-                src={playIcon}
-                alt="Apple"
-                sx={{ width: 24, height: 24 }}
-              />
-              test
-            </Button>
-            <Button
-              sx={{
-                background: "#FF581C",
-                textTransform: "none",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                fontFamily: "GeneralSans-m",
-                fontSize: "14px",
-                color: "#fff",
-                px: "25px",
-                height: "36px",
-              }}
-              onClick={handleFlowSubmit}
-            >
-              Publish
-              <Box
-                component="img"
-                src={chevron_down}
-                alt="Apple"
-                sx={{ width: 24, height: 24, color: "#FFF" }}
-              />
-            </Button>
-          </Box>
-        </Panel>
         <Controls />
         <MiniMap />
         <Background gap={12} size={1} />

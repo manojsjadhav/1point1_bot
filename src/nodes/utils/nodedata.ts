@@ -6,7 +6,7 @@ import Info from "../../assets/componentmenuicon/Info.svg";
 import Note_Search from "../../assets/componentmenuicon/Note_Search.svg";
 import Google_TTS from "../../assets/componentmenuicon/Google_TTS.svg";
 import Email from "../../assets/Mail.svg";
-// import Upload from "../../assets/componentmenuicon/Upload.svg";
+import play from "../../assets/componentmenuicon/play.svg";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
