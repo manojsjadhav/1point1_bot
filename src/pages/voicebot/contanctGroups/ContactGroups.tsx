@@ -41,6 +41,7 @@ import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import CustomLoader from '../../CustomLoader';
 import AvatarSummary from './AvatarSummary';
+import BroadcastModal from './BroadcastModal';
 
 const rowsPerPage = 10;
 
@@ -50,6 +51,7 @@ const ContactGroups = () => {
     const [page, setPage] = useState<number>(1);
     const [openAddNew, setOpenAddNew] = useState(false);
     const [openViewContact, setOpeViewContact] = useState(false);
+    const [openBroadCast, setOpenBroadCast] = useState(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const { success } = useSelector((state: RootState) => state.createGroup);
     const groupsState = useSelector((state: RootState) => state && state.groups);
@@ -91,6 +93,10 @@ const ContactGroups = () => {
     const handleOpenViewContact = (Row: any) => {
         dispatch(setSelectedGroup(Row))
         setOpeViewContact(true);
+    }
+    const handleOpenBroadCast = (Row: any) => {
+        dispatch(setSelectedGroup(Row))
+        setOpenBroadCast(true);
     }
 
     const handleDelete = async (id: string) => {
@@ -326,6 +332,7 @@ const ContactGroups = () => {
                                                         textTransform: 'none',
                                                     }}
                                                     endIcon={<SensorsOutlinedIcon />}
+                                                    onClick={() => handleOpenBroadCast(row)}
                                                 >
                                                     Broadcast
                                                 </Button>
@@ -365,7 +372,10 @@ const ContactGroups = () => {
                 <GroupModal
                     open={openViewContact}
                     onClose={() => setOpeViewContact(false)}
-                /></>
+                />
+
+                <BroadcastModal open={openBroadCast} onClose={() => setOpenBroadCast(false)} />
+            </>
         );
     };
 
