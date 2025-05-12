@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import ContactGroups from "../pages/voicebot/contanctGroups/ContactGroups";
 import EmailBotDashboard from "../pages/voicebot/dashboard/EmailBotDashboard";
 import EmailBotAIAgent from "../pages/emailBot/emailBotAiAgent/EmailBotAIAgent";
+import EmailConversation from "../pages/emailBot/EmailComponent/EmailConversation";
 import ChatbotDashboard from "../pages/chatbot/dashboard/ChatbotDashboard";
 import ChatBotAiAgent from "../pages/chatbot/aiAgent/ChatBotAiAgent";
 import TestBot from "../pages/chatbot/aiAgent/TestBot";
@@ -83,6 +84,7 @@ const AppRoutes = () => {
             </PriveteRoute>
           }
         />
+        
         <Route
           path="emailBot/emailBotAIAgents"
           element={
@@ -91,6 +93,17 @@ const AppRoutes = () => {
             </PriveteRoute>
           }
         />
+
+
+        <Route
+          path="emailBot/emails"
+          element={
+            <PriveteRoute>
+              <EmailConversation />
+                  </PriveteRoute>
+          }
+        />
+              
         <Route
           path="chatbot"
           element={

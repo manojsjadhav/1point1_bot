@@ -24,6 +24,7 @@ function AiAgent() {
 
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
+  const voiceBotSelected = selectedBotName?.selectedBot === "Voice_Bot";
 
   useEffect(() => {
     setAgentDetails({ ...agentDetails, user_id, created_by: username });
@@ -34,11 +35,10 @@ function AiAgent() {
       dispatch(fetchEmailBotAgentList());
 
       dispatch(
-        setBreadcrumbs([
-          { label: "My Agent", path: "emailBot/emailBotAIAgents" },
-        ])
+        setBreadcrumbs([{ label: "My Email Agent", path: "emailBot/emailBotAIAgents" }])
       );
-    } else {
+    }
+    else if (voiceBotSelected) {
       dispatch(fetchAgentList(user_id));
       dispatch(
         setBreadcrumbs([{ label: "Voice Agent", path: "voicebot/ai-agents" }])

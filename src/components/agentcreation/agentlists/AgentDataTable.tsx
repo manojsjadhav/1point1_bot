@@ -23,7 +23,7 @@ import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useDispatch } from "react-redux";
-import { deleteAgent } from "../../../services/agentFlowServices";
+import { deleteAgent, deleteEmailAgent } from "../../../services/agentFlowServices";
 import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
@@ -105,9 +105,14 @@ const AgentDataTable = () => {
 
   const handlAgentDelete = (id: any) => {
     if (window.confirm("Are you sure you want to delete this agent?")) {
-      dispatch(deleteAgent(id));
+      if (mailBotSelected) {
+        dispatch(deleteEmailAgent(id));
+      } else {
+        dispatch(deleteAgent(id));
+      }
     }
   };
+  
   const handlAgentEdit = (agent: any) => {
     console.log({ agent });
     if (selectedBotName?.selectedBot === "Voice_Bot") {
@@ -124,7 +129,14 @@ const AgentDataTable = () => {
           { label: agent.agent_type, path: "/chatbot" },
         ])
       );
-    }
+    } else if(selectedBotName?.selectedBot === "Email_Bot"){
+         dispatch(
+        setBreadcrumbs([
+          { label: "My Email Agent", path: "/emailBot/emailBotAIAgents" },
+           { label: agent.agent_type, path: "/emailBot" },
+        ])
+      );
+     }
     const flowNodes = JSON.parse(agent.nodes_list);
     console.log({ flowNodes });
     dispatch(setInitialNodes(flowNodes));

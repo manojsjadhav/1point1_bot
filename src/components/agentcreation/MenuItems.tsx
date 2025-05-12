@@ -1,22 +1,46 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import Drag from "../../assets/componentmenuicon/Drag.svg";
+import { addNode } from "../../redux/nodeSlice/nodeSlice";
+import { RootState } from "../../redux/store";
+import { agentFlowMenuItems } from "../../constants/agentFlowMenuItems";
+import { EmailConfigurationLLM, fetchModelParameters, nodeListData } from "../../nodes/utils/nodedata";
+import { getSubmenuList } from "../../services/agentFlowServices";
 import {
   agentFlowMenuItems,
   chatAgentFlowMenuItems,
   groupedByTypes,
 } from "../../constants/agentFlowMenuItems";
-import { fetchModelParameters, nodeListData } from "../../nodes/utils/nodedata";
-import { getSubmenuList } from "../../services/agentFlowServices";
-import { useReactFlow } from "@xyflow/react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+
+interface Model {
+  id: number;
+  model_name: string;
+  url: string;
+  library_details: string;
+  thumbnail: string;
+  model_type: string;
+}
+
+const groupModelsByType = (menuData: Model[]) => {
+  return menuData.reduce((acc: Record<string, Model[]>, model) => {
+    const type = model.model_type;
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(model);
+    return acc;
+  }, {});
+};
 
 const MenuItems = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const allNodes = useSelector((state: RootState) => state.nodes);
+  const dispatch = useDispatch();
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
-  const { addNodes, getNodes } = useReactFlow();
+  const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
+   const { addNodes, getNodes } = useReactFlow();
+
   const toggleMenu = (id: number) => {
     setMenuItems((prev: any) =>
       prev.map((item: any) =>
@@ -24,26 +48,40 @@ const MenuItems = () => {
       )
     );
   };
+
   const handleAddNode = async (subMenu: any) => {
-    const getAllNodes: any = getNodes();
-    console.log({ getAllNodes });
-    let node: any = nodeListData.find(
+    const getNodes = getNodes();
+    const nodeTemplate: any = nodeListData.find(
       (node: any) => node.nodetype === subMenu.model_type
     );
-    const fields = await fetchModelParameters(subMenu.id);
-    console.log({ fields });
-    node.data.title = subMenu.model_name;
-    node.data.nodeIcon = subMenu.thumbnail;
-    node.data.fields = fields;
-    console.log({ node });
-    const isCheckNode = getAllNodes.some(
-      (nodeItem: any) => nodeItem?.nodetype === node?.nodetype
-    );
-    if (isCheckNode) {
-      alert("This type of node already exist");
-    } else {
-      addNodes({ ...node, id: uuidv4() });
+
+    if (!nodeTemplate) {
+      console.error("Node template not found for type:", subMenu.model_type);
+      return;
     }
+
+    const fields = await fetchModelParameters(subMenu.id);
+    const newNode = {
+      ...nodeTemplate,
+      id: uuidv4(),
+      data: {
+        ...nodeTemplate.data,
+        title: subMenu.model_name,
+        nodeIcon: subMenu.thumbnail,
+        fields,
+      },
+    };
+    
+    const isDuplicate = getNodes.find(
+      (nodeItem: any) => nodeItem.nodetype === nodeTemplate?.nodetype
+    );
+
+    if (isDuplicate) {
+      alert("This type of node already exists");
+      return;   
+    }
+
+    addNodes(newNode);
   };
 
   useEffect(() => {
@@ -53,17 +91,20 @@ const MenuItems = () => {
         const groupedByType = groupedByTypes(menuData);
         const menuitem = agentFlowMenuItems(groupedByType);
         setMenuItems(menuitem);
-      } else if (selectedBotName?.selectedBot === "Chat_Bot") {
+      } else if (selectedBotName?.selectedBot === "Chat_Bot" || selectedBotName?.selectedBot === "Email_Bot") {
         const menuData = await getSubmenuList(); // call chat menuitem api
         const groupedByType = groupedByTypes(menuData);
         const menuitem = chatAgentFlowMenuItems(groupedByType);
         setMenuItems(menuitem);
       }
     })();
-  }, []);
+  }, [selectedBotName.selectedBot]);
+
+  const filterData = mailBotSelected ? menuItems.filter((elem: any) => elem.label === "LLM Models") : menuItems
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-      {menuItems.map((menu: any) => (
+      {filterData.map((menu: any) => (
         <React.Fragment key={menu.id}>
           <Box
             onClick={() => toggleMenu(menu.id)}
@@ -115,13 +156,7 @@ const MenuItems = () => {
             />
           </Box>
           {menu.isActive && menu.subMenuItems.length > 0 && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "4px",
-              }}
-            >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {menu.subMenuItems.map((sub: any, i: any) => (
                 <Box
                   key={i}
@@ -160,6 +195,7 @@ const MenuItems = () => {
                       {sub.model_name}
                     </Typography>
                   </Box>
+
                   <Box
                     component="img"
                     src={Drag}

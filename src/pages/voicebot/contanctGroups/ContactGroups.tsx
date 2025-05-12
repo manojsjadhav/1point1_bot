@@ -35,8 +35,6 @@ import { AppDispatch, RootState } from '../../../redux/store';
 import { useDispatch } from 'react-redux';
 import { fetchGroups, searchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
 import { deleteGroup } from '../../../redux/nodeSlice/deleteContactGroupSlice';
-import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGroupSlice';
-
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import CustomLoader from '../../CustomLoader';

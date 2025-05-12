@@ -59,3 +59,21 @@ export interface AddNewContactType {
   phone_number: string;
   formated_number: string;
 }
+
+export interface Email {
+  id: string;
+  from: {
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  subject: string;
+  preview: string;
+  body: string;
+  isRead: boolean;
+  isStarred: boolean;
+  date: Date;
+  labels: string[];
+  attachments?: number;
+  folder: "inbox" | "sent" | "drafts" | "trash";
+}

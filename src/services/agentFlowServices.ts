@@ -111,3 +111,49 @@ export const getSubmenuList = async () => {
     console.log("getSubmenuList", error.message);
   }
 };
+
+export const postEmailAgentFlow = async (payload: any): Promise<void> => {
+  try {
+    await axios.post(
+      "http://1msg.1point1.in:3001/api/email/bot/create/email-user/bot/j-v1/",
+      payload
+    );
+    console.log("Data posted successfully");
+  } catch (error) {
+    const err = error as AxiosError;
+    console.error("Failed to post agent flow:", err.message);
+  }
+};
+
+export const editEmailAgent = createAsyncThunk<
+  any,
+  { id: any; updatedData: any },
+  { rejectValue: string }
+>(
+  "agentList/editEmailAgent",
+  async ({ id, updatedData }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `http://1msg.1point1.in:3001/api/email/bot/update/email-user/bot/j-v1/?agent_id=${id}`,
+        updatedData
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Update failed");
+    }
+  }
+);
+
+export const deleteEmailAgent = createAsyncThunk(
+  "agentList/deleteEmailAgent",
+  async (agentId: any, { rejectWithValue }) => {
+    try {
+      await axios.delete(
+        `http://1msg.1point1.in:3001/api/email/bot/delete/email-user/bot/j-v1/?agent_id=${agentId}`
+      );
+      return agentId;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Delete failed");
+    }
+  }
+);
