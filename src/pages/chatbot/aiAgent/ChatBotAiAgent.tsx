@@ -24,7 +24,7 @@ function ChatBotAiAgent() {
   }, [agentFlowtoggle]);
 
   useEffect(() => {
-    dispatch(fetchAgentList(user_id)); // chat ai agent list api
+    dispatch(fetchAgentList(user_id));
     dispatch(
       setBreadcrumbs([{ label: "Chat Agent", path: "chatbot/ai-agents" }])
     );

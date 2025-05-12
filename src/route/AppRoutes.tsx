@@ -12,6 +12,7 @@ import EmailBotDashboard from "../pages/voicebot/dashboard/EmailBotDashboard";
 import EmailBotAIAgent from "../pages/emailBot/emailBotAiAgent/EmailBotAIAgent";
 import ChatbotDashboard from "../pages/chatbot/dashboard/ChatbotDashboard";
 import ChatBotAiAgent from "../pages/chatbot/aiAgent/ChatBotAiAgent";
+import TestBot from "../pages/chatbot/aiAgent/TestBot";
 
 const AppRoutes = () => {
   return (
@@ -103,6 +104,14 @@ const AppRoutes = () => {
           element={
             <PriveteRoute>
               <ChatBotAiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="chatbot/ai-agents/testbot/:id"
+          element={
+            <PriveteRoute>
+              <TestBot />
             </PriveteRoute>
           }
         />

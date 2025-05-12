@@ -17,6 +17,8 @@ import {
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../redux/store";
 import Delete from "../../../assets/agentdialogicon/Delete.svg";
+import Chat_agent from "../../../assets/chatbotIcon/Chat_agent.svg";
+import code from "../../../assets/chatbotIcon/code.svg";
 import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -26,6 +28,8 @@ import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
 import { formatDate } from "../../../utils";
+import CodePopup from "../../chatbot/CodePopup";
+import { useNavigate } from "react-router-dom";
 
 const NavButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#41414B",
@@ -42,16 +46,27 @@ const NavButton = styled(Button)(({ theme }) => ({
 }));
 
 const AgentDataTable = () => {
+  const cellWidths = ["5%", "30%", "20%", "20%", "25%"];
   const { agents } = useSelector((state: RootState) => state.agents);
   const TableHeaders = ["", "Agent Name", "Created On", "Created By", "Action"];
   const [page, setPage] = useState(1);
+  const [openCodePopup, setOpenCodePopup] = useState<boolean>(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { agentFlowtoggle, setAgentFlowtoggle, setEditAgentData } =
     useContext(agentStore);
   const rowsPerPage = 10;
 
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
+  const handleCodeOpen = (id: any) => {
+    console.log("code id: ", id);
+    setOpenCodePopup(true);
+  };
+
+  const handleCodeClose = () => {
+    setOpenCodePopup(false);
+  };
 
   const paginatedAgents = useMemo(() => {
     const startIndex = (page - 1) * rowsPerPage;
@@ -125,14 +140,18 @@ const AgentDataTable = () => {
       >
         <Table>
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#43454e" }}>
+            <TableRow
+              sx={{
+                backgroundColor: "#43454e",
+              }}
+            >
               <TableCell
                 padding="checkbox"
                 sx={{
                   color: "#D9D9DE",
                   padding: "10px",
                   fontSize: 12,
-                  fontWeight: 500,
+                  fontWeight: "GeneralSans-m",
                   border: "none",
                 }}
               >
@@ -149,14 +168,15 @@ const AgentDataTable = () => {
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              {TableHeaders.slice(1).map((header) => (
+              {TableHeaders.slice(1).map((header: any, index: any) => (
                 <TableCell
                   key={header}
                   sx={{
+                    width: cellWidths[index + 1],
                     color: "#D9D9DE",
                     padding: "10px",
-                    fontSize: 12,
-                    fontWeight: 500,
+                    fontSize: 14,
+                    fontWeight: "GeneralSans-m",
                     border: "none",
                   }}
                 >
@@ -197,6 +217,7 @@ const AgentDataTable = () => {
                       color: "#D9D9DE",
                       border: "none",
                       backgroundColor: bgColor,
+                      pl: "10px",
                     }}
                   >
                     {agent?.agent_name}
@@ -215,6 +236,7 @@ const AgentDataTable = () => {
                       color: "#D9D9DE",
                       border: "none",
                       backgroundColor: bgColor,
+                      pl: "10px",
                     }}
                   >
                     {/* {agent?.created_by} */}
@@ -225,6 +247,7 @@ const AgentDataTable = () => {
                       color: "#D9D9DE",
                       border: "none",
                       backgroundColor: bgColor,
+                      pl: 0,
                     }}
                   >
                     <Box
@@ -234,6 +257,46 @@ const AgentDataTable = () => {
                         gap: "10px",
                       }}
                     >
+                      {selectedBotName?.selectedBot === "Chat_Bot" && (
+                        <Button
+                          sx={{
+                            background: "#172A54",
+                            textTransform: "none",
+                            borderRadius: "50px",
+                            display: "flex",
+                            alignItems: "center",
+                            fontFamily: "GeneralSans-m",
+                            fontSize: "12px",
+                            color: "#fff",
+                            px: "16px",
+                            height: "30px",
+                          }}
+                          onClick={() =>
+                            navigate(`/chatbot/ai-agents/testbot/${agent.id}`)
+                          }
+                        >
+                          Test Bot
+                          <Box
+                            component="img"
+                            src={Chat_agent}
+                            alt="Publish"
+                            sx={{ width: 22, height: 22, ml: 1 }}
+                          />
+                        </Button>
+                      )}
+                      {selectedBotName?.selectedBot === "Chat_Bot" && (
+                        <Box
+                          component="img"
+                          src={code}
+                          alt="Delete"
+                          sx={{ width: 22, height: 22, cursor: "pointer" }}
+                          onClick={() => handleCodeOpen(agent?.id)}
+                        />
+                      )}
+                      <CodePopup
+                        handleCodeClose={handleCodeClose}
+                        openCodePopup={openCodePopup}
+                      />
                       <Box
                         component="img"
                         src={Delete}
