@@ -8,18 +8,30 @@ import { agentStore } from "../../providers/AgentContext";
 import { useDispatch } from "react-redux";
 import { setBreadcrumbs } from "../../redux/nodeSlice/breadcrumbSlice";
 import { ReactFlowProvider } from "@xyflow/react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const VoiceAgentFlow = () => {
   const dispatch = useDispatch();
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const { agentDetails } = useContext(agentStore);
   useEffect(() => {
     if (agentDetails.agent_type) {
-      dispatch(
-        setBreadcrumbs([
-          { label: "My Agent", path: "/voicebot/ai-agents" },
-          { label: agentDetails.agent_type, path: "/voicebot" },
-        ])
-      );
+      if (selectedBotName?.selectedBot === "Voice_Bot") {
+        dispatch(
+          setBreadcrumbs([
+            { label: "Voice Agent", path: "/voicebot/ai-agents" },
+            { label: agentDetails.agent_type, path: "/voicebot" },
+          ])
+        );
+      } else if (selectedBotName?.selectedBot === "Chat_Bot") {
+        dispatch(
+          setBreadcrumbs([
+            { label: "Chat Agent", path: "/chatbot/ai-agents" },
+            { label: agentDetails.agent_type, path: "/chatbot" },
+          ])
+        );
+      }
     }
   }, []);
   return (

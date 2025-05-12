@@ -45,7 +45,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["nodes", "auth", "agents", "breadcrumb"],
+  whitelist: ["nodes", "auth", "agents", "breadcrumb", "selectBot"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

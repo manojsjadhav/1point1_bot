@@ -5,7 +5,6 @@ import {
   Controls,
   Edge,
   MiniMap,
-  Panel,
   ReactFlow,
   useEdgesState,
   useNodesState,
@@ -23,6 +22,7 @@ import { Box, Button } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { editAgent, editEmailAgent, postAgentFlow, postEmailAgentFlow } from "../../services/agentFlowServices.ts";
 // import { getCurrentFormattedDate } from "../../nodes/utils/nodedata.ts";
+
 import { agentStore } from "../../providers/AgentContext.tsx";
 import { setInitialNodes } from "../../redux/nodeSlice/nodeSlice.ts";
 import { useDispatch } from "react-redux";
@@ -49,7 +49,6 @@ export default function NodeLists() {
   const lengthNodes = nodes?.length;
   const { user_id, created_by, agent_type, dialer, flow_type, agent_name } =
     agentDetails;
-
   const handleFlowSubmit = async () => {
     const tempId = uuidv4();
     const isEditing = editAgentData && Object.keys(editAgentData).length > 0;
@@ -98,7 +97,6 @@ export default function NodeLists() {
       tts_model_perm: {},
       sts_model_perms: {},
     };
-
     // Utility to populate values from fields
     const populateFields = (target: any, fields: any[]) => {
       fields.forEach(field => {
@@ -138,7 +136,6 @@ export default function NodeLists() {
         }
       }
     });
-
     // Utility to check if any field is empty
     const hasEmptyFields = (obj: Record<string, any>) =>
       Object.values(obj).some(value => value === "" || value === null || value === undefined);
@@ -195,12 +192,14 @@ export default function NodeLists() {
   );
 
   useEffect(() => {
-    setNodes((prevNodes) => {
+   if(allNode.length > 0){ 
+     setNodes((prevNodes) => {
       const newNodes = cloneDeep(allNode);
       const existingIds = new Set(prevNodes.map((node) => node.id));
       const filteredNewNodes = newNodes.filter((node: any) => !existingIds.has(node.id));
       return [...prevNodes, ...filteredNewNodes];
     });
+    }
   }, [allNode]);
 
   useEffect(() => {
@@ -208,7 +207,66 @@ export default function NodeLists() {
   }, [])
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <div
+        style={{
+          position: "fixed",
+          top: "80px",
+          right: "25px",
+          zIndex: 9999,
+          backgroundColor: "#2A2A33",
+          padding: "8px 12px",
+          borderRadius: "8px",
+          display: "flex",
+          alignItems: "center",
+          boxShadow: "0 0 10px rgba(0,0,0,0.4)",
+        }}
+      >
+        <Button
+          sx={{
+            textTransform: "none",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            fontFamily: "GeneralSans-m",
+            fontSize: "14px",
+            color: "#fff",
+            px: "25px",
+            height: "36px",
+          }}
+        >
+          <Box
+            component="img"
+            src={playIcon}
+            alt="Test"
+            sx={{ width: 24, height: 24, mr: 1 }}
+          />
+          Test
+        </Button>
+        <Button
+          sx={{
+            background: "#FF581C",
+            textTransform: "none",
+            borderRadius: "8px",
+            display: "flex",
+            alignItems: "center",
+            fontFamily: "GeneralSans-m",
+            fontSize: "14px",
+            color: "#fff",
+            px: "25px",
+            height: "36px",
+          }}
+          onClick={handleflowsubmit}
+        >
+          Publish
+          <Box
+            component="img"
+            src={chevron_down}
+            alt="Publish"
+            sx={{ width: 24, height: 24, ml: 1 }}
+          />
+        </Button>
+      </div>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -216,6 +274,7 @@ export default function NodeLists() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        fitView
       >
         <Panel position="top-right">
           <Box
@@ -275,7 +334,6 @@ export default function NodeLists() {
             </Button>
           </Box>
         </Panel>
-
         <Controls />
         <MiniMap />
         <Background gap={12} size={1} />

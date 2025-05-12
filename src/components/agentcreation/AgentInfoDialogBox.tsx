@@ -7,14 +7,17 @@ import {
   Drawer,
 } from "@mui/material";
 import Arrow_Left_SM from "../../assets/agentdialogicon/Arrow_Left_SM.svg";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { agentStore } from "../../providers/AgentContext";
-import { agentTypes, marketingAgentType } from "../../constants/agentType";
+import { agentTypes, marketingAgentType , voiceAgentType, chatAgentTypes } from "../../constants/agentType";
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
 
+
 const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
   const [typeValue, setTypeValue] = useState<any>("");
+  const [agentType, setAgentType] = useState<any>([]);
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const { agentFlowtoggle, setAgentFlowtoggle, setAgentDetails, agentDetails } =
     useContext(agentStore);
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
@@ -47,8 +50,17 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
       setAgentFlowtoggle(!agentFlowtoggle);
     }
   };
-
-  const agentTypesData = mailBotSelected ? [...agentTypes, ...marketingAgentType] : agentTypes
+  
+  useEffect(() => {
+    if (selectedBotName?.selectedBot === "Voice_Bot") {
+      setAgentType(voiceAgentType);
+    } else if (selectedBotName?.selectedBot === "Chat_Bot") {
+      setAgentType(chatAgentTypes);
+    } else if (selectedBotName?.selectedBot === "Email_Bot") {
+      setAgentType(marketingAgentType);
+    }
+  }, []);
+  
   return (
     <Drawer
       anchor="right"
@@ -94,7 +106,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
           onChange={handleChange}
         />
 
-        {!mailBotSelected &&
+        {selectedBotName?.selectedBot === "Voice_Bot" &&
           <> <Typography className="text" sx={{ mt: "20px" }}>
             2. Flow Type
           </Typography>
@@ -132,7 +144,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
         </Typography>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {agentTypesData.map((agent: any, index: any) => (
+        {agentType.map((agent: any, index: any) => (
           <Box
             key={index}
             className="agent-type"

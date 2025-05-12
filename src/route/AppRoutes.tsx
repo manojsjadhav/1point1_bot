@@ -11,6 +11,9 @@ import ContactGroups from "../pages/voicebot/contanctGroups/ContactGroups";
 import EmailBotDashboard from "../pages/voicebot/dashboard/EmailBotDashboard";
 import EmailBotAIAgent from "../pages/emailBot/emailBotAiAgent/EmailBotAIAgent";
 import EmailConversation from "../pages/emailBot/EmailComponent/EmailConversation";
+import ChatbotDashboard from "../pages/chatbot/dashboard/ChatbotDashboard";
+import ChatBotAiAgent from "../pages/chatbot/aiAgent/ChatBotAiAgent";
+import TestBot from "../pages/chatbot/aiAgent/TestBot";
 
 const AppRoutes = () => {
   return (
@@ -81,6 +84,7 @@ const AppRoutes = () => {
             </PriveteRoute>
           }
         />
+        
         <Route
           path="emailBot/emailBotAIAgents"
           element={
@@ -89,11 +93,38 @@ const AppRoutes = () => {
             </PriveteRoute>
           }
         />
+
+
         <Route
           path="emailBot/emails"
           element={
             <PriveteRoute>
               <EmailConversation />
+                  </PriveteRoute>
+          }
+        />
+              
+        <Route
+          path="chatbot"
+          element={
+            <PriveteRoute>
+              <ChatbotDashboard />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="chatbot/ai-agents"
+          element={
+            <PriveteRoute>
+              <ChatBotAiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="chatbot/ai-agents/testbot/:id"
+          element={
+            <PriveteRoute>
+              <TestBot />
             </PriveteRoute>
           }
         />

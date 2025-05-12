@@ -1,11 +1,16 @@
 import { Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { setSelectedBotName } from "../redux/nodeSlice/selectBotSlice";
+import { AppDispatch } from "../redux/store";
+import { useDispatch } from "react-redux";
 
 const BotType = ({ icon, botName, route, description, label }: any) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const handleBotClick = () => {
-    navigate(route)
-    localStorage.setItem("selectedBotName", label);
+    navigate(route);
+    dispatch(setSelectedBotName(label));
+    // localStorage.setItem("selectedBotName", label);
   };
 
   return (
@@ -33,7 +38,12 @@ const BotType = ({ icon, botName, route, description, label }: any) => {
         />
       </Box>
       <Typography
-        sx={{ fontFamily: "GeneralSans-m", fontSize: "16px", color: "#fff", mb: "8px" }}
+        sx={{
+          fontFamily: "GeneralSans-m",
+          fontSize: "16px",
+          color: "#fff",
+          mb: "8px",
+        }}
       >
         {botName}
       </Typography>

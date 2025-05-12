@@ -12,7 +12,10 @@ import AgentInfoDialogBox from "../AgentInfoDialogBox";
 import AgentDataTable from "./AgentDataTable";
 import { useDispatch } from "react-redux";
 import { useDebounce } from "../../../utils/useDebounce";
-import { fetchAgentsBySearch, fetchEmailBotAgentList } from "../../../services/agentFlowServices";
+import {
+  fetchAgentsBySearch,
+  fetchEmailBotAgentList,
+} from "../../../services/agentFlowServices";
 import { AppDispatch, RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 const textFieldStyle = {
@@ -32,7 +35,7 @@ const textFieldStyle = {
     fontSize: "14px",
   },
 };
-const AgentLists = ({ }: any) => {
+const AgentLists = ({}: any) => {
   const [open, setOpen] = useState<any>(false);
   const { auth } = useSelector((state: RootState) => state);
   const user_id = auth?.response?.user_id;
@@ -63,7 +66,15 @@ const AgentLists = ({ }: any) => {
   return (
     <Box className="container">
       <Box className="heading-content">
-        <Typography className="heading">{mailBotSelected ? "Manage Email Agents" : "Manage Voice Agents"}</Typography>
+        {selectedBotName?.selectedBot === "Voice_Bot" && (
+          <Typography className="heading">Manage Voice Agents</Typography>
+        )}
+        {selectedBotName?.selectedBot === "Email_Bot" && (
+          <Typography className="heading">Manage Email Agents</Typography>
+        )}
+        {selectedBotName?.selectedBot === "Chat_Bot" && (
+          <Typography className="heading">Manage Chat Agents</Typography>
+        )}
         <TextField
           variant="outlined"
           placeholder="Search an Agent"
