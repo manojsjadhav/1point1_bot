@@ -204,7 +204,7 @@ export default function NodeLists() {
   }, [allNode]);
 
   useEffect(() => {
-    if (mailBotSelected && lengthNodes !== 0) addNodes(EmailConfigurationLLM)
+    if (mailBotSelected && lengthNodes === 0) addNodes(EmailConfigurationLLM)
   }, [])
 
   return (
