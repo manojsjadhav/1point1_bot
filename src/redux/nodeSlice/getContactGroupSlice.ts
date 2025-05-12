@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import {
   getGroups,
   searchContactGroups,
@@ -7,13 +7,17 @@ import { Group } from "../../types";
 
 interface GroupState {
   groups: Group[];
-  loading: boolean;
+  searchResults: Group[];
+  isFetchingGroups: boolean;
+  isSearchingGroups: boolean;
   error: string | null;
 }
 
 const initialState: GroupState = {
   groups: [],
-  loading: false,
+  searchResults: [],
+  isFetchingGroups: false,
+  isSearchingGroups: false,
   error: null,
 };
 
@@ -49,36 +53,46 @@ export const searchGroups = createAsyncThunk(
 const contactGroupReducer = createSlice({
   name: "groups",
   initialState,
-  reducers: {},
+  reducers: {
+    resetGroupsState: () => initialState,
+  },
   extraReducers: (builder) => {
     builder
       // fetchGroups
       .addCase(fetchGroups.pending, (state) => {
-        state.loading = true;
+        state.isFetchingGroups = true;
         state.error = null;
       })
-      .addCase(fetchGroups.fulfilled, (state, action) => {
-        state.loading = false;
-        state.groups = action.payload;
-      })
+      .addCase(
+        fetchGroups.fulfilled,
+        (state, action: PayloadAction<Group[]>) => {
+          state.isFetchingGroups = false;
+          state.groups = action.payload;
+        }
+      )
       .addCase(fetchGroups.rejected, (state, action) => {
-        state.loading = false;
+        state.isFetchingGroups = false;
         state.error = action.payload as string;
       })
+
       // searchGroups
       .addCase(searchGroups.pending, (state) => {
-        state.loading = true;
+        state.isSearchingGroups = true;
         state.error = null;
       })
-      .addCase(searchGroups.fulfilled, (state, action) => {
-        state.loading = false;
-        state.groups = action.payload;
-      })
+      .addCase(
+        searchGroups.fulfilled,
+        (state, action: PayloadAction<Group[]>) => {
+          state.isSearchingGroups = false;
+          state.searchResults = action.payload;
+        }
+      )
       .addCase(searchGroups.rejected, (state, action) => {
-        state.loading = false;
+        state.isSearchingGroups = false;
         state.error = action.payload as string;
       });
   },
 });
 
+export const { resetGroupsState } = contactGroupReducer.actions;
 export default contactGroupReducer.reducer;

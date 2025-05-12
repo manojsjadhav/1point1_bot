@@ -12,19 +12,28 @@ import {
   Button,
   Pagination,
   PaginationItem,
-  styled, // Import the styled utility
+  styled,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../redux/store";
 import Delete from "../../../assets/agentdialogicon/Delete.svg";
+import Chat_agent from "../../../assets/chatbotIcon/Chat_agent.svg";
+import code from "../../../assets/chatbotIcon/code.svg";
 import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useDispatch } from "react-redux";
-import { deleteAgent } from "../../../services/agentFlowServices";
-import { editNodes, setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
+import {
+  deleteAgent,
+  deleteEmailAgent,
+  fetchAgentList,
+} from "../../../services/agentFlowServices";
+import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
+import { formatDate } from "../../../utils";
+import CodePopup from "../../chatbot/CodePopup";
+import { useNavigate } from "react-router-dom";
 
 const NavButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#41414B",
@@ -41,18 +50,31 @@ const NavButton = styled(Button)(({ theme }) => ({
 }));
 
 const AgentDataTable = () => {
+  const cellWidths = ["5%", "30%", "20%", "20%", "25%"];
   const { agents } = useSelector((state: RootState) => state.agents);
   const TableHeaders = ["", "Agent Name", "Created On", "Created By", "Action"];
   const [page, setPage] = useState(1);
+  const [openCodePopup, setOpenCodePopup] = useState<boolean>(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const {
     agentFlowtoggle,
     setAgentFlowtoggle,
-    editAgentData,
     setEditAgentData,
+    editAgentData,
   } = useContext(agentStore);
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
+
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
+  const handleCodeOpen = (id: any) => {
+    console.log("code id: ", id);
+    setOpenCodePopup(true);
+  };
+
+  const handleCodeClose = () => {
+    setOpenCodePopup(false);
+  };
 
   const paginatedAgents = useMemo(() => {
     const startIndex = (page - 1) * rowsPerPage;
@@ -89,24 +111,57 @@ const AgentDataTable = () => {
     }
   };
 
-  const handlAgentDelete = (id: any) => {
+  const handlAgentDelete = (id: any, user_id: any) => {
     if (window.confirm("Are you sure you want to delete this agent?")) {
-      dispatch(deleteAgent(id));
+      if (selectedBotName?.selectedBot === "Voice_Bot") {
+        dispatch(deleteEmailAgent(id));
+        dispatch(fetchAgentList(user_id));
+      } else {
+        dispatch(deleteAgent(id));
+      }
     }
   };
+
   const handlAgentEdit = (agent: any) => {
-    console.log({ agent });
-    dispatch(
-      setBreadcrumbs([
-        { label: "My Agent", path: "/voicebot/ai-agents" },
-        { label: agent.agent_type, path: "/voicebot" },
-      ])
-    );
+    console.log("chech agent data:", agent);
+    const prompt = JSON.parse(agent.llm_model_param);
+    console.log({ prompt });
+    const editagent = {
+      user_id: agent.user_id,
+      created_by: agent.created_by,
+      dialer: agent.dialer,
+      flow_type: agent.flow_type,
+      agent_name: agent.agent_name,
+      agent_type: agent.agent_type,
+      system_prompt: prompt.system_prompt,
+      id: agent.id,
+    };
+    if (selectedBotName?.selectedBot === "Voice_Bot") {
+      dispatch(
+        setBreadcrumbs([
+          { label: "Voice Agent", path: "/voicebot/ai-agents" },
+          { label: agent.agent_type, path: "/voicebot" },
+        ])
+      );
+    } else if (selectedBotName?.selectedBot === "Chat_Bot") {
+      dispatch(
+        setBreadcrumbs([
+          { label: "Chat Agent", path: "/chatbot/ai-agents" },
+          { label: agent.agent_type, path: "/chatbot" },
+        ])
+      );
+    } else if (selectedBotName?.selectedBot === "Email_Bot") {
+      dispatch(
+        setBreadcrumbs([
+          { label: "My Email Agent", path: "/emailBot/emailBotAIAgents" },
+          { label: agent.agent_type, path: "/emailBot" },
+        ])
+      );
+    }
     const flowNodes = JSON.parse(agent.nodes_list);
-    console.log({ flowNodes });
-    // dispatch(editNodes(flowNodes));
     dispatch(setInitialNodes(flowNodes));
-    setEditAgentData(agent);
+    setEditAgentData(editagent);
+    console.log("check editagent set data", editAgentData);
     setAgentFlowtoggle(!agentFlowtoggle);
   };
 
@@ -118,14 +173,18 @@ const AgentDataTable = () => {
       >
         <Table>
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#43454e" }}>
+            <TableRow
+              sx={{
+                backgroundColor: "#43454e",
+              }}
+            >
               <TableCell
                 padding="checkbox"
                 sx={{
                   color: "#D9D9DE",
                   padding: "10px",
                   fontSize: 12,
-                  fontWeight: 500,
+                  fontWeight: "GeneralSans-m",
                   border: "none",
                 }}
               >
@@ -142,14 +201,15 @@ const AgentDataTable = () => {
                   onChange={handleSelectAll}
                 />
               </TableCell>
-              {TableHeaders.slice(1).map((header) => (
+              {TableHeaders.slice(1).map((header: any, index: any) => (
                 <TableCell
                   key={header}
                   sx={{
+                    width: cellWidths[index + 1],
                     color: "#D9D9DE",
                     padding: "10px",
-                    fontSize: 12,
-                    fontWeight: 500,
+                    fontSize: 14,
+                    fontWeight: "GeneralSans-m",
                     border: "none",
                   }}
                 >
@@ -190,6 +250,7 @@ const AgentDataTable = () => {
                       color: "#D9D9DE",
                       border: "none",
                       backgroundColor: bgColor,
+                      pl: "10px",
                     }}
                   >
                     {agent?.agent_name}
@@ -201,23 +262,25 @@ const AgentDataTable = () => {
                       backgroundColor: bgColor,
                     }}
                   >
-                    {agent?.created_date}
+                    {formatDate(agent?.created_date)}
                   </TableCell>
                   <TableCell
                     sx={{
                       color: "#D9D9DE",
                       border: "none",
                       backgroundColor: bgColor,
+                      pl: "10px",
                     }}
                   >
-                    {agent?.created_by}
-                    {/* manoj */}
+                    {/* {agent?.created_by} */}
+                    Admin
                   </TableCell>
                   <TableCell
                     sx={{
                       color: "#D9D9DE",
                       border: "none",
                       backgroundColor: bgColor,
+                      pl: 0,
                     }}
                   >
                     <Box
@@ -227,12 +290,54 @@ const AgentDataTable = () => {
                         gap: "10px",
                       }}
                     >
+                      {selectedBotName?.selectedBot === "Chat_Bot" && (
+                        <Button
+                          sx={{
+                            background: "#172A54",
+                            textTransform: "none",
+                            borderRadius: "50px",
+                            display: "flex",
+                            alignItems: "center",
+                            fontFamily: "GeneralSans-m",
+                            fontSize: "12px",
+                            color: "#fff",
+                            px: "16px",
+                            height: "30px",
+                          }}
+                          onClick={() =>
+                            navigate(`/chatbot/ai-agents/testbot/${agent.id}`)
+                          }
+                        >
+                          Test Bot
+                          <Box
+                            component="img"
+                            src={Chat_agent}
+                            alt="Publish"
+                            sx={{ width: 22, height: 22, ml: 1 }}
+                          />
+                        </Button>
+                      )}
+                      {selectedBotName?.selectedBot === "Chat_Bot" && (
+                        <Box
+                          component="img"
+                          src={code}
+                          alt="Delete"
+                          sx={{ width: 22, height: 22, cursor: "pointer" }}
+                          onClick={() => handleCodeOpen(agent?.id)}
+                        />
+                      )}
+                      <CodePopup
+                        handleCodeClose={handleCodeClose}
+                        openCodePopup={openCodePopup}
+                      />
                       <Box
                         component="img"
                         src={Delete}
                         alt="Delete"
                         sx={{ width: 22, height: 22, cursor: "pointer" }}
-                        onClick={() => handlAgentDelete(agent?.id)}
+                        onClick={() =>
+                          handlAgentDelete(agent?.id, agent?.user_id)
+                        }
                       />
                       <Box
                         component="img"

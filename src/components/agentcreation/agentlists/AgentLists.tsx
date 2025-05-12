@@ -12,7 +12,10 @@ import AgentInfoDialogBox from "../AgentInfoDialogBox";
 import AgentDataTable from "./AgentDataTable";
 import { useDispatch } from "react-redux";
 import { useDebounce } from "../../../utils/useDebounce";
-import { fetchAgentsBySearch } from "../../../services/agentFlowServices";
+import {
+  fetchAgentsBySearch,
+  fetchEmailBotAgentList,
+} from "../../../services/agentFlowServices";
 import { AppDispatch, RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 const textFieldStyle = {
@@ -40,6 +43,10 @@ const AgentLists = ({}: any) => {
   const [searchText, setSearchText] = useState<any>("");
   const debouncedSearch = useDebounce(searchText, 500);
 
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
+  const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
+  const voiceBotSelected = selectedBotName?.selectedBot === "Voice_Bot";
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -49,13 +56,25 @@ const AgentLists = ({}: any) => {
   };
 
   useEffect(() => {
-    dispatch(fetchAgentsBySearch({ userId: user_id, query: debouncedSearch }));
+    if (mailBotSelected) {
+      dispatch(fetchEmailBotAgentList())
+    } else if (voiceBotSelected) {
+      dispatch(fetchAgentsBySearch({ userId: user_id, query: debouncedSearch }));
+    }
   }, [debouncedSearch, dispatch]);
 
   return (
     <Box className="container">
       <Box className="heading-content">
-        <Typography className="heading">Manage Agents</Typography>
+        {selectedBotName?.selectedBot === "Voice_Bot" && (
+          <Typography className="heading">Manage Voice Agents</Typography>
+        )}
+        {selectedBotName?.selectedBot === "Email_Bot" && (
+          <Typography className="heading">Manage Email Agents</Typography>
+        )}
+        {selectedBotName?.selectedBot === "Chat_Bot" && (
+          <Typography className="heading">Manage Chat Agents</Typography>
+        )}
         <TextField
           variant="outlined"
           placeholder="Search an Agent"
@@ -84,7 +103,6 @@ const AgentLists = ({}: any) => {
         handleClose={handleClose}
         textFieldStyle={textFieldStyle}
       />
-
       <AgentDataTable />
     </Box>
   );

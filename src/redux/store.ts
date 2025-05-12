@@ -23,6 +23,7 @@ import modalSlice from "./nodeSlice/modolNameSlice.ts";
 import contactGroupSlice from "./nodeSlice/deleteContactSlice.ts";
 import uploadFileReducer from "./nodeSlice/uploadFileSlice.ts";
 import uploadCSVFileSlice from "./nodeSlice/uploadCSVFileSlice.ts";
+import selectBot from "./nodeSlice/selectBotSlice.ts";
 
 const rootReducer = combineReducers({
   nodes: nodeReducer,
@@ -38,12 +39,13 @@ const rootReducer = combineReducers({
   deleteContacts: contactGroupSlice,
   uploadFile: uploadFileReducer,
   uploadCSVFile: uploadCSVFileSlice,
+  selectBot: selectBot,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["nodes", "auth", "agents", "breadcrumb"],
+  whitelist: ["nodes", "auth", "agents", "breadcrumb", "selectBot"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

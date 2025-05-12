@@ -35,13 +35,15 @@ import { AppDispatch, RootState } from '../../../redux/store';
 import { useDispatch } from 'react-redux';
 import { fetchGroups, searchGroups } from '../../../redux/nodeSlice/getContactGroupSlice';
 import { deleteGroup } from '../../../redux/nodeSlice/deleteContactGroupSlice';
-import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGroupSlice';
-
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import CustomLoader from '../../CustomLoader';
+
 import AvatarSummary from './AvatarSummary';
 import BroadcastModal from './BroadcastModal';
+
+import { formatDate } from '../../../utils';
+
 
 const rowsPerPage = 10;
 
@@ -53,7 +55,6 @@ const ContactGroups = () => {
     const [openViewContact, setOpeViewContact] = useState(false);
     const [openBroadCast, setOpenBroadCast] = useState(false);
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
-    const { success } = useSelector((state: RootState) => state.createGroup);
     const groupsState = useSelector((state: RootState) => state && state.groups);
     const { auth } = useSelector((state: RootState) => state);
 
@@ -137,21 +138,6 @@ const ContactGroups = () => {
         const start = (page - 1) * rowsPerPage;
         return filteredData.slice(start, start + rowsPerPage);
     }, [filteredData, page]);
-
-    const formatDate = (isoDate: string): string => {
-        const date = new Date(isoDate);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
-
-    useEffect(() => {
-        if (success) {
-            console.log('Group created successfully!');
-            dispatch(resetContactGroupState());
-        }
-    }, [success, dispatch]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
@@ -270,14 +256,12 @@ const ContactGroups = () => {
                                                 }}
                                             />
                                         )}
-
                                         {header}
                                         {header === 'Action' && <IconButton><ErrorOutlineOutlinedIcon sx={{ fontSize: 16, color: '#a1a1aa' }} /></IconButton>}
                                     </TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
-
                         <TableBody sx={{ border: '1px solid #505060', borderTop: "none", borderBottom: "none" }}>
                             {paginatedData.map((row: any, index: any) => {
                                 const isEvenRow = index % 2 === 0;
@@ -299,10 +283,17 @@ const ContactGroups = () => {
                                                 />
                                             </IconButton>
                                             <IconButton>
-                                                <Avatar
-                                                    src={row.group_avtar}
-                                                    sx={{ width: 26, height: 26 }}
-                                                />
+                                                {row.group_avtar ?
+
+                                                    <Avatar
+                                                        src={row.group_avtar}
+                                                        sx={{ width: 26, height: 26 }}
+                                                    />
+                                                    :
+                                                    <Avatar
+                                                        src={"sample.png"}
+                                                        sx={{ width: 26, height: 26 }}
+                                                    > {row.group_name.charAt(0).toUpperCase()}</Avatar>}
 
                                             </IconButton>
                                             {row.group_name}
@@ -465,7 +456,7 @@ const ContactGroups = () => {
 
     return (
         <Layout>
-            {loading ? <CustomLoader /> : <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh', width: '100%' }}>
+            {loading ? <CustomLoader /> : <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh' }}>
                 {chartHistoryHeader()}
                 {groupSearch()}
                 {contactGroupsTable()}

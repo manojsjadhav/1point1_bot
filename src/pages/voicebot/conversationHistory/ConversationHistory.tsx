@@ -353,7 +353,7 @@ const ConversationHistory: React.FC = () => {
                                                 backgroundColor: bgColor,
                                             }}
                                         >
-                                          {index}  {text}
+                                            {index}  {text}
                                         </TableCell>
                                     ))}
 
@@ -427,7 +427,7 @@ const ConversationHistory: React.FC = () => {
             '&:hover': {
                 backgroundColor: '#4a4a57',
             },
-        };        
+        };
         return (
             <Box
                 sx={{
@@ -503,7 +503,7 @@ const ConversationHistory: React.FC = () => {
 
     return (
         <Layout>
-            <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh', width: '100%' }}>
+            <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh', }}>
                 {chartHistoryHeader()}
                 {filterChartHistory()}
                 <Divider sx={{ mt: 1, bgcolor: '#505060', height: "1px", borderRadius: 1, mb: 2 }} />

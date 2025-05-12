@@ -27,6 +27,21 @@ export const fetchAgentList = createAsyncThunk<any>(
     }
   }
 );
+
+export const fetchEmailBotAgentList = createAsyncThunk(
+  "agents/fetchEmailBotAgentList",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get(
+        `http://1msg.1point1.in:3001/api/email/bot/get-all/email-user/bot/j-v1/`
+      );
+      return res.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message || "Something went wrong");
+    }
+  }
+);
+
 export const fetchAgentsBySearch = createAsyncThunk(
   "agents/fetchBySearch",
   async ({ userId, query }: { userId: any; query: any }) => {
@@ -76,8 +91,65 @@ export const deleteAgent = createAsyncThunk(
   "agentList/deleteAgent",
   async (agentId: any, { rejectWithValue }) => {
     try {
-      const response = await axios.delete(
+      await axios.delete(
         `http://1msg.1point1.in:3001/api/auth/j-v1/agents/delete/${agentId}`
+      );
+      return agentId;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Delete failed");
+    }
+  }
+);
+
+export const getSubmenuList = async () => {
+  try {
+    const result = await axios.get(
+      "http://1msg.1point1.in:3001/api/auth/j-v1/all_models/"
+    );
+    return result.data.models;
+  } catch (error: any) {
+    console.log("getSubmenuList", error.message);
+  }
+};
+
+export const postEmailAgentFlow = async (payload: any): Promise<void> => {
+  try {
+    await axios.post(
+      "http://1msg.1point1.in:3001/api/email/bot/create/email-user/bot/j-v1/",
+      payload
+    );
+    console.log("Data posted successfully");
+  } catch (error) {
+    const err = error as AxiosError;
+    console.error("Failed to post agent flow:", err.message);
+  }
+};
+
+export const editEmailAgent = createAsyncThunk<
+  any,
+  { id: any; updatedData: any },
+  { rejectValue: string }
+>(
+  "agentList/editEmailAgent",
+  async ({ id, updatedData }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `http://1msg.1point1.in:3001/api/email/bot/update/email-user/bot/j-v1/?agent_id=${id}`,
+        updatedData
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Update failed");
+    }
+  }
+);
+
+export const deleteEmailAgent = createAsyncThunk(
+  "agentList/deleteEmailAgent",
+  async (agentId: any, { rejectWithValue }) => {
+    try {
+      await axios.delete(
+        `http://1msg.1point1.in:3001/api/email/bot/delete/email-user/bot/j-v1/?agent_id=${agentId}`
       );
       return agentId;
     } catch (error: any) {

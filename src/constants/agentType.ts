@@ -2,8 +2,9 @@ import Edit from "../assets/agentdialogicon/Edit.svg";
 import Mindfulness_coach from "../assets/agentdialogicon/Mindfulness_coach.svg";
 import Sales_agent from "../assets/agentdialogicon/Sales_agent.svg";
 import Support_agent from "../assets/agentdialogicon/Support_agent.svg";
+import Marketing_agent from "../assets/agentdialogicon/Marketing.svg";
 
-export const agentTypes = [
+export const voiceAgentType = [
   {
     icon: Edit,
     description:
@@ -41,4 +42,26 @@ export const agentTypes = [
   },
 ];
 
+export const marketingAgentType = [
+  ...voiceAgentType,
+  {
+    icon: Marketing_agent,
+    description:
+      "Talk to harper, A marketing agent who showcases how ElevenLabs can transform your business. ",
+    system_prompt: "prompt",
+    value: "Marketing Agent",
+    title: "Marketing Agent",
+  },
+];
 
+export const chatAgentTypes = [
+  ...voiceAgentType,
+  {
+    icon: Sales_agent,
+    description:
+      "Talk to harper, A sales agent who showcases how ElevenLabs can transform your business. ",
+    system_prompt: "prompt",
+    value: "Marketing Agent",
+    title: "Marketing Agent",
+  },
+];

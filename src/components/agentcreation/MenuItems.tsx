@@ -1,41 +1,93 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
-import { addNode } from "../../redux/nodeSlice/nodeSlice";
 import { useSelector } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
 import { RootState } from "../../redux/store";
-import { agentFlowMenuItems } from "../../constants/agentFlowMenuItems";
-import { nodeListData } from "../../nodes/utils/nodedata";
+import { fetchModelParameters, nodeListData } from "../../nodes/utils/nodedata";
+import { getSubmenuList } from "../../services/agentFlowServices";
+import {
+  agentFlowMenuItems,
+  chatAgentFlowMenuItems,
+  groupedByTypes,
+} from "../../constants/agentFlowMenuItems";
+import { useReactFlow } from "@xyflow/react";
+import Drag from "../../assets/componentmenuicon/Drag.svg";
 
 const MenuItems = () => {
-  const [menuItems, setMenuItems] = useState(agentFlowMenuItems);
-  const allNodes = useSelector((state: RootState) => state.nodes);
-  const dispatch = useDispatch();
+  const [menuItems, setMenuItems] = useState([]);
+  const selectedBotName = useSelector((state: RootState) => state.selectBot);
+  const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
+  const { addNodes, getNodes } = useReactFlow();
 
   const toggleMenu = (id: number) => {
-    setMenuItems((prev) =>
-      prev.map((item) =>
+    setMenuItems((prev: any) =>
+      prev.map((item: any) =>
         item.id === id ? { ...item, isActive: !item.isActive } : item
       )
     );
   };
-  const handleAddNode = (nodeName: any) => {
-    const node: any = nodeListData.find(
-      (node: any) => node.data.title === nodeName
+
+  const handleAddNode = async (subMenu: any) => {
+    const getnodes: any = getNodes();
+    const nodeTemplate: any = nodeListData.find(
+      (node: any) => node.nodetype === subMenu.model_type
     );
-    const isCheckNode = allNodes.find(
-      (nodeItem: any) => nodeItem.nodetype === node?.nodetype
-    );
-    if (isCheckNode) {
-      alert("This type of node already exist");
-    } else {
-      dispatch(addNode({ ...node, id: uuidv4() }));
+
+    if (!nodeTemplate) {
+      console.error("Node template not found for type:", subMenu.model_type);
+      return;
     }
+
+    const fields = await fetchModelParameters(subMenu.id);
+    const newNode = {
+      ...nodeTemplate,
+      id: uuidv4(),
+      data: {
+        ...nodeTemplate.data,
+        title: subMenu.model_name,
+        nodeIcon: subMenu.thumbnail,
+        fields,
+      },
+    };
+
+    const isDuplicate = getnodes.find(
+      (nodeItem: any) => nodeItem.nodetype === nodeTemplate?.nodetype
+    );
+
+    if (isDuplicate) {
+      alert("This type of node already exists");
+      return;
+    }
+
+    addNodes(newNode);
   };
+
+  useEffect(() => {
+    (async () => {
+      if (selectedBotName?.selectedBot === "Voice_Bot") {
+        const menuData = await getSubmenuList();
+        const groupedByType = groupedByTypes(menuData);
+        const menuitem = agentFlowMenuItems(groupedByType);
+        setMenuItems(menuitem);
+      } else if (
+        selectedBotName?.selectedBot === "Chat_Bot" ||
+        selectedBotName?.selectedBot === "Email_Bot"
+      ) {
+        const menuData = await getSubmenuList(); // call chat menuitem api
+        const groupedByType = groupedByTypes(menuData);
+        const menuitem = chatAgentFlowMenuItems(groupedByType);
+        setMenuItems(menuitem);
+      }
+    })();
+  }, [selectedBotName.selectedBot]);
+
+  const filterData = mailBotSelected
+    ? menuItems.filter((elem: any) => elem.label === "LLM Models")
+    : menuItems;
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-      {menuItems.map((menu) => (
+      {filterData.map((menu: any) => (
         <React.Fragment key={menu.id}>
           <Box
             onClick={() => toggleMenu(menu.id)}
@@ -86,17 +138,9 @@ const MenuItems = () => {
               }}
             />
           </Box>
-
-          {/* Submenu */}
           {menu.isActive && menu.subMenuItems.length > 0 && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "4px",
-              }}
-            >
-              {menu.subMenuItems.map((sub, i) => (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              {menu.subMenuItems.map((sub: any, i: any) => (
                 <Box
                   key={i}
                   sx={{
@@ -109,15 +153,15 @@ const MenuItems = () => {
                     backgroundColor: "#2A2A33",
                     borderRadius: "6px",
                   }}
-                  onClick={() => handleAddNode(sub.label)}
+                  onClick={() => handleAddNode(sub)}
                 >
                   <Box
                     sx={{ display: "flex", alignItems: "center", gap: "8px" }}
                   >
                     <Box
                       component="img"
-                      src={sub.startIcon}
-                      alt={sub.label}
+                      src={sub.thumbnail}
+                      alt={sub.model_name}
                       sx={{
                         width: 24,
                         height: 24,
@@ -131,12 +175,13 @@ const MenuItems = () => {
                         color: menu.isActive ? "#F7F7F8" : "#B8B9C1",
                       }}
                     >
-                      {sub.label}
+                      {sub.model_name}
                     </Typography>
                   </Box>
+
                   <Box
                     component="img"
-                    src={sub.endIcon}
+                    src={Drag}
                     alt="drag"
                     sx={{
                       width: 24,

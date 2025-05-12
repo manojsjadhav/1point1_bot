@@ -13,13 +13,13 @@ import { useContext, useEffect, useState } from "react";
 import { agentStore } from "../providers/AgentContext";
 import Openview from "../assets/componentmenuicon/Open_view.svg";
 import TextareaPopup from "../components/agentcreation/TextareaPopup";
+import Upload from "../assets/componentmenuicon/Upload.svg";
 
 const AgentCustomNode = (props: any) => {
   const { id, data } = props;
   const [isFocused, setIsFocused] = useState<any>(false);
   const [openTextarea, setOpenTextarea] = useState<any>(false);
   const { agentDetails } = useContext(agentStore);
-  console.log({ data });
   const { setNodes } = useReactFlow();
   const handleTextareaOpen = () => {
     setOpenTextarea(true);
@@ -27,6 +27,10 @@ const AgentCustomNode = (props: any) => {
   const handleTextareaClose = () => {
     setOpenTextarea(false);
   };
+  const handleDeleteNode = () => {
+    setNodes((prevNodes) => prevNodes.filter((node) => node.id !== id));
+  };
+
   if (!data) return <div style={{ color: "white" }}>No data</div>;
   const handleInputChange = (event: any) => {
     setNodes((nodes) =>
@@ -89,6 +93,7 @@ const AgentCustomNode = (props: any) => {
       console.error("Upload error:", err);
     }
   };
+
   useEffect(() => {
     if (agentDetails.system_prompt) {
       setNodes((nodes) =>
@@ -207,38 +212,13 @@ const AgentCustomNode = (props: any) => {
             <option value="" disabled>
               {field.placeholder || "Select an option"}
             </option>
-            {field.options?.map((option: any) => (
-              <option key={option} value={option}>
+            {field.options?.map((option: any, index: number) => (
+              <option key={index} value={option}>
                 {String(option)}
               </option>
             ))}
           </select>
         )}
-        {/* {field.type === "textarea" && (
-          <textarea
-            value={field.value}
-            name={field.name}
-            onChange={handleInputChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            placeholder="Type something..."
-            style={{
-              height: "100px",
-              width: "100%",
-              boxSizing: "border-box",
-              paddingBottom: "5px",
-              fontFamily: "GeneralSans-m",
-              fontSize: "10px",
-              border: `1px solid ${isFocused ? "#FF581C" : "#41414B"}`,
-              borderRadius: "8px",
-              background: "#2A2A33",
-              color: "#fff",
-              padding: "8px",
-              resize: "none",
-              overflow: "auto",
-            }}
-          />
-        )} */}
         {field.type === "textarea" && (
           <Box sx={{ position: "relative", width: "100%" }}>
             <textarea
@@ -333,7 +313,7 @@ const AgentCustomNode = (props: any) => {
               >
                 <Box
                   component="img"
-                  src={field.fileIcon}
+                  src={Upload}
                   alt="upload"
                   sx={{ width: 20, height: 20 }}
                 />
@@ -378,32 +358,32 @@ const AgentCustomNode = (props: any) => {
             px: "12px",
           }}
         >
-          {data.nodeIcon && (
+          {/* {data.nodeIcon && ( */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              mb: "8px",
+            }}
+          >
             <Box
+              component="img"
+              src={data.nodeIcon}
+              alt={data.label}
+              sx={{ width: 24, height: 24 }}
+            />
+            <Typography
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                mb: "8px",
+                fontFamily: "GeneralSans-m",
+                fontSize: "14px",
+                color: "#fff",
               }}
             >
-              <Box
-                component="img"
-                src={data.nodeIcon}
-                alt={data.label}
-                sx={{ width: 24, height: 24 }}
-              />
-              <Typography
-                sx={{
-                  fontFamily: "GeneralSans-m",
-                  fontSize: "14px",
-                  color: "#fff",
-                }}
-              >
-                {data.title}
-              </Typography>
-            </Box>
-          )}
+              {data.title}
+            </Typography>
+          </Box>
+          {/* )} */}
           <Box>
             <Box
               component="img"
@@ -412,8 +392,10 @@ const AgentCustomNode = (props: any) => {
               sx={{
                 width: 24,
                 height: 24,
+                cursor: "pointer",
                 color: data.isActive ? "#F7F7F8" : "",
               }}
+              onClick={handleDeleteNode}
             />
           </Box>
         </Box>
@@ -437,7 +419,6 @@ const AgentCustomNode = (props: any) => {
             px: "12px",
           }}
         >
-          {console.log({ data })}
           {data.fields?.map(renderField)}
         </Box>
 
