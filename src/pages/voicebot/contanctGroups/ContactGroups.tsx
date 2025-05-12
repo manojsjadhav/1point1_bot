@@ -40,6 +40,7 @@ import { resetContactGroupState } from '../../../redux/nodeSlice/createcontactGr
 import { setSelectedGroup } from '../../../redux/nodeSlice/groupSlice';
 import { setSelectedModalName } from '../../../redux/nodeSlice/modolNameSlice';
 import CustomLoader from '../../CustomLoader';
+import AvatarSummary from './AvatarSummary';
 
 const rowsPerPage = 10;
 
@@ -116,8 +117,8 @@ const ContactGroups = () => {
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             if (search.trim()) {
-               dispatch(searchGroups({ user_id, query: search.trim() }));
-               searchInputRef.current?.focus();
+                dispatch(searchGroups({ user_id, query: search.trim() }));
+                searchInputRef.current?.focus();
             } else {
                 dispatch(fetchGroups(user_id));
             }
@@ -229,7 +230,7 @@ const ContactGroups = () => {
     );
 
     const contactGroupsTable = () => {
-        const TableHeaders = ['Group Name', 'Created on', 'Created By', 'Action'];
+        const TableHeaders = ['Group Name', "Contact Includes", "Agents", 'Created on', 'Created By', 'Action'];
         return (
             <>
                 <TableContainer component={Paper} sx={{ bgcolor: '#1e1e1e' }}>
@@ -299,6 +300,12 @@ const ContactGroups = () => {
 
                                             </IconButton>
                                             {row.group_name}
+                                        </TableCell>
+                                        <TableCell sx={{ color: '#D9D9DE', border: 'none', backgroundColor: bgColor }}>
+                                            {row.contact_count}
+                                        </TableCell>
+                                        <TableCell sx={{ color: '#D9D9DE', border: 'none', backgroundColor: bgColor }}>
+                                            <AvatarSummary totalCount={row.contact_count} />
                                         </TableCell>
                                         <TableCell sx={{ color: '#D9D9DE', border: 'none', backgroundColor: bgColor }}>
                                             {formatDate(row.created_date)}
