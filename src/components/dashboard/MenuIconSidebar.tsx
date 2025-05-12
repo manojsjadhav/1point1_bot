@@ -24,7 +24,7 @@ const MenuIconSidebar = () => {
       ? {
         label: "Mail Bot Selection",
         icon: mailBot,
-        path: "/voicebot/conversation-history",
+        path: "/emailBot/emails",
       }
       : {
         label: "Conversation History",
