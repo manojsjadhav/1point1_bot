@@ -2,19 +2,20 @@ import React from 'react';
 import {
     Box, Typography
 } from '@mui/material';
-import { Email } from '../../../types';
 import ChatInputBar from './ChatInputBar';
 import NoData from '../../../components/NoData';
 import EmailHeader from './EmailHeader';
 import MessageItem from './MessageItem';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store';
+import { formatDate, formatMessageDate } from '../../../utils';
 
 interface EmailDetailProps {
-    email: Email | null;
-    onMarkAsRead: (emailId: string) => void;
+    email: any | null;
 }
 
-const EmailDetail: React.FC<EmailDetailProps> = ({ email, onMarkAsRead }) => {
-    console.log("onMarkAsRead", onMarkAsRead);
+const EmailDetail: React.FC<EmailDetailProps> = ({ email }) => {
+    const conversationsById = useSelector((state: RootState) => state.emailConversation.conversationsById);
 
     if (!email) {
         return (
@@ -49,29 +50,32 @@ const EmailDetail: React.FC<EmailDetailProps> = ({ email, onMarkAsRead }) => {
                     msOverflowStyle: 'none',
                 }}
             >
-                <MessageItem />
-                <MessageItem />
-                <Box
-                    sx={{
-                        bgcolor: '#2c2c32',
-                        px: 2,
-                        py: 0.5,
-                        textAlign: 'center',
-                    }}
-                >
-                    <Typography
-                        sx={{
-                            fontSize: 13,
-                            color: '#b0b0b5',
-                        }}
-                    >
-                        Yesterday
-                    </Typography>
-                </Box>
-                <MessageItem />
+                {conversationsById.map((elem) => {
+                    return (
+                        <>
+                            <Box
+                                sx={{
+                                    bgcolor: '#2c2c32',
+                                    px: 2,
+                                    py: 0.5,
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        fontSize: 13,
+                                        color: '#b0b0b5',
+                                    }}
+                                >
+                                    {formatMessageDate(email.mailReceiveAt)} ,{formatDate(email.mailReceiveAt)}
+                                </Typography>
+                            </Box>
+                            <MessageItem emailDetail={elem} />
+                        </>
+                    )
+                })}
             </Box>
 
-            {/* Fixed Input Bar */}
             <Box sx={{ flexShrink: 0 }}>
                 <ChatInputBar />
             </Box>

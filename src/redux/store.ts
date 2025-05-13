@@ -24,6 +24,7 @@ import contactGroupSlice from "./nodeSlice/deleteContactSlice.ts";
 import uploadFileReducer from "./nodeSlice/uploadFileSlice.ts";
 import uploadCSVFileSlice from "./nodeSlice/uploadCSVFileSlice.ts";
 import selectBot from "./nodeSlice/selectBotSlice.ts";
+import emailConversationSlice from "./nodeSlice/emailSlice.ts";
 
 const rootReducer = combineReducers({
   nodes: nodeReducer,
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
   uploadFile: uploadFileReducer,
   uploadCSVFile: uploadCSVFileSlice,
   selectBot: selectBot,
+  emailConversation: emailConversationSlice,
 });
 
 const persistConfig = {

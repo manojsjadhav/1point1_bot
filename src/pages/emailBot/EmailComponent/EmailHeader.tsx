@@ -4,7 +4,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FlagIcon from '@mui/icons-material/Flag';
 import { EmailHeaderStyles } from './Style';
 
-const EmailHeader = ({ email }: { email: { subject: string; id: string } }) => {
+const EmailHeader = ({ email }: { email: { subject: string; id: string, email: string, ticketno: string } }) => {
     return (
         <Box sx={EmailHeaderStyles.container}>
             {/* Left Section */}
@@ -14,12 +14,12 @@ const EmailHeader = ({ email }: { email: { subject: string; id: string } }) => {
                         {email.subject}
                     </Typography>
                     <Typography variant="body2" sx={EmailHeaderStyles.emailId}>
-                        &lt;{email.id}&gt;
+                        &lt;{email?.email}&gt;
                     </Typography>
                 </Box>
                 <Box sx={EmailHeaderStyles.tagRow}>
                     <Typography variant="body2" sx={EmailHeaderStyles.tagText}>
-                        Technical Problem
+                        {email.ticketno}
                     </Typography>
                     <FlagIcon sx={EmailHeaderStyles.flagIcon} />
                 </Box>

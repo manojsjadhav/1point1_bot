@@ -77,3 +77,39 @@ export interface Email {
   attachments?: number;
   folder: "inbox" | "sent" | "drafts" | "trash";
 }
+
+export interface EmailConversation {
+  id: number;
+  ticketNo: string;
+  fetchMail: string;
+  customerMail: string;
+  mailReceivedAt: string;
+  subject: string;
+  internalStatus: number;
+  isTransfer: number;
+  agentId: number;
+  isMerge: number;
+  toAddress: { mailbox: string; host: string }[];
+  priorityId: string;
+  priorityName: string;
+  message: string;
+  pid: number;
+}
+
+export interface EmailConversation {
+  id: number;
+  ticketno: string;
+  fetchMail: string;
+  customerMail: string;
+  mailReceiveAt: string;
+  subject: string;
+  internalStatus: number;
+  isTransfer: number;
+  agentId: number;
+  isMerge: number;
+  toaddress: string;
+  fk_priorities: string;
+  priorityName: string;
+  pid: number;
+  message: string;
+}

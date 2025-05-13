@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, TextField, Typography, Button } from '@mui/material';
 import { emails as initialEmails } from './emails';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -9,10 +9,16 @@ import EmailList from './EmailList';
 import EmailDetail from './EmailDetail';
 import { Layout } from '../../../components';
 import { Search } from '@mui/icons-material';
+import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../../redux/store';
+import { fetchEmailConversations } from '../../../redux/nodeSlice/emailSlice';
+import { useSelector } from 'react-redux';
 
 const EmailConversation: React.FC = () => {
-  const [emails, setEmails] = useState<Email[]>(initialEmails);
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const dispatch = useDispatch<AppDispatch>()
+  const conversations = useSelector((state: RootState) => state.emailConversation.conversations);
+  
+  const [selectedEmail, setSelectedEmail] = useState<any | null>(null);  
   const [agentFilter, setAgentFilter] = useState('');
   const [keywordFilter, setKeywordFilter] = useState('');
   const [fromDate, setFromDate] = useState<Date | null>(null);
@@ -21,32 +27,42 @@ const EmailConversation: React.FC = () => {
   const handleSelectEmail = (email: Email) => {
     setSelectedEmail(email);
 
-    if (!email.isRead) {
-      setEmails(emails.map(e =>
-        e.id === email.id ? { ...e, isRead: true } : e
-      ));
-    }
+    // if (!email.isRead) {
+    //   setEmails(conversations.map(e =>
+    //     e.id === conversations?.id ? { ...e, isRead: true } : e
+    //   ));
+    // }
   };
 
-  const handleMarkAsRead = (emailId: string) => {
-    setEmails(emails.map(email =>
-      email.id === emailId ? { ...email, isRead: true } : email
-    ));
+  // const handleMarkAsRead = (emailId: string) => {
+  //   setEmails(emails.map(email =>
+  //     email.id === emailId ? { ...email, isRead: true } : email
+  //   ));
 
-    if (selectedEmail && selectedEmail.id === emailId) {
-      setSelectedEmail({ ...selectedEmail, isRead: true });
-    }
-  };
+  //   if (selectedEmail && selectedEmail.id === emailId) {
+  //     setSelectedEmail({ ...selectedEmail, isRead: true });
+  //   }
+  // };
 
-  const handleStarEmail = (emailId: string) => {
-    setEmails(emails.map(email =>
-      email.id === emailId ? { ...email, isStarred: !email.isStarred } : email
-    ));
+  // const handleStarEmail = (emailId: string) => {
+  //   setEmails(emails.map(email =>
+  //     email.id === emailId ? { ...email, isStarred: !email.isStarred } : email
+  //   ));
 
-    if (selectedEmail && selectedEmail.id === emailId) {
-      setSelectedEmail({ ...selectedEmail, isStarred: !selectedEmail.isStarred });
-    }
-  };
+  //   if (selectedEmail && selectedEmail.id === emailId) {
+  //     setSelectedEmail({ ...selectedEmail, isStarred: !selectedEmail.isStarred });
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchEmails = async () => {
+      console.log("running useeffect");
+      await dispatch(fetchEmailConversations());
+    };
+
+    fetchEmails();
+  }, []);
+
 
   return (
     <Layout>
@@ -209,23 +225,23 @@ const EmailConversation: React.FC = () => {
             p: 2,
             gap: 2,
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            backgroundColor:"#2a2a33",
-            borderRadius:"8px"
+            backgroundColor: "#2a2a33",
+            borderRadius: "8px"
           }}
         >
           <Box sx={{ width: '350px', flexShrink: 0 }}>
             <EmailList
-              emails={emails}
-              selectedEmail={selectedEmail}
+              conversations={conversations}
               onSelectEmail={handleSelectEmail}
-              onStarEmail={handleStarEmail}
+              // selectedEmail={selectedEmail}
+              // onStarEmail={handleStarEmail}
             />
           </Box>
 
           <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
             <EmailDetail
               email={selectedEmail}
-              onMarkAsRead={handleMarkAsRead}
+              // onMarkAsRead={handleMarkAsRead}
             />
           </Box>
         </Box>

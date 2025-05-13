@@ -84,7 +84,7 @@ const AppRoutes = () => {
             </PriveteRoute>
           }
         />
-        
+
         <Route
           path="emailBot/emailBotAIAgents"
           element={
@@ -94,16 +94,15 @@ const AppRoutes = () => {
           }
         />
 
-
         <Route
           path="emailBot/emails"
           element={
             <PriveteRoute>
               <EmailConversation />
-                  </PriveteRoute>
+            </PriveteRoute>
           }
         />
-              
+
         <Route
           path="chatbot"
           element={
