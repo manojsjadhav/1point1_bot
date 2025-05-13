@@ -157,3 +157,17 @@ export const deleteEmailAgent = createAsyncThunk(
     }
   }
 );
+export const getChatAgentList = createAsyncThunk<any>(
+  "agents/getChatAgentList",
+  async (user_id, thunkAPI) => {
+    console.log("user_id", user_id);
+    try {
+      const res = await axios.get(
+        `http://1msg.1point1.in:3001/api/chat/bot/agents/user/${user_id}`
+      );
+      return res.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);

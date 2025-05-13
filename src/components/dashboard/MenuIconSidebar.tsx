@@ -15,7 +15,6 @@ const MenuIconSidebar = () => {
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const [sidebarMenuIcon, setSidebarMenuIcon] = useState<any>([]);
 
-
   useEffect(() => {
     if (selectedBotName?.selectedBot === "Voice_Bot") {
       setSidebarMenuIcon(voiceSidbarMenu);
@@ -27,7 +26,7 @@ const MenuIconSidebar = () => {
       setSidebarMenuIcon(voiceSidbarMenu);
     }
   }, []);
-    
+
   return (
     <Box sx={{ width: "72px", background: "#18181B" }}>
       <Box
