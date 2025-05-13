@@ -34,12 +34,16 @@ import { useDispatch } from "react-redux";
 import { cloneDeep } from "lodash";
 import { toast } from "react-toastify";
 import { EmailConfigurationLLM } from "../../nodes/utils/nodedata.ts";
+import { useNavigate } from "react-router-dom";
 const nodeTypes = { custom: AgentCustomNode };
 
 export default function NodeLists() {
   const allNode = useSelector((state: RootState) => state.nodes);
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
+  const voiceBotSelected = selectedBotName?.selectedBot === "Voice_Bot";
+  const chatBotSelected = selectedBotName?.selectedBot === "Chat_Bot";
+
   const { addNodes } = useReactFlow();
   const {
     agentDetails,
@@ -52,6 +56,7 @@ export default function NodeLists() {
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const lengthNodes = nodes?.length;
   const { user_id, created_by, agent_type, dialer, flow_type, agent_name } =
     agentDetails;
@@ -166,7 +171,7 @@ export default function NodeLists() {
         } else {
           await postEmailAgentFlow(emailAgentData);
         }
-      } else {
+      } else if (voiceBotSelected) {
         if (isEditing) {
           dispatch(
             editAgent({
@@ -178,6 +183,21 @@ export default function NodeLists() {
         } else {
           await postAgentFlow(fallbackAgentData);
           toast.success("Agent Added Successfully");
+        }
+        navigate(`/voicebot/ai-agents`);
+      } else if (chatBotSelected) {
+        if (isEditing) {
+          dispatch(
+            editAgent({
+              id: editAgentData.id,
+              updatedData: { ...editAgentData, ...fallbackAgentData },
+            })
+          );
+          toast.success("Agent Edited Successfully");
+        } else {
+          await postAgentFlow(fallbackAgentData);
+          toast.success("Agent Added Successfully");
+          navigate(`/chatbot/ai-agents`);
         }
       }
       dispatch(setInitialNodes([]));

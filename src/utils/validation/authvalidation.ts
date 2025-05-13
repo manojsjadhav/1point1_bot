@@ -24,3 +24,10 @@ export const loginValidationSchema = Yup.object({
     )
     .required("Password is required"),
 });
+export const addChatDetailsValidationSchema = Yup.object({
+  first_name: Yup.string().required("name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone_number: Yup.string()
+    .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
+    .required("Phone number is required"),
+});
