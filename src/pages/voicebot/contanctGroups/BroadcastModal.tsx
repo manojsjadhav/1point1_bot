@@ -1,50 +1,97 @@
 import React, { useEffect } from 'react';
 import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Typography,
-    Box,
-    Button,
-    MenuItem,
-    Select,
-    FormControl,
+    Dialog, DialogContent, DialogTitle, Typography, Box, Button, MenuItem,
+    Select, FormControl, Grid
 } from '@mui/material';
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
-import Grid from '@mui/material/Grid';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../redux/store';
 import { fetchContactDetails } from '../../../redux/nodeSlice/getContactDetailsSlice';
-import { useSelector } from 'react-redux';
 import { addBrodCastData } from '../../../services/contactGroupsServices';
+import { toast } from 'react-toastify';
 
-
+const inputSx = {
+    bgcolor: '#2a2a33',
+    border: '1px solid #B8B9C1',
+    borderRadius: '8px',
+    '&:hover': {
+        borderColor: '#FF5722',
+        backgroundColor: '#333344',
+    },
+    '& .MuiInputBase-root': {
+        borderRadius: '8px',
+        pl: 1,
+        color: '#FF4C4C',
+    },
+    '& input': {
+        color: '#FF4C4C !important',
+        padding: '10px',
+    },
+    '& .MuiInputLabel-root': {
+        color: '#B8B9C1',
+        opacity: 0.7,
+    },
+    '& .MuiSvgIcon-root': {
+        color: '#B8B9C1',
+    },
+    '&.Mui-focused .MuiInputLabel-root': {
+        opacity: 0,
+    },
+    '& .MuiPickersOutlinedInput-sectionsContainer': {
+        color: '#FF4C4C',
+        borderRadius: '8px',
+    },
+    '& .MuiOutlinedInput-root': {
+        bgcolor: '#2a2a33',
+        border: '1px solid #B8B9C1',
+        borderRadius: '8px',
+        color: '#B8B9C1',
+        pl: 1,
+        '& input': {
+            color: '#B8B9C1',
+            padding: '10px',
+        },
+        '&.Mui-focused fieldset': {
+            borderColor: 'red',
+        },
+    },
+    '& .MuiPickersInputBase-sectionsContainer': {
+        color: '#B8B9C1',
+    },
+    '& .MuiPickersInputBase-root.MuiPickersOutlinedInput-root': {
+        backgroundColor: '#2a2a33',
+        borderRadius: '8px',
+        border: 'unset',
+        color: '#FF4C4C',
+        paddingLeft: '8px',
+        '& input': {
+            color: '#FF4C4C',
+        },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'unset',
+        },
+    },
+};
 
 const BroadcastModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
     const dispatch = useDispatch<AppDispatch>();
     const selectedGroup = useSelector((state: RootState) => state.groupSlice.selectedGroup);
-    const contactState = useSelector((state: RootState) => state && state.contactDetails);
-    const contactDetails = contactState?.contactsDeatails || [];
-
+    const { agents } = useSelector((state: RootState) => state.agents);
     const [agent, setAgent] = React.useState('');
     const [date, setDate] = React.useState<dayjs.Dayjs | null>(null);
-
     const [time, setTime] = React.useState<dayjs.Dayjs | null>(null);
     const [selectedAgent, setSelectedAgent] = React.useState<any>({});
 
-    console.log("date===", selectedAgent?.group_id);
-
     const handleBrodCast = () => {
-        if (!date || !time) {
-            alert("Date or Time not selected");
+        if (!date || !time || !agent) {
+            toast.error("Please fill the all fields.")
             return;
         }
 
-        // Extract date parts
         const finalDateTime = date
             .hour(time.hour())
             .minute(time.minute())
@@ -52,18 +99,14 @@ const BroadcastModal = ({ open, onClose }: { open: boolean; onClose: () => void 
             .millisecond(0)
             .format('YYYY-MM-DDTHH:mm:ss');
 
-        console.log("Payload datetime:", finalDateTime);
-
         const payload = {
-            id: selectedAgent.id,
+            id: selectedGroup.id,
+            assigned_agent: selectedAgent?.id,
             scheduled_date: finalDateTime,
-            assigned_agent: selectedAgent?.group_id,
         };
 
-        console.log("Payload to be sent:", payload);
-
-        addBrodCastData(payload)
-        onClose()
+        addBrodCastData(payload);
+        onClose();
     };
 
     useEffect(() => {
@@ -76,7 +119,6 @@ const BroadcastModal = ({ open, onClose }: { open: boolean; onClose: () => void 
     }, [open]);
 
     useEffect(() => {
-        console.log("selectedGroup:", selectedGroup);
         if (selectedGroup?.id) {
             dispatch(fetchContactDetails(selectedGroup.id));
         }
@@ -100,7 +142,7 @@ const BroadcastModal = ({ open, onClose }: { open: boolean; onClose: () => void 
             </DialogTitle>
 
             <DialogContent>
-                <Typography sx={{ color: '#B8B9C1', fontSize: 14, mb: 2, fontWeight: 400 }}>
+                <Typography sx={{ color: '#B8B9C1', fontSize: 14, mb: 2 }}>
                     Add details to broadcast this group.
                 </Typography>
 
@@ -112,75 +154,48 @@ const BroadcastModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                     <Select
                         value={agent}
                         onChange={(e) => {
-                            setAgent(e.target.value)
-                            const selectedContact = e.target.value;
-                            const agentObj = contactDetails.find((elem) => elem.person_name === selectedContact);
+                            setAgent(e.target.value);
+                            const agentObj = agents.find((elem) => elem.agent_name === e.target.value);
                             setSelectedAgent(agentObj);
                         }}
-
                         displayEmpty
                         sx={{
                             mb: 3,
                             backgroundColor: '#2a2a33',
                             color: agent ? '#ffffff' : '#b0b0b5',
                             borderRadius: '8px',
-                            '& .MuiSelect-icon': {
-                                color: '#b0b0b5',
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                borderColor: '#555',
-                            },
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                borderColor: '#ff5a1f',
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                borderColor: '#ff5a1f'
-                            },
+                            '& .MuiSelect-icon': { color: '#b0b0b5' },
+                            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#555' },
+                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#ff5a1f' },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#ff5a1f' },
                         }}
-
                         MenuProps={{
                             PaperProps: {
                                 sx: {
-                                    maxHeight: 200, // Fix height and make it scrollable
-                                    backgroundColor: '#1e1e28', // Dropdown background
-                                    color: '#fff', // Text color
+                                    maxHeight: 200,
+                                    backgroundColor: '#1e1e28',
+                                    color: '#fff',
                                 },
                             },
-                            MenuListProps: {
-                                sx: {
-                                    padding: 0, // Optional: remove extra padding
-                                },
-                            },
+                            MenuListProps: { sx: { padding: 0 } },
                         }}
-                        renderValue={(selected) => {
-                            if (!selected) {
-                                return <span style={{ color: '#b0b0b5' }}>Select Agent</span>;
-                            }
-                            return selected;
-                        }}
+                        renderValue={(selected) =>
+                            selected ? selected : <span style={{ color: '#b0b0b5' }}>Select Agent</span>
+                        }
                     >
-                        <MenuItem value="" disabled>
-                            Select Agent
-                        </MenuItem>
-                        {contactDetails.map((elem, index) => (
+                        <MenuItem value="" disabled>Select Agent</MenuItem>
+                        {agents.map((elem, index) => (
                             <MenuItem
                                 key={index}
-                                value={elem.person_name}
+                                value={elem.agent_name}
                                 sx={{
                                     backgroundColor: '#1e1e28',
-                                    '&:hover': {
-                                        backgroundColor: '#333',
-                                    },
-                                    '&.Mui-selected': {
-                                        backgroundColor: '#ff5a1f',
-                                        color: '#fff',
-                                    },
-                                    '&.Mui-selected:hover': {
-                                        backgroundColor: '#e04a12',
-                                    },
+                                    '&:hover': { backgroundColor: '#333' },
+                                    '&.Mui-selected': { backgroundColor: '#ff5a1f', color: '#fff' },
+                                    '&.Mui-selected:hover': { backgroundColor: '#e04a12' },
                                 }}
                             >
-                                {elem.person_name}
+                                {elem.agent_name}
                             </MenuItem>
                         ))}
                     </Select>
@@ -189,172 +204,28 @@ const BroadcastModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
-                            <Typography sx={{ color: '#fff', fontSize: 14, mb: 1, fontWeight: 500 }}>
-                                Date
-                            </Typography>
+                            <Typography sx={{ color: '#fff', fontSize: 14, mb: 1, fontWeight: 500 }}>Date</Typography>
                             <DatePicker
                                 label={!date ? 'Select Date' : ''}
                                 value={date}
                                 onChange={(newValue: any) => setDate(newValue)}
-                                slotProps={{
-                                    textField: {
-                                        size: 'small',
-                                        sx: {
-                                            bgcolor: '#2a2a33',
-                                            border: '1px solid #B8B9C1',
-                                            borderRadius: '8px',
-                                            '&:hover': {
-                                                borderColor: '#FF5722',
-                                                backgroundColor: '#333344',
-                                            },
-                                            '& .MuiInputBase-root': {
-                                                borderRadius: '8px',
-                                                pl: 1,
-                                                color: '#FF4C4C',
-                                            },
-                                            '& input': {
-                                                color: '#FF4C4C !important',
-                                                padding: '10px',
-                                            },
-                                            '& .MuiInputLabel-root': {
-                                                color: '#B8B9C1',
-                                                opacity: 0.7,
-                                            },
-                                            '& .MuiSvgIcon-root': {
-                                                color: '#B8B9C1',
-                                            },
-                                            '&.Mui-focused .MuiInputLabel-root': {
-                                                opacity: 0,
-                                            },
-                                            '& .MuiPickersOutlinedInput-sectionsContainer': {
-                                                color: '#FF4C4C',
-                                                borderRadius: '8px',
-                                            },
-                                            '& .MuiOutlinedInput-root': {
-                                                bgcolor: '#2a2a33',
-                                                border: '1px solid #B8B9C1',
-                                                borderRadius: '8px',
-                                                color: '#B8B9C1',
-                                                pl: 1,
-                                                '& input': {
-                                                    color: '#B8B9C1',
-                                                    padding: '10px',
-                                                },
-                                                '&.Mui-focused fieldset': {
-                                                    borderColor: 'red',
-                                                },
-                                            },
-                                            '& .MuiPickersInputBase-sectionsContainer': {
-                                                color: '#B8B9C1',
-                                            },
-
-
-                                            // checking
-                                            '& .MuiPickersInputBase-root.MuiPickersOutlinedInput-root': {
-                                                backgroundColor: '#2a2a33',
-                                                borderRadius: '8px',
-                                                border: 'unset',
-                                                color: '#FF4C4C',
-                                                paddingLeft: '8px',
-                                                '& input': {
-                                                    color: '#FF4C4C',
-                                                },
-                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                    borderColor: 'unset', // removes blue border on focus
-                                                },
-                                            },
-                                        }
-                                    },
-                                }}
+                                disablePast
+                                slotProps={{ textField: { size: 'small', sx: inputSx } }}
                             />
                         </Grid>
 
-                        {/* Time Picker */}
                         <Grid item xs={6}>
-                            <Typography sx={{ color: '#fff', fontSize: 14, mb: 1, fontWeight: 500 }}>
-                                Time
-                            </Typography>
+                            <Typography sx={{ color: '#fff', fontSize: 14, mb: 1, fontWeight: 500 }}>Time</Typography>
                             <TimePicker
                                 label={!time ? 'Select Time' : ''}
                                 value={time}
                                 onChange={(newValue: any) => setTime(newValue)}
-                                slotProps={{
-                                    textField: {
-                                        fullWidth: true,
-                                        size: 'small',
-                                        sx: {
-                                            bgcolor: '#2a2a33',
-                                            border: '1px solid #B8B9C1',
-                                            borderRadius: '8px',
-                                            '&:hover': {
-                                                borderColor: '#FF5722',
-                                                backgroundColor: '#333344',
-                                            },
-                                            '& .MuiInputBase-root': {
-                                                borderRadius: '8px',
-                                                pl: 1,
-                                                color: '#FF4C4C',
-                                            },
-                                            '& input': {
-                                                color: '#FF4C4C !important',
-                                                padding: '10px',
-                                            },
-                                            '& .MuiInputLabel-root': {
-                                                color: '#B8B9C1',
-                                                opacity: 0.7,
-                                            },
-                                            '& .MuiSvgIcon-root': {
-                                                color: '#B8B9C1',
-                                            },
-                                            '&.Mui-focused .MuiInputLabel-root': {
-                                                opacity: 0,
-                                            },
-                                            '& .MuiPickersOutlinedInput-sectionsContainer': {
-                                                color: '#FF4C4C',
-                                                borderRadius: '8px',
-                                            },
-                                            '& .MuiOutlinedInput-root': {
-                                                bgcolor: '#2a2a33',
-                                                border: '1px solid #B8B9C1',
-                                                borderRadius: '8px',
-                                                color: '#B8B9C1',
-                                                pl: 1,
-                                                '& input': {
-                                                    color: '#B8B9C1',
-                                                    padding: '10px',
-                                                },
-                                                '&.Mui-focused fieldset': {
-                                                    borderColor: 'red',
-                                                },
-                                            },
-                                            '& .MuiPickersInputBase-sectionsContainer': {
-                                                color: '#B8B9C1',
-                                            },
-
-
-                                            // checking
-                                            '& .MuiPickersInputBase-root.MuiPickersOutlinedInput-root': {
-                                                backgroundColor: '#2a2a33',
-                                                borderRadius: '8px',
-                                                border: 'unset',
-                                                color: '#FF4C4C',
-                                                paddingLeft: '8px',
-                                                '& input': {
-                                                    color: '#FF4C4C',
-                                                },
-                                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                    borderColor: 'unset',
-                                                },
-                                            },
-                                        }
-                                    },
-                                }}
+                                disablePast
+                                slotProps={{ textField: { fullWidth: true, size: 'small', sx: inputSx } }}
                             />
                         </Grid>
                     </Grid>
                 </LocalizationProvider>
-
-
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
                     <Button
@@ -383,9 +254,7 @@ const BroadcastModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                             width: '48%',
                             borderRadius: '8px',
                             boxShadow: 'none',
-                            '&:active': {
-                                bgcolor: '#c64518',
-                            },
+                            '&:active': { bgcolor: '#c64518' },
                         }}
                     >
                         Broadcast

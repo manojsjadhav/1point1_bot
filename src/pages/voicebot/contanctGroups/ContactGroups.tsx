@@ -43,6 +43,7 @@ import AvatarSummary from './AvatarSummary';
 import BroadcastModal from './BroadcastModal';
 
 import { formatDate } from '../../../utils';
+import { fetchAgentList } from '../../../services/agentFlowServices';
 
 
 const rowsPerPage = 10;
@@ -63,6 +64,7 @@ const ContactGroups = () => {
     const user_id = auth.response.user_id;
     const groups = groupsState?.groups || [];
     const loading = groupsState?.loading;
+    const { agents } = useSelector((state: RootState) => state.agents);
 
     const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
@@ -112,6 +114,7 @@ const ContactGroups = () => {
     useEffect(() => {
         if (user_id) {
             dispatch(fetchGroups(user_id));
+            dispatch(fetchAgentList(user_id));
         }
     }, [dispatch, user_id]);
 
@@ -302,7 +305,7 @@ const ContactGroups = () => {
                                             {row.contact_count}
                                         </TableCell>
                                         <TableCell sx={{ color: '#D9D9DE', border: 'none', backgroundColor: bgColor }}>
-                                            <AvatarSummary totalCount={row.contact_count} />
+                                            <AvatarSummary agents={agents} />
                                         </TableCell>
                                         <TableCell sx={{ color: '#D9D9DE', border: 'none', backgroundColor: bgColor }}>
                                             {formatDate(row.created_date)}

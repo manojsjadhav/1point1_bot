@@ -8,13 +8,9 @@ import {
   fetchEmailBotAgentList,
 } from "../../services/agentFlowServices";
 
-interface Agent {
-  id: string;
-  name: string;
-}
 
 interface AgentListState {
-  agents: Agent[];
+  agents: any[];
   loading: boolean;
   error: string | null;
 }
@@ -37,7 +33,7 @@ const agentListSlice = createSlice({
       })
       .addCase(
         fetchAgentList.fulfilled,
-        (state, action: PayloadAction<Agent[]>) => {
+        (state, action: PayloadAction<any[]>) => {
           state.agents = action.payload;
           state.loading = false;
         }
@@ -51,7 +47,7 @@ const agentListSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(addAgent.fulfilled, (state, action: PayloadAction<Agent>) => {
+      .addCase(addAgent.fulfilled, (state, action: PayloadAction<any>) => {
         state.agents.push(action.payload);
         state.loading = false;
       })
@@ -61,7 +57,7 @@ const agentListSlice = createSlice({
       })
       .addCase(
         fetchAgentsBySearch.fulfilled,
-        (state, action: PayloadAction<Agent[]>) => {
+        (state, action: PayloadAction<any[]>) => {
           state.agents = action.payload;
         }
       )
@@ -69,7 +65,7 @@ const agentListSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(editAgent.fulfilled, (state, action: PayloadAction<Agent>) => {
+      .addCase(editAgent.fulfilled, (state, action: PayloadAction<any>) => {
         const index = state.agents.findIndex(
           (agent) => agent.id === action.payload.id
         );
@@ -107,7 +103,7 @@ const agentListSlice = createSlice({
       })
       .addCase(
         fetchEmailBotAgentList.fulfilled,
-        (state, action: PayloadAction<Agent[]>) => {
+        (state, action: PayloadAction<any[]>) => {
           state.agents = action.payload;
           state.loading = false;
         }
