@@ -263,6 +263,6 @@ const BroadcastModal = ({ open, onClose }: { open: boolean; onClose: () => void 
             </DialogContent>
         </Dialog>
     );
-};
+}; 
 
 export default BroadcastModal;
