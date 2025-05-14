@@ -46,6 +46,7 @@ const AgentLists = ({}: any) => {
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
   const voiceBotSelected = selectedBotName?.selectedBot === "Voice_Bot";
+  const chatBotSelected = selectedBotName?.selectedBot === "Chat_Bot";
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -57,9 +58,13 @@ const AgentLists = ({}: any) => {
 
   useEffect(() => {
     if (mailBotSelected) {
-      dispatch(fetchEmailBotAgentList())
+      dispatch(fetchEmailBotAgentList());
     } else if (voiceBotSelected) {
-      dispatch(fetchAgentsBySearch({ userId: user_id, query: debouncedSearch }));
+      dispatch(
+        fetchAgentsBySearch({ userId: user_id, query: debouncedSearch })
+      );
+    } else if (chatBotSelected) {
+      // dispatch(getChatAgentList(user_id));
     }
   }, [debouncedSearch, dispatch]);
 

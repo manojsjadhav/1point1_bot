@@ -27,6 +27,7 @@ import {
   deleteAgent,
   deleteEmailAgent,
   fetchAgentList,
+  getChatAgentList,
 } from "../../../services/agentFlowServices";
 import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { agentStore } from "../../../providers/AgentContext";
@@ -58,12 +59,8 @@ const AgentDataTable = () => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const {
-    agentFlowtoggle,
-    setAgentFlowtoggle,
-    setEditAgentData,
-    editAgentData,
-  } = useContext(agentStore);
+  const { agentFlowtoggle, setAgentFlowtoggle, setEditAgentData } =
+    useContext(agentStore);
   const rowsPerPage = 10;
 
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
@@ -114,10 +111,13 @@ const AgentDataTable = () => {
   const handlAgentDelete = (id: any, user_id: any) => {
     if (window.confirm("Are you sure you want to delete this agent?")) {
       if (selectedBotName?.selectedBot === "Voice_Bot") {
-        dispatch(deleteEmailAgent(id));
-        dispatch(fetchAgentList(user_id));
-      } else {
         dispatch(deleteAgent(id));
+        dispatch(fetchAgentList(user_id));
+      } else if (selectedBotName?.selectedBot === "Chat_Bot") {
+        // dispatch(deleteAgent(id));
+        dispatch(getChatAgentList(user_id));
+      } else {
+        dispatch(deleteEmailAgent(id));
       }
     }
   };
@@ -161,7 +161,7 @@ const AgentDataTable = () => {
     const flowNodes = JSON.parse(agent.nodes_list);
     dispatch(setInitialNodes(flowNodes));
     setEditAgentData(editagent);
-    console.log("check editagent set data", editAgentData);
+    navigate(`/chatbot/ai-agents/${agent.id}`);
     setAgentFlowtoggle(!agentFlowtoggle);
   };
 

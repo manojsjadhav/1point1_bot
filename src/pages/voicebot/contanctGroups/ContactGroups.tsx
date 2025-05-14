@@ -1,33 +1,33 @@
-import { Layout } from '../../../components';
+import { Layout } from "../../../components";
 import {
-    Avatar,
-    Box,
-    Button,
-    Checkbox,
-    IconButton,
-    InputAdornment,
-    Pagination,
-    PaginationItem,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Typography,
-} from '@mui/material';
-import { Search } from '@mui/icons-material';
-import SensorsOutlinedIcon from '@mui/icons-material/SensorsOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import CreateGroupModal from './CreateGroupModal';
-import GroupModal from './GroupModal';
+  Avatar,
+  Box,
+  Button,
+  Checkbox,
+  IconButton,
+  InputAdornment,
+  Pagination,
+  PaginationItem,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Search } from "@mui/icons-material";
+import SensorsOutlinedIcon from "@mui/icons-material/SensorsOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useEffect, useMemo, useRef, useState } from "react";
+import CreateGroupModal from "./CreateGroupModal";
+import GroupModal from "./GroupModal";
 import Delete from "../../../assets/agentdialogicon/Delete.svg";
 import Editagent from "../../../assets/agentdialogicon/Editagent.svg";
 import { useSelector } from 'react-redux';
@@ -44,7 +44,6 @@ import BroadcastModal from './BroadcastModal';
 
 import { formatDate } from '../../../utils';
 import { fetchAgentList } from '../../../services/agentFlowServices';
-
 
 const rowsPerPage = 10;
 
@@ -150,81 +149,115 @@ const ContactGroups = () => {
     };
 
 
-    const chartHistoryHeader = () => (
-        <>
-            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ color: 'white', fontWeight: 500, fontSize: '20px' }}>
-                    Contact Groups
-                </Typography>
-                <Button
-                    variant="contained"
-                    endIcon={<AddOutlinedIcon />}
-                    onClick={() => handleOpenAddNew()}
-                    sx={{
-                        borderRadius: '8px',
-                        bgcolor: '#ff5a1f',
-                        color: '#fff',
-                        px: 4,
-                        height: 36,
-                        textTransform: 'none',
-                        fontWeight: 500,
-                    }}
-                >
-                    Add New
-                </Button>
-            </Box>
-            <CreateGroupModal
-                open={openAddNew}
-                onClose={() => setOpenAddNew(false)}
-            />
-        </>
+  useEffect(() => {
+    if (user_id) {
+      dispatch(fetchGroups(user_id));
+    }
+  }, [dispatch, user_id]);
+
+  const filteredData = useMemo(() => {
+    return groups.filter((item: any) =>
+      item.group_name?.toLowerCase().includes(search.toLowerCase())
     );
+  }, [groups, search]);
 
-    const groupSearch = () => (
-        <TextField
-            fullWidth
-            placeholder="Search groups..."
-            variant="outlined"
-            value={search}
-            onChange={handleSearchChange}
-            inputRef={searchInputRef}
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <Search sx={{ color: '#444' }} />
-                    </InputAdornment>
-                ),
-            }}
-            sx={{
-                border: '1px solid #505060',
-                borderRadius: '8px',
-                bgcolor: '#18181b',
-                width: 600,
-                '& .MuiInputBase-root': {
-                    height: 36,
-                    borderRadius: '8px',
-                    pl: 1,
-                },
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (search.trim()) {
+        dispatch(searchGroups({ user_id, query: search.trim() }));
+        searchInputRef.current?.focus();
+      }
+    }, 300);
 
-                '& .MuiOutlinedInput-root': {
-                    '&:hover fieldset': {
-                        borderColor: '#ff5a1f',
-                    },
-                    '&.Mui-focused fieldset': {
-                        borderColor: '#ff5a1f',
-                    },
-                },
-                input: {
-                    color: '#fff',
-                    padding: '10px ',
-                },
-                mb: 2,
+    return () => clearTimeout(delayDebounce);
+  }, [search, dispatch, user_id]);
 
-            }}
-        />
-    );
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    return filteredData.slice(start, start + rowsPerPage);
+  }, [filteredData, page]);
 
-    const contactGroupsTable = () => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  };
+
+  const chartHistoryHeader = () => (
+    <>
+      <Box sx={{ mb: 3, display: "flex", justifyContent: "space-between" }}>
+        <Typography sx={{ color: "white", fontWeight: 500, fontSize: "20px" }}>
+          Contact Groups
+        </Typography>
+        <Button
+          variant="contained"
+          endIcon={<AddOutlinedIcon />}
+          onClick={() => handleOpenAddNew()}
+          sx={{
+            borderRadius: "8px",
+            bgcolor: "#ff5a1f",
+            color: "#fff",
+            px: 4,
+            height: 36,
+            textTransform: "none",
+            fontWeight: 500,
+          }}
+        >
+          Add New
+        </Button>
+      </Box>
+      <CreateGroupModal
+        open={openAddNew}
+        onClose={() => setOpenAddNew(false)}
+      />
+    </>
+  );
+
+  const groupSearch = () => (
+    <TextField
+      fullWidth
+      placeholder="Search groups..."
+      variant="outlined"
+      value={search}
+      onChange={handleSearchChange}
+      inputRef={searchInputRef}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <Search sx={{ color: "#444" }} />
+          </InputAdornment>
+        ),
+      }}
+      sx={{
+        border: "1px solid #505060",
+        borderRadius: "8px",
+        bgcolor: "#18181b",
+        width: 600,
+        "& .MuiInputBase-root": {
+          height: 36,
+          borderRadius: "8px",
+          pl: 1,
+        },
+
+        "& .MuiOutlinedInput-root": {
+          "&:hover fieldset": {
+            borderColor: "#ff5a1f",
+          },
+          "&.Mui-focused fieldset": {
+            borderColor: "#ff5a1f",
+          },
+        },
+        input: {
+          color: "#fff",
+          padding: "10px ",
+        },
+        mb: 2,
+      }}
+    />
+  );
+
+ const contactGroupsTable = () => {
         const TableHeaders = ['Group Name', "Contact Includes", "Agents", 'Created on', 'Created By', 'Action'];
         return (
             <>
@@ -371,102 +404,112 @@ const ContactGroups = () => {
                 <BroadcastModal open={openBroadCast} onClose={() => setOpenBroadCast(false)} />
             </>
         );
+  };
+
+  const paginationOfTable = () => {
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    const navButtonStyles = {
+      backgroundColor: "#3d3d48",
+      color: "#ccc",
+      borderRadius: "12px",
+      textTransform: "none",
+      fontSize: "14px",
+      px: 2,
+      py: 0.5,
+      boxShadow: "none",
+      "&:hover": {
+        backgroundColor: "#4a4a57",
+      },
     };
-
-    const paginationOfTable = () => {
-        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-        const navButtonStyles = {
-            backgroundColor: '#3d3d48',
-            color: '#ccc',
-            borderRadius: '12px',
-            textTransform: 'none',
-            fontSize: '14px',
-            px: 2,
-            py: 0.5,
-            boxShadow: 'none',
-            '&:hover': {
-                backgroundColor: '#4a4a57',
-            },
-        };
-        return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    border: '1px solid #505060',
-                    p: '8px 14px',
-                    alignItems: 'center',
-                    borderRadius: '0px 0px 10px 10px',
-                    borderTop: 'none'
-                }}
-            >
-                <Button
-                    variant="contained"
-                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                    disabled={page === 1}
-                    startIcon={<ArrowBackIcon />}
-                    sx={navButtonStyles}
-                >
-                    Previous
-                </Button>
-
-                <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={(_, value) => setPage(value)}
-                    variant="outlined"
-                    shape="rounded"
-                    siblingCount={1}
-                    boundaryCount={1}
-                    renderItem={(item) =>
-                        item.type === 'page' ? (
-                            <PaginationItem
-                                {...item}
-                                sx={{
-                                    color: '#fff',
-                                    borderRadius: '10px',
-                                    fontWeight: 'normal',
-                                    '&.Mui-selected': {
-                                        backgroundColor: '#FF581C',
-                                        fontWeight: 'bold',
-                                        color: '#fff',
-                                        '&:hover': {
-                                            backgroundColor: '#FF5A1F',
-                                        },
-                                    },
-                                    '&:hover': {
-                                        backgroundColor: '#2c2c2c',
-                                    },
-                                }}
-                            />
-                        ) : null
-                    }
-                />
-
-                <Button
-                    variant="contained"
-                    onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                    disabled={page === totalPages}
-                    endIcon={<ArrowForwardIcon />}
-                    sx={navButtonStyles}
-                >
-                    Next
-                </Button>
-            </Box>
-
-        )
-    }
-
     return (
-        <Layout>
-            {loading ? <CustomLoader /> : <Box sx={{ p: 3, backgroundColor: '#0E0E11', color: '#fff', minHeight: '100vh' }}>
-                {chartHistoryHeader()}
-                {groupSearch()}
-                {contactGroupsTable()}
-                {paginationOfTable()}
-            </Box>}
-        </Layout>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          border: "1px solid #505060",
+          p: "8px 14px",
+          alignItems: "center",
+          borderRadius: "0px 0px 10px 10px",
+          borderTop: "none",
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+          startIcon={<ArrowBackIcon />}
+          sx={navButtonStyles}
+        >
+          Previous
+        </Button>
+
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(_, value) => setPage(value)}
+          variant="outlined"
+          shape="rounded"
+          siblingCount={1}
+          boundaryCount={1}
+          renderItem={(item) =>
+            item.type === "page" ? (
+              <PaginationItem
+                {...item}
+                sx={{
+                  color: "#fff",
+                  borderRadius: "10px",
+                  fontWeight: "normal",
+                  "&.Mui-selected": {
+                    backgroundColor: "#FF581C",
+                    fontWeight: "bold",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#FF5A1F",
+                    },
+                  },
+                  "&:hover": {
+                    backgroundColor: "#2c2c2c",
+                  },
+                }}
+              />
+            ) : null
+          }
+        />
+
+        <Button
+          variant="contained"
+          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          disabled={page === totalPages}
+          endIcon={<ArrowForwardIcon />}
+          sx={navButtonStyles}
+        >
+          Next
+        </Button>
+      </Box>
     );
+  };
+
+  return (
+    <Layout>
+      {loading ? (
+        <CustomLoader />
+      ) : (
+        <Box
+          sx={{
+            p: 3,
+            backgroundColor: "#0E0E11",
+            color: "#fff",
+            minHeight: "100vh",
+          }}
+        >
+          {chartHistoryHeader()}
+          {groupSearch()}
+          {contactGroupsTable()}
+          {paginationOfTable()}
+        </Box>
+      )}
+    </Layout>
+  );
 };
 
 export default ContactGroups;

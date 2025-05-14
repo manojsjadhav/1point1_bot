@@ -26,6 +26,7 @@ const FormikTextField = ({
           fontFamily: "GeneralSans-m",
           fontSize: "14px",
           lineHeight: "20px",
+          color: "#fff",
         }}
       >
         {label}

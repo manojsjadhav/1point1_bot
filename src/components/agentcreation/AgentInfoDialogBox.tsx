@@ -16,6 +16,7 @@ import {
 } from "../../constants/agentType";
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
   const [typeValue, setTypeValue] = useState<any>("");
@@ -23,7 +24,10 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
   const selectedBotName = useSelector((state: RootState) => state.selectBot);
   const { agentFlowtoggle, setAgentFlowtoggle, setAgentDetails, agentDetails } =
     useContext(agentStore);
+  const navigate = useNavigate();
   const mailBotSelected = selectedBotName?.selectedBot === "Email_Bot";
+  const voiceBotSelected = selectedBotName?.selectedBot === "Voice_Bot";
+  const chatBotSelected = selectedBotName?.selectedBot === "Chat_Bot";
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setAgentDetails((prev: any) => ({ ...prev, [name]: value }));
@@ -40,7 +44,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
   const handleCreateAgent = () => {
     const isAnyFieldEmpty = Object.entries(agentDetails)
       .filter(([key, _]) => {
-        if (mailBotSelected) {
+        if (mailBotSelected || chatBotSelected) {
           return key === "agent_name";
         }
         return true;
@@ -50,6 +54,13 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
       alert("Please fillup all fields");
     } else {
       setAgentFlowtoggle(!agentFlowtoggle);
+      if (voiceBotSelected) {
+        navigate(`/voicebot/ai-agents/${agentDetails?.user_id}`);
+      } else if (chatBotSelected) {
+        navigate(`/chatbot/ai-agents/${agentDetails?.user_id}`);
+      } else if (mailBotSelected) {
+        navigate(`/chatbot/ai-agents/${agentDetails?.user_id}`);
+      }
     }
   };
 

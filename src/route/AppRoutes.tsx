@@ -14,6 +14,9 @@ import EmailConversation from "../pages/emailBot/EmailComponent/EmailConversatio
 import ChatbotDashboard from "../pages/chatbot/dashboard/ChatbotDashboard";
 import ChatBotAiAgent from "../pages/chatbot/aiAgent/ChatBotAiAgent";
 import TestBot from "../pages/chatbot/aiAgent/TestBot";
+import AiAgentFlow from "../pages/chatbot/aiAgent/AiAgentFlow";
+import AiVoiceAgentFlow from "../pages/voicebot/aiAgent/AiVoiceAgentFlow";
+import Chat from "../pages/chatbot/chatmessage/Chat";
 
 const AppRoutes = () => {
   return (
@@ -41,6 +44,14 @@ const AppRoutes = () => {
           element={
             <PriveteRoute>
               <AiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="voicebot/ai-agents/:id"
+          element={
+            <PriveteRoute>
+              <AiVoiceAgentFlow />
             </PriveteRoute>
           }
         />
@@ -84,7 +95,7 @@ const AppRoutes = () => {
             </PriveteRoute>
           }
         />
-        
+
         <Route
           path="emailBot/emailBotAIAgents"
           element={
@@ -94,16 +105,15 @@ const AppRoutes = () => {
           }
         />
 
-
         <Route
           path="emailBot/emails"
           element={
             <PriveteRoute>
               <EmailConversation />
-                  </PriveteRoute>
+            </PriveteRoute>
           }
         />
-              
+
         <Route
           path="chatbot"
           element={
@@ -121,10 +131,26 @@ const AppRoutes = () => {
           }
         />
         <Route
+          path="chatbot/ai-agents/:id"
+          element={
+            <PriveteRoute>
+              <AiAgentFlow />
+            </PriveteRoute>
+          }
+        />
+        <Route
           path="chatbot/ai-agents/testbot/:id"
           element={
             <PriveteRoute>
               <TestBot />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="chatbot/chat"
+          element={
+            <PriveteRoute>
+              <Chat />
             </PriveteRoute>
           }
         />
