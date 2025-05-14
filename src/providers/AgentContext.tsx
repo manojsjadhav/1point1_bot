@@ -19,7 +19,7 @@ const AgentContext = ({ children }: any) => {
   });
   const [agentFlowtoggle, setAgentFlowtoggle] = useState<any>(true);
   const [editAgentData, setEditAgentData] = useState<any>({});
-
+  console.log("edit agent data in context : ", editAgentData);
   return (
     <agentStore.Provider
       value={{
