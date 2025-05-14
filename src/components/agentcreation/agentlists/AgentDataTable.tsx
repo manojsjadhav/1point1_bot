@@ -27,6 +27,7 @@ import {
   deleteAgent,
   deleteEmailAgent,
   fetchAgentList,
+  fetchEmailBotAgentList,
   getChatAgentList,
 } from "../../../services/agentFlowServices";
 import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
@@ -109,7 +110,7 @@ const AgentDataTable = () => {
     }
   };
 
-  const handlAgentDelete = (id: any, user_id: any) => {
+  const handlAgentDelete = async (id: any, user_id: any) => {
     if (window.confirm("Are you sure you want to delete this agent?")) {
       if (selectedBotName?.selectedBot === "Voice_Bot") {
         dispatch(deleteAgent(id));
@@ -117,8 +118,10 @@ const AgentDataTable = () => {
       } else if (selectedBotName?.selectedBot === "Chat_Bot") {
         dispatch(deleteChatAgent(id));
         dispatch(getChatAgentList(user_id));
-      } else {
-        dispatch(deleteEmailAgent(id));
+        // dispatch(deleteAgent(id));
+      } else if (selectedBotName?.selectedBot === "Email_Bot") {
+        await dispatch(deleteEmailAgent(id));
+        dispatch(fetchEmailBotAgentList());
       }
     }
   };
@@ -140,7 +143,7 @@ const AgentDataTable = () => {
     if (selectedBotName?.selectedBot === "Voice_Bot") {
       dispatch(
         setBreadcrumbs([
-          { label: "Voice Agent", path: "/voicebot/ai-agents" },
+          { label: "Voice Agenssst", path: "/voicebot/ai-agents" },
           { label: agent.agent_type, path: "/voicebot" },
         ])
       );
@@ -156,10 +159,11 @@ const AgentDataTable = () => {
     } else if (selectedBotName?.selectedBot === "Email_Bot") {
       dispatch(
         setBreadcrumbs([
-          { label: "My Email Agent", path: "/emailBot/emailBotAIAgents" },
+          { label: "My Email Agent", path: "/emailBot/ai-agents" },
           { label: agent.agent_type, path: "/emailBot" },
         ])
       );
+      navigate(`/emailBot/ai-agents/${agent.id}`);
     }
     const flowNodes = JSON.parse(agent.nodes_list);
     dispatch(setInitialNodes(flowNodes));

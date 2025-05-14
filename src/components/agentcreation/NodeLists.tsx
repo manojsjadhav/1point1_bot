@@ -59,6 +59,8 @@ export default function NodeLists() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const lengthNodes = nodes?.length;
+  console.log("lengthNodes", allNode);
+
   const { user_id, created_by, agent_type, dialer, flow_type, agent_name } =
     agentDetails;
   const handleFlowSubmit = async () => {
@@ -194,8 +196,12 @@ export default function NodeLists() {
               updatedData: { ...editAgentData, ...emailAgentData },
             })
           );
+          toast.success("Agent Edited Successfully");
+          navigate(`/emailBot/emailBotAIAgents`);
         } else {
           await postEmailAgentFlow(emailAgentData);
+          toast.success("Agent Added Successfully");
+          navigate(`/emailBot/emailBotAIAgents`);
         }
       } else if (voiceBotSelected) {
         if (isEditing) {
@@ -252,7 +258,7 @@ export default function NodeLists() {
     }
   }, [allNode]);
   useEffect(() => {
-    if (mailBotSelected && lengthNodes === 0) addNodes(EmailConfigurationLLM);
+    if (allNode.length === 0 && lengthNodes === 0) addNodes(EmailConfigurationLLM);
   }, []);
 
   return (
