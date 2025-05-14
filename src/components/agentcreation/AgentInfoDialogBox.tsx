@@ -59,7 +59,7 @@ const AgentInfoDialogBox = ({ open, handleClose, textFieldStyle }: any) => {
       } else if (chatBotSelected) {
         navigate(`/chatbot/ai-agents/${agentDetails?.user_id}`);
       } else if (mailBotSelected) {
-        navigate(`/chatbot/ai-agents/${agentDetails?.user_id}`);
+        navigate(`/emailBot/ai-agents/${agentDetails?.user_id}`);
       }
     }
   };

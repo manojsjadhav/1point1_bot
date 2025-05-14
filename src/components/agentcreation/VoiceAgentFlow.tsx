@@ -31,9 +31,17 @@ const VoiceAgentFlow = () => {
             { label: agentDetails.agent_type, path: "/chatbot" },
           ])
         );
+      } else if (selectedBotName?.selectedBot === "Email_Bot") {
+        dispatch(
+          setBreadcrumbs([
+            { label: "My Email Agent", path: "/emailBot/ai-agents" },
+            { label: agentDetails.agent_type, path: "/emailBot" },
+          ])
+        );
       }
     }
   }, []);
+  
   return (
     <ReactFlowProvider>
       <Box sx={{ display: "flex", width: "100%" }}>

@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import { setInitialNodes } from "../../../redux/nodeSlice/nodeSlice";
 import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
 import { fetchEmailBotAgentList } from "../../../services/agentFlowServices";
-import VoiceAgentFlow from "../../../components/agentcreation/VoiceAgentFlow";
 
 const EmailBotAIAgent = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -33,7 +32,7 @@ const EmailBotAIAgent = () => {
   }, [agentFlowtoggle]);
 
   return (
-    <Layout>{agentFlowtoggle ? <AgentLists /> : <VoiceAgentFlow />}</Layout>
+    <Layout><AgentLists /> </Layout>
   );
 };
 

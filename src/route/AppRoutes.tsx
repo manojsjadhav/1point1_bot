@@ -113,6 +113,22 @@ const AppRoutes = () => {
             </PriveteRoute>
           }
         />
+        <Route
+          path="emailBot/ai-agents"
+          element={
+            <PriveteRoute>
+              <AiAgent />
+            </PriveteRoute>
+          }
+        />
+        <Route
+          path="emailBot/ai-agents/:id"
+          element={
+            <PriveteRoute>
+              <AiAgentFlow />
+            </PriveteRoute>
+          }
+        />
 
         <Route
           path="chatbot"
