@@ -26,7 +26,7 @@ const AvatarSummary = ({
 
     return (
         <OverlapBox>
-            {totalCount !== 0 && agents.map((elem, index) => (
+            {totalCount !== 0 && agents.slice(0, 3).map((elem, index) => (
                 <Avatar key={index} alt={`User ${index}`}>{elem.agent_name.charAt(0).toUpperCase()}</Avatar>
             ))}
             {remaining > 0 && (
