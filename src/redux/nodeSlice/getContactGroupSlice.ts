@@ -8,16 +8,14 @@ import { Group } from "../../types";
 interface GroupState {
   groups: Group[];
   searchResults: Group[];
-  isFetchingGroups: boolean;
-  isSearchingGroups: boolean;
+  loading: "idle" | "fetching" | "searching" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: GroupState = {
   groups: [],
   searchResults: [],
-  isFetchingGroups: false,
-  isSearchingGroups: false,
+  loading: "idle",
   error: null,
 };
 
@@ -60,36 +58,36 @@ const contactGroupReducer = createSlice({
     builder
       // fetchGroups
       .addCase(fetchGroups.pending, (state) => {
-        state.isFetchingGroups = true;
+        state.loading = "fetching";
         state.error = null;
       })
       .addCase(
         fetchGroups.fulfilled,
         (state, action: PayloadAction<Group[]>) => {
-          state.isFetchingGroups = false;
+          state.loading = "succeeded";
           state.groups = action.payload;
         }
       )
       .addCase(fetchGroups.rejected, (state, action) => {
-        state.isFetchingGroups = false;
-        state.error = action.payload as string;
+        state.loading = "failed";
+        state.error = action.payload || "Something went wrong";
       })
 
       // searchGroups
       .addCase(searchGroups.pending, (state) => {
-        state.isSearchingGroups = true;
+        state.loading = "searching";
         state.error = null;
       })
       .addCase(
         searchGroups.fulfilled,
         (state, action: PayloadAction<Group[]>) => {
-          state.isSearchingGroups = false;
+          state.loading = "succeeded";
           state.searchResults = action.payload;
         }
       )
       .addCase(searchGroups.rejected, (state, action) => {
-        state.isSearchingGroups = false;
-        state.error = action.payload as string;
+        state.loading = "failed";
+        state.error = action.payload || "Search failed";
       });
   },
 });
