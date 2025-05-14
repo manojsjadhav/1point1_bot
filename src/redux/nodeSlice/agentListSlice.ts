@@ -120,7 +120,7 @@ const agentListSlice = createSlice({
       })
       .addCase(
         getChatAgentList.fulfilled,
-        (state, action: PayloadAction<Agent[]>) => {
+        (state, action: PayloadAction<any>) => {
           state.agents = action.payload;
           state.loading = false;
         }

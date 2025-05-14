@@ -223,6 +223,7 @@ const AgentDataTable = () => {
 
           <TableBody>
             {paginatedAgents.map((agent: any, index: number) => {
+              console.log(agent, "agentid");
               const isEvenRow = index % 2 === 0;
               const bgColor = isEvenRow ? "#18181b" : "#2a2a33";
               const isChecked = selectedIds.includes(agent.id);

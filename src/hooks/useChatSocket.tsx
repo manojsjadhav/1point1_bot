@@ -46,19 +46,17 @@ export const useChatSocket = ({
     });
 
     socketRef.current.addEventListener("message", (event: MessageEvent) => {
-      const data: IncomingMessage = JSON.parse(event.data);
-      console.log({ data });
-      setMessages((prev) => [...prev, data]);
+      const data: any = JSON.parse(event.data);
+      console.log(data ," data");
+      const messages = data.type == "history" ? data.messages : [data];
+      setMessages((prev) => [...prev, ...messages]);
     });
-
     socketRef.current.addEventListener("error", (event) => {
       console.error("WebSocket error:", event);
     });
-
     socketRef.current.addEventListener("close", (event) => {
       console.log("WebSocket connection closed:", event);
     });
-
     return () => {
       socketRef.current?.close();
     };
