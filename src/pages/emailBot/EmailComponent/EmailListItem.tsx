@@ -3,6 +3,7 @@ import { Box, Typography, IconButton, Avatar, styled } from '@mui/material';
 // import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { formatTo12HourTime } from '../../../utils';
+import PartialHtmlMessage from './PartialHtmlMessage';
 
 // const StyledBox = styled(Box)<{ isselected: string }>(({ isselected }) => ({
 const StyledBox = styled(Box)(() => ({
@@ -33,7 +34,6 @@ const StyledBox = styled(Box)(() => ({
 }));
 
 const EmailListItem: React.FC<any> = ({ email }) => {
-    console.log("email", email);
 
     return (
         <StyledBox
@@ -80,7 +80,8 @@ const EmailListItem: React.FC<any> = ({ email }) => {
                             whiteSpace: "normal"
                         }}
                     >
-                        {email.message ? email.message : " "}
+                        {/* {email.message ? email.message : " "} */}
+                        <PartialHtmlMessage html={email.message} />
                     </Typography>
 
                     <IconButton
