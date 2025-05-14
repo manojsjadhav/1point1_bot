@@ -121,3 +121,17 @@ export const searchContactDetail = async (query: string = "") => {
   const response = await axios.get(`${BASE_URL}/search/contacts/?q=${query}`);
   return response.data;
 };
+
+export const addBrodCastData = async (payload: any) => {
+  const response = await axios.post(
+    `${BASE_URL}/update-contact-group/`,
+    payload,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  toast.success("Brodcast add succssesfully.");
+  return response.data;
+};
