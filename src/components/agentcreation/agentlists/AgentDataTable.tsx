@@ -35,6 +35,7 @@ import { setBreadcrumbs } from "../../../redux/nodeSlice/breadcrumbSlice";
 import { formatDate } from "../../../utils";
 import CodePopup from "../../chatbot/CodePopup";
 import { useNavigate } from "react-router-dom";
+import { deleteChatAgent } from "../../../services/chatServices";
 
 const NavButton = styled(Button)(({ theme }) => ({
   backgroundColor: "#41414B",
@@ -114,7 +115,7 @@ const AgentDataTable = () => {
         dispatch(deleteAgent(id));
         dispatch(fetchAgentList(user_id));
       } else if (selectedBotName?.selectedBot === "Chat_Bot") {
-        // dispatch(deleteAgent(id));
+        dispatch(deleteChatAgent(id));
         dispatch(getChatAgentList(user_id));
       } else {
         dispatch(deleteEmailAgent(id));
@@ -143,6 +144,7 @@ const AgentDataTable = () => {
           { label: agent.agent_type, path: "/voicebot" },
         ])
       );
+      navigate(`/voicebot/ai-agents/${agent.id}`);
     } else if (selectedBotName?.selectedBot === "Chat_Bot") {
       dispatch(
         setBreadcrumbs([
@@ -150,6 +152,7 @@ const AgentDataTable = () => {
           { label: agent.agent_type, path: "/chatbot" },
         ])
       );
+      navigate(`/chatbot/ai-agents/${agent.id}`);
     } else if (selectedBotName?.selectedBot === "Email_Bot") {
       dispatch(
         setBreadcrumbs([
@@ -161,7 +164,6 @@ const AgentDataTable = () => {
     const flowNodes = JSON.parse(agent.nodes_list);
     dispatch(setInitialNodes(flowNodes));
     setEditAgentData(editagent);
-    navigate(`/chatbot/ai-agents/${agent.id}`);
     setAgentFlowtoggle(!agentFlowtoggle);
   };
 

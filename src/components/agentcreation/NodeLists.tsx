@@ -35,6 +35,7 @@ import { cloneDeep } from "lodash";
 import { toast } from "react-toastify";
 import { EmailConfigurationLLM } from "../../nodes/utils/nodedata.ts";
 import { useNavigate } from "react-router-dom";
+import { editChatAgent, postChatAgent } from "../../services/chatServices.ts";
 const nodeTypes = { custom: AgentCustomNode };
 
 export default function NodeLists() {
@@ -61,15 +62,20 @@ export default function NodeLists() {
   const { user_id, created_by, agent_type, dialer, flow_type, agent_name } =
     agentDetails;
   const handleFlowSubmit = async () => {
-    console.log("agentEditData", agentDetails);
     const tempId = uuidv4();
     const isEditing = editAgentData && Object.keys(editAgentData).length > 0;
-    const requiredNodes = mailBotSelected
-      ? ["LLM", "Email"]
-      : ["STT", "TTS", "LLM"];
+    const requiredNodes: any = () => {
+      if (voiceBotSelected) {
+        return ["STT", "TTS", "LLM"];
+      } else if (mailBotSelected) {
+        return ["LLM", "Email"];
+      } else if (chatBotSelected) {
+        return ["LLM"];
+      }
+    };
     const currentNodeTypes = new Set(nodes.map((node: any) => node.nodetype));
-    const missingNodes = requiredNodes.filter(
-      (type) => !currentNodeTypes.has(type)
+    const missingNodes = requiredNodes().filter(
+      (type: any) => !currentNodeTypes.has(type)
     );
     if (missingNodes.length > 0) {
       alert(`Missing required nodes: ${missingNodes.join(", ")}`);
@@ -105,6 +111,16 @@ export default function NodeLists() {
       tts_model_perm: {},
       sts_model_perms: {},
     };
+    const chatAgentData = {
+      user_id,
+      created_by,
+      agent_name,
+      llm_model_id: tempId,
+      llm_model_param: {},
+      llm_model_document: "doc-456",
+      nodes_list: nodes,
+      edges,
+    };
     // Utility to populate values from fields
     const populateFields = (target: any, fields: any[]) => {
       fields.forEach((field) => {
@@ -126,7 +142,7 @@ export default function NodeLists() {
         if (nodetype === "Email") {
           populateFields(emailAgentData.tts_model_perm, fields);
         }
-      } else {
+      } else if (voiceBotSelected) {
         if (nodetype === "STT") {
           populateFields(fallbackAgentData.sts_model_perms, fields);
         }
@@ -136,6 +152,10 @@ export default function NodeLists() {
         if (nodetype === "LLM") {
           populateFields(fallbackAgentData.llm_model_param, fields);
         }
+      } else if (chatBotSelected) {
+        if (nodetype === "LLM") {
+          populateFields(chatAgentData.llm_model_param, fields);
+        }
       }
     });
     // Utility to check if any field is empty
@@ -143,19 +163,25 @@ export default function NodeLists() {
       Object.values(obj).some(
         (value) => value === "" || value === null || value === undefined
       );
-    const dataToValidate = mailBotSelected
-      ? [
-          emailAgentData.llm_model_param,
-          emailAgentData.tts_model_perm,
-          emailAgentData.sts_model_perms,
-        ]
-      : [
+    const dataToValidate = () => {
+      if (voiceBotSelected) {
+        return [
           fallbackAgentData.llm_model_param,
           fallbackAgentData.tts_model_perm,
           fallbackAgentData.sts_model_perms,
         ];
-
-    if (dataToValidate.some(hasEmptyFields)) {
+      } else if (mailBotSelected) {
+        return [
+          emailAgentData.llm_model_param,
+          emailAgentData.tts_model_perm,
+          emailAgentData.sts_model_perms,
+        ];
+      } else if (chatBotSelected) {
+        return [chatAgentData.llm_model_param];
+      }
+    };
+    const dataValidation: any = dataToValidate();
+    if (dataValidation.some(hasEmptyFields)) {
       alert("Please fill out all required node fields correctly.");
       return;
     }
@@ -188,17 +214,17 @@ export default function NodeLists() {
       } else if (chatBotSelected) {
         if (isEditing) {
           dispatch(
-            editAgent({
+            editChatAgent({
               id: editAgentData.id,
-              updatedData: { ...editAgentData, ...fallbackAgentData },
+              updatedData: { ...editAgentData, ...chatAgentData },
             })
           );
           toast.success("Agent Edited Successfully");
         } else {
-          await postAgentFlow(fallbackAgentData);
+          await postChatAgent(chatAgentData);
           toast.success("Agent Added Successfully");
-          navigate(`/chatbot/ai-agents`);
         }
+        navigate(`/chatbot/ai-agents`);
       }
       dispatch(setInitialNodes([]));
       setAgentFlowtoggle(!agentFlowtoggle);

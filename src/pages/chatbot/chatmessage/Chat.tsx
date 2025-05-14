@@ -26,6 +26,7 @@ import ChatContactList from "../../../components/chatbot/ChatContactList";
 
 const Chat: React.FC = () => {
   const { chatContact } = useSelector((state: RootState) => state.chatContacts);
+  const [selectedContact, setSelectedContact] = useState<any>({});
   const { agents } = useSelector((state: RootState) => state.agents);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [agentSelect, setAgentSelect] = useState<any>({});
@@ -157,7 +158,7 @@ const Chat: React.FC = () => {
               <DatePicker
                 label="From Date"
                 value={fromDate}
-                onChange={(date: Date | null) => setFromDate(date)}
+                onChange={(date: any) => setFromDate(date)}
                 slotProps={{
                   textField: {
                     size: "small",
@@ -191,7 +192,7 @@ const Chat: React.FC = () => {
               <DatePicker
                 label="To Date"
                 value={toDate}
-                onChange={(date) => setToDate(date)}
+                onChange={(date: any) => setToDate(date)}
                 slotProps={{
                   textField: {
                     size: "small",
@@ -254,11 +255,14 @@ const Chat: React.FC = () => {
           }}
         >
           <Box sx={{ width: "350px", flexShrink: 0 }}>
-            <ChatContactList chatContacts={chatContact} />
+            <ChatContactList
+              chatContacts={chatContact}
+              setSelectedContact={setSelectedContact}
+            />
           </Box>
 
           <Box sx={{ flexGrow: 1, overflow: "hidden", height: "100%" }}>
-            <TestChatAgent />
+            <TestChatAgent selectedContact={selectedContact} />
           </Box>
         </Box>
       </Box>

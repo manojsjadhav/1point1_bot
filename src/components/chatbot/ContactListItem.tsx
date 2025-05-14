@@ -30,12 +30,13 @@ const boxStyle = {
   },
 };
 
-const ContactListItem = ({ chatContact, onStar }: any) => {
+const ContactListItem = ({ chatContact, onStar, setSelectedContact }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-  const handleOpenChat = (email: any) => {
-    const contactId = email.id;
-    const id = email.user_id;
+  const handleOpenChat = (contact: any) => {
+    const contactId = contact.id;
+    const id = contact.agent_id;
     console.log(contactId, "contact id");
+    setSelectedContact(contact);
     dispatch(getChatHistoryByContact(contactId));
     dispatch(getChatbotAgent(id));
   };

@@ -10,7 +10,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { Search } from "@mui/icons-material";
 import ContactListItem from "./ContactListItem";
 
-const ChatContactList = ({ chatContacts }: any) => {
+const ChatContactList = ({ chatContacts, setSelectedContact }: any) => {
   const [search, setSearch] = useState<string>("");
   return (
     <Box
@@ -91,7 +91,11 @@ const ChatContactList = ({ chatContacts }: any) => {
       >
         {chatContacts.length > 0 ? (
           chatContacts.map((chatContact: any) => (
-            <ContactListItem key={chatContact.id} chatContact={chatContact} />
+            <ContactListItem
+              key={chatContact.id}
+              chatContact={chatContact}
+              setSelectedContact={setSelectedContact}
+            />
           ))
         ) : (
           <Box sx={{ p: 2, textAlign: "center" }}>

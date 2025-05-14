@@ -24,16 +24,16 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 
-const ChatInputBar = () => {
+const ChatInputBar = ({ sendMessage }: any) => {
   const [message, setMessage] = useState("");
 
-  const handleSend = () => {
+  const handleSendMessage = () => {
     if (message.trim()) {
       console.log("Message sent:", message);
+      sendMessage(message);
       setMessage("");
     }
   };
-
   const iconStyle = {
     color: "#B8B9C1",
     fontSize: 20,
@@ -158,7 +158,7 @@ const ChatInputBar = () => {
           <Button
             variant="contained"
             endIcon={<Send />}
-            onClick={handleSend}
+            onClick={handleSendMessage}
             sx={{
               backgroundColor: "#FF5E2B",
               color: "#fff",
