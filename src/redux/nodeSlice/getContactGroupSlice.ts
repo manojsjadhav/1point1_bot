@@ -9,7 +9,7 @@ interface GroupState {
   groups: Group[];
   searchResults: Group[];
   loading: "idle" | "fetching" | "searching" | "succeeded" | "failed";
-  error: string | null;
+  error: any;
 }
 
 const initialState: GroupState = {

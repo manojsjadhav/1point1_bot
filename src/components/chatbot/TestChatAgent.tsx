@@ -129,9 +129,8 @@ const TestChatAgent = ({ selectedContact }: any) => {
             </Box>
             <Box className="chat-container">
               <Box className="chat-container">
-                {console.log(messages, "messages")}
-                {(messages as any)?.[0]?.messages?.length > 0 &&
-                  (messages as any)?.[0]?.messages?.map((msg: any) => (
+                {messages?.length > 0 &&
+                  messages?.map((msg: any) => (
                     <Box
                       key={msg.id}
                       className={`chat-message ${msg.message_type}`}

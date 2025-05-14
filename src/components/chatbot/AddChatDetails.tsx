@@ -2,18 +2,23 @@ import { Box, Typography, Button } from "@mui/material";
 import Mail from "../../assets/Mail.svg";
 import User_Add from "../../assets/User_Add.svg";
 import { useFormik } from "formik";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { addChatDetailsValidationSchema } from "../../utils/validation/authvalidation";
 import FormikTextField from "../FormikTextField";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const AddChatDetails = ({ setOpenForm }: any) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const { auth } = useSelector((state: RootState) => state);
+  const user_id = auth?.response?.user_id;
   const { id } = useParams();
 
   const formik = useFormik({
     initialValues: {
+      user_id,
       agent_id: id,
       first_name: "",
       email: "",
