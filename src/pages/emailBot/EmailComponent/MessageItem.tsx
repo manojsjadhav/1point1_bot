@@ -5,6 +5,20 @@ import { formatDate, formatTo12HourTime } from '../../../utils';
 
 
 const MessageItem = (emailDetail: any) => {
+    let rawAttachments = emailDetail.emailDetail?.attachments;
+    let attachmentsArray = [];
+
+    if (typeof rawAttachments === 'string') {
+        try {
+            attachmentsArray = JSON.parse(rawAttachments.replace(/'/g, '"')); 
+        } catch (e) {
+            console.error('Invalid JSON string in attachments:', e);
+        }
+    } else if (Array.isArray(rawAttachments)) {
+        attachmentsArray = rawAttachments;
+    }
+
+
     return (
         <Box sx={MessageItemStyles.container}>
             {/* Header: Avatar, Name, Date */}
@@ -27,12 +41,12 @@ const MessageItem = (emailDetail: any) => {
             </Typography>
 
             {/* Attachments */}
-            <Box sx={MessageItemStyles.attachmentRow}>
+            {attachmentsArray?.length > 1 && <Box sx={MessageItemStyles.attachmentRow}>
                 <AttachFileIcon sx={MessageItemStyles.attachmentIcon} />
                 <Link underline="hover" sx={MessageItemStyles.attachmentLink}>
-                    2 Files attached
+                    {attachmentsArray?.length} Files attached
                 </Link>
-            </Box>
+            </Box>}
         </Box>
     );
 };

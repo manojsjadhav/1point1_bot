@@ -1,32 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, IconButton, TextField, InputAdornment } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import EmailListItem from './EmailListItem';
-import { EmailConversation } from '../../../types';
 import { Search } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../redux/store';
+import { AppDispatch, RootState } from '../../../redux/store';
 import { fetchEmailByTikectIdConversations } from '../../../redux/nodeSlice/emailSlice';
+import { useSelector } from 'react-redux';
 
 interface EmailListProps {
-    conversations: EmailConversation[];
     onSelectEmail: (email: any) => void;
+    showFiltered: boolean;
 }
 
 const EmailList: React.FC<EmailListProps> = ({
-    conversations,
     onSelectEmail,
+    showFiltered,
 }) => {
-
     const dispatch = useDispatch<AppDispatch>();
     const [search, setSearch] = useState<string>('');
 
+    const allConversations = useSelector((state: RootState) => state.emailConversation.allConversations);
+    const conversations = useSelector((state: RootState) => state.emailConversation.conversations);
 
-    const filteredEmails = conversations.filter(email =>
-        email.subject?.toLowerCase().includes(search.toLowerCase()) ||
-        email.customerMail?.toLowerCase().includes(search.toLowerCase()) ||
-        email.message?.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredEmails = useMemo(() => {
+        const source = showFiltered ? conversations : allConversations;
+
+        return source.filter(email =>
+            (email.subject || '').toLowerCase().includes(search.toLowerCase()) ||
+            (email.customerMail || '').toLowerCase().includes(search.toLowerCase()) ||
+            (email.message || '').toLowerCase().includes(search.toLowerCase())
+        );
+    }, [allConversations, conversations, search, showFiltered]);
+
 
     const handleOnSelectEmail = async (selectedMail: any) => {
         await dispatch(fetchEmailByTikectIdConversations(selectedMail.ticketno))
@@ -119,7 +125,7 @@ const EmailList: React.FC<EmailListProps> = ({
                     ))
                 ) : (
                     <Box sx={{ p: 2, textAlign: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="h6" fontWeight="bold" color="#505060">
                             No emails found
                         </Typography>
                     </Box>

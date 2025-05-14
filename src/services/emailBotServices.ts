@@ -13,3 +13,16 @@ export const getEmailByTickectIdConversations = async (tikect_id: string) => {
   );
   return response.data;
 };
+
+export const searchEmailByParams = async (payload: any) => {
+  const response = await axios.post(
+    `http://1msg.1point1.in:3001/api/email/bot/search/email-agent/keywords/by/user-id/`,
+    payload,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};

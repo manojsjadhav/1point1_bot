@@ -3,21 +3,32 @@ import { EmailConversation } from "../../types";
 import {
   getEmailByTickectIdConversations,
   getEmailConversations,
+  searchEmailByParams,
 } from "../../services/emailBotServices";
 
 interface EmailConversationState {
-  conversations: EmailConversation[];
+  allConversations: EmailConversation[]; // full list
+  conversations: EmailConversation[];    // filtered/search result
   conversationsById: EmailConversation[];
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: EmailConversationState = {
+  allConversations: [],
   conversations: [],
   conversationsById: [],
   isLoading: false,
   error: null,
 };
+
+interface SearchFilter {
+  user_id: number;
+  agent_name: string;
+  keyword: string;
+  from_date: string;
+  to_date: string;
+}
 
 // Fetch all conversations
 export const fetchEmailConversations = createAsyncThunk(
@@ -45,6 +56,19 @@ export const fetchEmailByTikectIdConversations = createAsyncThunk(
   }
 );
 
+// Search by params
+export const fetchSearchEmailByParams = createAsyncThunk(
+  "emails/fetchByParams",
+  async (payLoad: SearchFilter, { rejectWithValue }) => {
+    try {
+      const data = await searchEmailByParams(payLoad);
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch emails");
+    }
+  }
+);
+
 const emailConversationSlice = createSlice({
   name: "emailConversations",
   initialState,
@@ -62,7 +86,8 @@ const emailConversationSlice = createSlice({
         fetchEmailConversations.fulfilled,
         (state, action: PayloadAction<EmailConversation[]>) => {
           state.isLoading = false;
-          state.conversations = action.payload;
+          state.allConversations = action.payload;
+          state.conversations = action.payload; // default filtered = all
         }
       )
       .addCase(fetchEmailConversations.rejected, (state, action) => {
@@ -85,7 +110,15 @@ const emailConversationSlice = createSlice({
       .addCase(fetchEmailByTikectIdConversations.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
-      });
+      })
+
+      // Search by params
+      .addCase(
+        fetchSearchEmailByParams.fulfilled,
+        (state, action: PayloadAction<any[]>) => {
+          state.conversations = action.payload;
+        }
+      );
   },
 });
 
