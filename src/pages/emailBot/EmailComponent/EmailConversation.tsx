@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, TextField, Typography, Button } from '@mui/material';
-import { emails as initialEmails } from './emails';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -9,44 +8,76 @@ import EmailList from './EmailList';
 import EmailDetail from './EmailDetail';
 import { Layout } from '../../../components';
 import { Search } from '@mui/icons-material';
+import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../../redux/store';
+import { fetchEmailConversations, fetchSearchEmailByParams } from '../../../redux/nodeSlice/emailSlice';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const EmailConversation: React.FC = () => {
-  const [emails, setEmails] = useState<Email[]>(initialEmails);
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const dispatch = useDispatch<AppDispatch>()
+  const auth = useSelector((state: RootState) => state.auth);
+  const user_Id = auth.response.user_id
+
+  const conversations = useSelector((state: RootState) => state.emailConversation.conversations);
+
+  console.log("conversations", conversations);
+
+
+  const [selectedEmail, setSelectedEmail] = useState<any | null>(null);
   const [agentFilter, setAgentFilter] = useState('');
   const [keywordFilter, setKeywordFilter] = useState('');
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
+  const [showFiltered, setShowFiltered] = useState(false);
+
 
   const handleSelectEmail = (email: Email) => {
     setSelectedEmail(email);
-
-    if (!email.isRead) {
-      setEmails(emails.map(e =>
-        e.id === email.id ? { ...e, isRead: true } : e
-      ));
-    }
   };
 
-  const handleMarkAsRead = (emailId: string) => {
-    setEmails(emails.map(email =>
-      email.id === emailId ? { ...email, isRead: true } : email
-    ));
 
-    if (selectedEmail && selectedEmail.id === emailId) {
-      setSelectedEmail({ ...selectedEmail, isRead: true });
-    }
+  const formatDate = (date: Date | null): string => {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
-  const handleStarEmail = (emailId: string) => {
-    setEmails(emails.map(email =>
-      email.id === emailId ? { ...email, isStarred: !email.isStarred } : email
-    ));
-
-    if (selectedEmail && selectedEmail.id === emailId) {
-      setSelectedEmail({ ...selectedEmail, isStarred: !selectedEmail.isStarred });
+  const handleSearchEmails = async () => {
+    if (!agentFilter && !keywordFilter && !fromDate && !toDate) {
+      toast.error("please add the filters.")
     }
+    const payload = {
+      user_id: user_Id,
+      agent_name: agentFilter,
+      keyword: keywordFilter,
+      from_date: formatDate(fromDate),
+      to_date: formatDate(toDate),
+    };
+    console.log("Payload:", payload);
+    await dispatch(fetchSearchEmailByParams(payload));
+    setShowFiltered(true);
   };
+
+  const handleResetSearch = () => {
+    setShowFiltered(false);
+    setAgentFilter("");
+    setKeywordFilter("");
+    setFromDate(null);
+    setToDate(null);
+  };
+
+
+  const fetchEmails = async () => {
+    console.log("running useeffect");
+    await dispatch(fetchEmailConversations());
+  };
+
+  useEffect(() => {
+    fetchEmails();
+  }, [dispatch]);
 
   return (
     <Layout>
@@ -184,7 +215,7 @@ const EmailConversation: React.FC = () => {
             </LocalizationProvider>
             <Button
               variant="contained"
-              // onClick={handleSearch}
+              onClick={handleSearchEmails}
               startIcon={<Search />}
               sx={{
                 borderRadius: '8px',
@@ -196,6 +227,20 @@ const EmailConversation: React.FC = () => {
               }}
             >
               Search
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleResetSearch}
+              sx={{
+                borderRadius: '8px',
+                bgcolor: '#ff5a1f',
+                color: '#fff',
+                px: 4,
+                textTransform: 'none',
+                fontWeight: 500,
+              }}
+            >
+              Clear filter
             </Button>
           </Box>
         </Box>
@@ -209,23 +254,20 @@ const EmailConversation: React.FC = () => {
             p: 2,
             gap: 2,
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            backgroundColor:"#2a2a33",
-            borderRadius:"8px"
+            backgroundColor: "#2a2a33",
+            borderRadius: "8px"
           }}
         >
           <Box sx={{ width: '350px', flexShrink: 0 }}>
             <EmailList
-              emails={emails}
-              selectedEmail={selectedEmail}
               onSelectEmail={handleSelectEmail}
-              onStarEmail={handleStarEmail}
+              showFiltered={showFiltered}
             />
           </Box>
 
           <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
             <EmailDetail
               email={selectedEmail}
-              onMarkAsRead={handleMarkAsRead}
             />
           </Box>
         </Box>

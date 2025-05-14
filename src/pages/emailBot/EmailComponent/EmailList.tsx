@@ -1,31 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, IconButton, TextField, InputAdornment } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import EmailListItem from './EmailListItem';
-import { Email } from '../../../types';
 import { Search } from '@mui/icons-material';
+import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../../redux/store';
+import { fetchEmailByTikectIdConversations } from '../../../redux/nodeSlice/emailSlice';
+import { useSelector } from 'react-redux';
 
 interface EmailListProps {
-    emails: Email[];
-    selectedEmail: Email | null;
-    onSelectEmail: (email: Email) => void;
-    onStarEmail: (emailId: string) => void;
+    onSelectEmail: (email: any) => void;
+    showFiltered: boolean;
 }
 
 const EmailList: React.FC<EmailListProps> = ({
-    emails,
-    selectedEmail,
     onSelectEmail,
-    onStarEmail,
+    showFiltered,
 }) => {
+    const dispatch = useDispatch<AppDispatch>();
     const [search, setSearch] = useState<string>('');
 
+    const allConversations = useSelector((state: RootState) => state.emailConversation.allConversations);
+    const conversations = useSelector((state: RootState) => state.emailConversation.conversations);
 
-    const filteredEmails = emails.filter(email =>
-        email.subject.toLowerCase().includes(search.toLowerCase()) ||
-        email.from.name.toLowerCase().includes(search.toLowerCase()) ||
-        email.preview.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredEmails = useMemo(() => {
+        const source = showFiltered ? conversations : allConversations;
+
+        return source.filter(email =>
+            (email.subject || '').toLowerCase().includes(search.toLowerCase()) ||
+            (email.customerMail || '').toLowerCase().includes(search.toLowerCase()) ||
+            (email.message || '').toLowerCase().includes(search.toLowerCase())
+        );
+    }, [allConversations, conversations, search, showFiltered]);
+
+
+    const handleOnSelectEmail = async (selectedMail: any) => {
+        await dispatch(fetchEmailByTikectIdConversations(selectedMail.ticketno))
+        onSelectEmail(selectedMail)
+    }
+
 
     return (
         <Box
@@ -80,7 +93,6 @@ const EmailList: React.FC<EmailListProps> = ({
                             color: '#fff',
                             padding: '10px ',
                         },
-                        // mb: 2,
                     }}
                 />
 
@@ -102,17 +114,18 @@ const EmailList: React.FC<EmailListProps> = ({
             >
                 {filteredEmails.length > 0 ? (
                     filteredEmails.map(email => (
-                        <EmailListItem
-                            key={email.id}
-                            email={email}
-                            isSelected={selectedEmail?.id === email.id}
-                            onClick={() => onSelectEmail(email)}
-                            onStar={() => onStarEmail(email.id)}
-                        />
+
+                        <div onClick={() => handleOnSelectEmail(email)}>
+                            <EmailListItem
+                                key={email.id}
+                                email={email}
+                            />
+
+                        </div>
                     ))
                 ) : (
                     <Box sx={{ p: 2, textAlign: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="h6" fontWeight="bold" color="#505060">
                             No emails found
                         </Typography>
                     </Box>

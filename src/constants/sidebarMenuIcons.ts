@@ -35,7 +35,7 @@ export const emailSidbarMenu = [
   {
     label: "Mail Bot Selection",
     icon: mailBot,
-    path: "/voicebot/conversation-history",
+    path: "/emailBot/emails",
   },
   { label: "Reports", icon: graph, path: "/voicebot/reports" },
 ];

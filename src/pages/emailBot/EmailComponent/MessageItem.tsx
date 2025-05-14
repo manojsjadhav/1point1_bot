@@ -1,9 +1,24 @@
-import { Avatar, Box, Typography, Link } from '@mui/material';
+import { Avatar, Box, Link, Typography } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { MessageItemStyles } from './Style';
+import { formatDate, formatTo12HourTime } from '../../../utils';
 
 
-const MessageItem = () => {
+const MessageItem = (emailDetail: any) => {
+    let rawAttachments = emailDetail.emailDetail?.attachments;
+    let attachmentsArray = [];
+
+    if (typeof rawAttachments === 'string') {
+        try {
+            attachmentsArray = JSON.parse(rawAttachments.replace(/'/g, '"')); 
+        } catch (e) {
+            console.error('Invalid JSON string in attachments:', e);
+        }
+    } else if (Array.isArray(rawAttachments)) {
+        attachmentsArray = rawAttachments;
+    }
+
+
     return (
         <Box sx={MessageItemStyles.container}>
             {/* Header: Avatar, Name, Date */}
@@ -11,28 +26,27 @@ const MessageItem = () => {
                 <Box sx={MessageItemStyles.userInfo}>
                     <Avatar
                         alt="John Doe"
-                        src="https://randomuser.me/api/portraits/men/10.jpg"
                         sx={MessageItemStyles.avatar}
-                    />
-                    <Typography sx={MessageItemStyles.userName}>John Doe</Typography>
+                    >{emailDetail?.emailDetail?.name.charAt(0).toUpperCase()}</Avatar>
+                    <Typography sx={MessageItemStyles.userName}>{emailDetail?.emailDetail?.name}</Typography>
                 </Box>
                 <Typography sx={MessageItemStyles.timestamp}>
-                    22/06/2024 • 10:30 AM
+                    {formatDate(emailDetail?.emailDetail?.ticket_created_at)} • {formatTo12HourTime(emailDetail?.emailDetail?.ticket_created_at)}
                 </Typography>
             </Box>
 
             {/* Message Text */}
             <Typography sx={MessageItemStyles.messageText}>
-                Embedding Model for SBI bot is experiencing surge in the response from the voice model andshdsds
+                {emailDetail?.emailDetail?.message}
             </Typography>
 
             {/* Attachments */}
-            <Box sx={MessageItemStyles.attachmentRow}>
+            {attachmentsArray?.length > 1 && <Box sx={MessageItemStyles.attachmentRow}>
                 <AttachFileIcon sx={MessageItemStyles.attachmentIcon} />
                 <Link underline="hover" sx={MessageItemStyles.attachmentLink}>
-                    2 Files attached
+                    {attachmentsArray?.length} Files attached
                 </Link>
-            </Box>
+            </Box>}
         </Box>
     );
 };
