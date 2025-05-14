@@ -6,6 +6,7 @@ import {
   deleteAgent,
   editAgent,
   fetchEmailBotAgentList,
+  getChatAgentList,
 } from "../../services/agentFlowServices";
 
 interface Agent {
@@ -113,6 +114,22 @@ const agentListSlice = createSlice({
         }
       )
       .addCase(fetchEmailBotAgentList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // chat agents
+      .addCase(getChatAgentList.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        getChatAgentList.fulfilled,
+        (state, action: PayloadAction<Agent[]>) => {
+          state.agents = action.payload;
+          state.loading = false;
+        }
+      )
+      .addCase(getChatAgentList.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

@@ -25,6 +25,10 @@ import uploadFileReducer from "./nodeSlice/uploadFileSlice.ts";
 import uploadCSVFileSlice from "./nodeSlice/uploadCSVFileSlice.ts";
 import selectBot from "./nodeSlice/selectBotSlice.ts";
 import emailConversationSlice from "./nodeSlice/emailSlice.ts";
+import chatHistory from "./chatSlice/chatHistorySlice.ts";
+import chatContacts from "./chatSlice/chatContactList.ts";
+import chatAgent from "./chatSlice/agentSlice.ts";
+
 
 const rootReducer = combineReducers({
   nodes: nodeReducer,
@@ -42,6 +46,9 @@ const rootReducer = combineReducers({
   uploadCSVFile: uploadCSVFileSlice,
   selectBot: selectBot,
   emailConversation: emailConversationSlice,
+  chatHistory: chatHistory,
+  chatContacts: chatContacts,
+  chatAgent: chatAgent,
 });
 
 const persistConfig = {
